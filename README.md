@@ -1,17 +1,20 @@
 # CodingTrainer
 
-Übungsaufgaben zum Skript **„Programmierung für Ingenieurinnen und Ingenieure“** (Prof. Dr. Maik Weber, Hochschule Trier) – direkt im Browser, ohne Installation.
+Übungsaufgaben zum Skript **„Programmierung für Ingenieurinnen und Ingenieure“** (Prof. Dr. Maik Weber, Hochschule Trier) – direkt im Browser, ohne Installation, mit eingebautem KI-Tutor.
 
 **Zum Trainer:** https://profweber.github.io/CodingTrainer/
 
-- 236 Aufgaben zu den Kapiteln 4–10 und den Anhängen A und B, je Kapitel in drei Schwierigkeitsstufen
+- 250 Aufgaben in drei Schwierigkeitsstufen: je 30 zu den Kapiteln 4–10, je 20 zu den Anhängen A (Dateien) und B (Fehlerbehandlung)
 - Jede Aufgabe lässt sich nur mit dem lösen, was bis zu ihrem Kapitel im Skript steht; der Trainer weist auf Konstrukte hin, die erst später oder gar nicht im Skript vorkommen.
 - Automatische Tests mit verständlichen Rückmeldungen und Verweisen auf die passenden Abschnitte im Skript
 - Klausurtraining mit zufälligen Aufgaben aus den gewählten Kapiteln
-- KI-Tutor: öffnet Claude mit einer vorbereiteten Anfrage (eigenes, kostenloses Claude-Konto genügt)
+- KI-Tutor direkt in der Seite: gibt Hinweise und Feedback, verrät aber keine fertigen Lösungen
+- Formeln sauber gesetzt (KaTeX, lokal eingebunden)
 - Deutsch und Englisch
 
-Python läuft vollständig im Browser (Pyodide). Der Lernfortschritt wird nur im Browser der Studierenden gespeichert; die Seite selbst sendet keine Daten an Dritte. Nur wer den KI-Tutor benutzt, schickt Aufgabe und Code an Claude.
+Der Link leitet zum Trainer auf claude.ai weiter. Dort läuft der KI-Tutor; Studierende melden sich mit ihrem eigenen (kostenlosen) Claude-Konto an, und die Anfragen zählen zu ihrem eigenen Kontingent – nicht zu dem der Lehrenden. Python läuft vollständig im Browser (Pyodide), der Lernfortschritt wird nur im Browser gespeichert.
+
+Wer kein Claude-Konto nutzen möchte, findet unter https://profweber.github.io/CodingTrainer/ohne-tutor/ dieselben Aufgaben ohne KI-Tutor (eigener Lernfortschritt, keine Daten an Dritte).
 
 Version 1.0 · abgestimmt auf Skriptversion 4.0
 
@@ -19,16 +22,31 @@ Version 1.0 · abgestimmt auf Skriptversion 4.0
 
 ## Für Lehrende
 
+### Aufbau des Repositorys
+
+| Pfad | Inhalt |
+|---|---|
+| `index.html` | Weiterleitung zur Claude-Version (die Adresse steht viermal in der Datei) |
+| `ohne-tutor/` | vollständige Website ohne KI-Tutor (läuft direkt auf GitHub Pages; `katex/` enthält die Formelschrift) |
+| `quellcode/` | Aufgabenbank, Prüfwerkzeuge und Vorlage, aus der beide Versionen erzeugt werden – Details in `quellcode/LIESMICH.txt` |
+| `quellcode/claude/` | die Claude-Version zum Veröffentlichen auf claude.ai, mit ihrer eigenen `config.json` |
+
 ### Semester einstellen
 
-Die Datei [`config.json`](config.json) legt fest, was im laufenden Semester behandelt wird. Ändern direkt auf GitHub: Datei anklicken → Stift-Symbol → Wert ändern → „Commit changes“. Nach 1–2 Minuten gilt die neue Einstellung.
+Jede Version hat eine `config.json`:
+
+- **Claude-Version:** `quellcode/claude/config.json`. Nach einer Änderung muss die Version neu auf claude.ai veröffentlicht werden (z.B. in einer Claude-Sitzung mit diesem Repository: „Veröffentliche die Claude-Version neu“).
+- **Version ohne Tutor:** `ohne-tutor/config.json`. Ändern direkt auf GitHub: Datei anklicken → Stift-Symbol → Wert ändern → „Commit changes“. Nach 1–2 Minuten gilt die neue Einstellung.
 
 ```json
 {
   "semester": "",
   "chapters": ["4", "5", "6", "7", "8", "9", "10", "A", "B"],
   "topics": { "numpy": true, "pandas": true },
-  "tutor": { "claude_link": true }
+  "tutor": {
+    "claude_link": true,
+    "artifact_url": "https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3"
+  }
 }
 ```
 
@@ -37,21 +55,16 @@ Die Datei [`config.json`](config.json) legt fest, was im laufenden Semester beha
 | `"pandas": false` | pandas-Aufgaben verschwinden (auch im Klausurtraining), Kapitel 9 zeigt „ohne pandas“, der Tutor empfiehlt pandas nicht. Gleiches gilt für `"numpy"`. |
 | Kapitel aus `"chapters"` löschen | Das Kapitel wird ausgeblendet. |
 | `"semester": "SoSe 2027"` | Erscheint im Info-Fenster. |
-| `"claude_link": false` | Blendet den KI-Tutor aus. |
+| `"artifact_url"` | Nur Version ohne Tutor: Der Tutor-Bereich zeigt einen Knopf zur Claude-Version. Leer (`""`): Der Tutor öffnet stattdessen Claude in einem neuen Tab mit vorbereiteter Anfrage. |
+| `"claude_link": false` | Nur Version ohne Tutor: blendet den Tutor-Bereich ganz aus. |
 
 Ist die Datei fehlerhaft oder fehlt sie, gilt einfach alles.
-
-### Aufbau des Repositorys
-
-| Pfad | Inhalt |
-|---|---|
-| `index.html`, `worker.js`, `config.json`, `py/`, `fonts/` | die Website (wird von GitHub Pages ausgeliefert) |
-| `quellcode/` | Aufgabenbank, Prüfwerkzeuge und Vorlage, aus der `index.html` und `worker.js` erzeugt werden – Details in `quellcode/LIESMICH.txt` |
 
 ### Aufgaben ändern oder ergänzen
 
 1. Aufgabe in einer der Dateien `quellcode/bank*.py` bearbeiten.
-2. Im Ordner `quellcode`: `python3 verify.py` (alle Musterlösungen bestehen, alle Startcodes fallen durch, nur Konstrukte aus dem Skript) und `python3 build_website.py` (schreibt `index.html` und `worker.js` neu).
-3. Die beiden geänderten Dateien hochladen.
+2. Im Ordner `quellcode`: `python3 verify.py` (alle Musterlösungen bestehen, alle Startcodes fallen durch, nur Konstrukte aus dem Skript).
+3. `python3 build_website.py` erneuert `ohne-tutor/index.html` und `ohne-tutor/worker.js`; `python3 build_website.py --claude` erneuert die Claude-Version in `quellcode/claude/`.
+4. Geänderte Dateien hochladen und die Claude-Version neu veröffentlichen.
 
 Python 3.11 oder neuer; für die NumPy- und pandas-Aufgaben müssen `numpy` und `pandas` installiert sein.

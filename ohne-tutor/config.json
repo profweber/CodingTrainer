@@ -1,0 +1,9 @@
+{
+  "semester": "",
+  "chapters": ["4", "5", "6", "7", "8", "9", "10", "A", "B"],
+  "topics": { "numpy": true, "pandas": true },
+  "tutor": {
+    "claude_link": true,
+    "artifact_url": "https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3"
+  }
+}

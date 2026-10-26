@@ -21,8 +21,8 @@ for k in [0, 300, 273.15]:
 
 ex(id="k7-flow", ch="7", lvl=1,
    title={"de": "Volumenstrom im Rohr", "en": "Flow rate in a pipe"},
-   task={"de": "Schreiben Sie\n- `pipe_area(d)`: Querschnittsfläche eines Rohrs mit Innendurchmesser `d` (m), A = π·d²/4 (mit der vorgegebenen Konstante `PI`)\n- `flow_rate(d, v)`: Volumenstrom Q = A · v in m³/s bei der Strömungsgeschwindigkeit `v` (m/s). Nutzen Sie dafür `pipe_area`.\n- `flow_lpm(d, v)`: denselben Volumenstrom in Litern pro Minute.",
-         "en": "Write\n- `pipe_area(d)`: cross-sectional area of a pipe with inner diameter `d` (m), A = π·d²/4 (using the given constant `PI`)\n- `flow_rate(d, v)`: flow rate Q = A · v in m³/s at flow velocity `v` (m/s). Use `pipe_area` for it.\n- `flow_lpm(d, v)`: the same flow rate in litres per minute."},
+   task={"de": "Schreiben Sie\n- `pipe_area(d)`: Querschnittsfläche eines Rohrs mit Innendurchmesser `d` (m), $A = \\pi d^2/4$ (mit der vorgegebenen Konstante `PI`)\n- `flow_rate(d, v)`: Volumenstrom $Q = A \\cdot v$ in m³/s bei der Strömungsgeschwindigkeit `v` (m/s). Nutzen Sie dafür `pipe_area`.\n- `flow_lpm(d, v)`: denselben Volumenstrom in Litern pro Minute.",
+         "en": "Write\n- `pipe_area(d)`: cross-sectional area of a pipe with inner diameter `d` (m), $A = \\pi d^2/4$ (using the given constant `PI`)\n- `flow_rate(d, v)`: flow rate $Q = A \\cdot v$ in m³/s at flow velocity `v` (m/s). Use `pipe_area` for it.\n- `flow_lpm(d, v)`: the same flow rate in litres per minute."},
    starter={"de": "PI = 3.14159\n\ndef pipe_area(d):\n    ...\n", "en": "PI = 3.14159\n\ndef pipe_area(d):\n    ...\n"},
    solution='PI = 3.14159\n\ndef pipe_area(d):\n    return PI * d**2 / 4\n\ndef flow_rate(d, v):\n    return pipe_area(d) * v\n\ndef flow_lpm(d, v):\n    return flow_rate(d, v) * 1000 * 60\n\nprint(flow_lpm(0.05, 1.2))\n',
    tests='''
@@ -54,8 +54,8 @@ for vals, lo, hi in [([4.9, 5.0, 5.2, 5.6], 4.95, 5.25), ([], 0, 1), ([1, 2, 3],
 
 ex(id="k7-vdrop", ch="7", lvl=1,
    title={"de": "Spannungsfall in einer Leitung", "en": "Voltage drop in a cable"},
-   task={"de": "Der Spannungsfall auf einer zweiadrigen Leitung beträgt ΔU = 2 · ρ · l · I / A (l: einfache Länge in m, A: Querschnitt in mm², I in A, ρ in Ω·mm²/m). Schreiben Sie `voltage_drop(current, length, area, rho=0.0178)` mit dem Standardwert für Kupfer. Rufen Sie die Funktion einmal für Kupfer und einmal mit `rho=0.0287` (Aluminium) als Keyword-Argument auf.",
-         "en": "The voltage drop on a two-wire cable is ΔU = 2 · ρ · l · I / A (l: single length in m, A: cross-section in mm², I in A, ρ in Ω·mm²/m). Write `voltage_drop(current, length, area, rho=0.0178)` with the default value for copper. Call it once for copper and once with `rho=0.0287` (aluminium) as a keyword argument."},
+   task={"de": "Der Spannungsfall auf einer zweiadrigen Leitung beträgt $\\Delta U = \\dfrac{2 \\rho l I}{A}$ ($l$: einfache Länge in m, $A$: Querschnitt in mm², $I$ in A, $\\rho$ in Ω·mm²/m). Schreiben Sie `voltage_drop(current, length, area, rho=0.0178)` mit dem Standardwert für Kupfer. Rufen Sie die Funktion einmal für Kupfer und einmal mit `rho=0.0287` (Aluminium) als Keyword-Argument auf.",
+         "en": "The voltage drop on a two-wire cable is $\\Delta U = \\dfrac{2 \\rho l I}{A}$ ($l$: single length in m, $A$: cross-section in mm², $I$ in A, $\\rho$ in Ω·mm²/m). Write `voltage_drop(current, length, area, rho=0.0178)` with the default value for copper. Call it once for copper and once with `rho=0.0287` (aluminium) as a keyword argument."},
    starter={"de": "def voltage_drop(current, length, area, rho=0.0178):\n    ...\n", "en": "def voltage_drop(current, length, area, rho=0.0178):\n    ...\n"},
    solution='def voltage_drop(current, length, area, rho=0.0178):\n    return 2 * rho * length * current / area\n\nprint(voltage_drop(16, 25, 2.5))\nprint(voltage_drop(16, 25, 2.5, rho=0.0287))\n',
    tests='''
@@ -86,8 +86,8 @@ check(call(ns, "convert", 1, "m", "mile") is None and call(ns, "convert", 1, "mi
 
 ex(id="k7-stress", ch="7", lvl=2,
    title={"de": "Spannungsnachweis", "en": "Stress check"},
-   task={"de": "Schreiben Sie `stress_check(force, area, limit=235.0)` für einen Zugstab: Die Spannung σ = F / A (F in N, A in mm², σ in N/mm²). Die Funktion gibt **drei Werte** zurück: die Spannung, ob der Nachweis erfüllt ist (σ ≤ limit) und den Ausnutzungsgrad σ/limit in Prozent (auf eine Nachkommastelle gerundet).\n\nRufen Sie die Funktion für Baustahl S235 (Standard) und für S355 (`limit=355.0`) auf.",
-         "en": "Write `stress_check(force, area, limit=235.0)` for a tension rod: the stress σ = F / A (F in N, A in mm², σ in N/mm²). The function returns **three values**: the stress, whether the check passes (σ ≤ limit) and the utilisation σ/limit in percent (rounded to one decimal).\n\nCall the function for structural steel S235 (default) and for S355 (`limit=355.0`)."},
+   task={"de": "Schreiben Sie `stress_check(force, area, limit=235.0)` für einen Zugstab: Die Spannung $\\sigma = F/A$ ($F$ in N, $A$ in mm², $\\sigma$ in N/mm²). Die Funktion gibt **drei Werte** zurück: die Spannung, ob der Nachweis erfüllt ist ($\\sigma \\le \\mathit{limit}$) und den Ausnutzungsgrad $\\sigma/\\mathit{limit}$ in Prozent (auf eine Nachkommastelle gerundet).\n\nRufen Sie die Funktion für Baustahl S235 (Standard) und für S355 (`limit=355.0`) auf.",
+         "en": "Write `stress_check(force, area, limit=235.0)` for a tension rod: the stress $\\sigma = F/A$ ($F$ in N, $A$ in mm², $\\sigma$ in N/mm²). The function returns **three values**: the stress, whether the check passes ($\\sigma \\le \\mathit{limit}$) and the utilisation $\\sigma/\\mathit{limit}$ in percent (rounded to one decimal).\n\nCall the function for structural steel S235 (default) and for S355 (`limit=355.0`)."},
    starter={"de": "def stress_check(force, area, limit=235.0):\n    ...\n", "en": "def stress_check(force, area, limit=235.0):\n    ...\n"},
    solution='def stress_check(force, area, limit=235.0):\n    sigma = force / area\n    ok = sigma <= limit\n    utilisation = round(sigma / limit * 100, 1)\n    return sigma, ok, utilisation\n\nprint(stress_check(50000, 314.0))\nprint(stress_check(90000, 314.0, limit=355.0))\n',
    tests='''
@@ -120,8 +120,8 @@ for vals, n in [([0.4, 2.7, 1.9, 3.3, 0.8], 3), ([5, 1, 4], 1), ([2.0, 1.0], 5),
 
 ex(id="k7-trapezoid", ch="7", lvl=3,
    title={"de": "Energie aus Messdaten (Trapezregel)", "en": "Energy from measured data (trapezoidal rule)"},
-   task={"de": "Schreiben Sie `trapezoid(xs, ys)`, die das Integral über Messpunkte mit der Trapezregel berechnet: Summe über alle Intervalle von (x[i+1] − x[i]) · (y[i] + y[i+1]) / 2. Die Zeitpunkte müssen nicht gleichabständig sein. Bei unterschiedlich langen Listen oder weniger als zwei Punkten soll `None` zurückgegeben werden.\n\nBerechnen Sie damit die Energie in Wh aus Zeitpunkten in h und Leistungswerten in W.",
-         "en": "Write `trapezoid(xs, ys)` that computes the integral over measured points using the trapezoidal rule: the sum over all intervals of (x[i+1] − x[i]) · (y[i] + y[i+1]) / 2. The time points need not be equally spaced. If the lists differ in length or have fewer than two points, return `None`.\n\nUse it to compute the energy in Wh from time points in h and power values in W."},
+   task={"de": "Schreiben Sie `trapezoid(xs, ys)`, die das Integral über Messpunkte mit der Trapezregel berechnet: Summe über alle Intervalle von $(x_{i+1} - x_i) \\cdot \\dfrac{y_i + y_{i+1}}{2}$. Die Zeitpunkte müssen nicht gleichabständig sein. Bei unterschiedlich langen Listen oder weniger als zwei Punkten soll `None` zurückgegeben werden.\n\nBerechnen Sie damit die Energie in Wh aus Zeitpunkten in h und Leistungswerten in W.",
+         "en": "Write `trapezoid(xs, ys)` that computes the integral over measured points using the trapezoidal rule: the sum over all intervals of $(x_{i+1} - x_i) \\cdot \\dfrac{y_i + y_{i+1}}{2}$. The time points need not be equally spaced. If the lists differ in length or have fewer than two points, return `None`.\n\nUse it to compute the energy in Wh from time points in h and power values in W."},
    starter={"de": "def trapezoid(xs, ys):\n    ...\n\nt_h = [0, 0.5, 1.0, 2.0, 3.0]\np_w = [0, 400, 650, 700, 300]\n", "en": "def trapezoid(xs, ys):\n    ...\n\nt_h = [0, 0.5, 1.0, 2.0, 3.0]\np_w = [0, 400, 650, 700, 300]\n"},
    solution='def trapezoid(xs, ys):\n    if len(xs) != len(ys) or len(xs) < 2:\n        return None\n    total = 0\n    for i in range(len(xs) - 1):\n        total += (xs[i + 1] - xs[i]) * (ys[i] + ys[i + 1]) / 2\n    return total\n\nt_h = [0, 0.5, 1.0, 2.0, 3.0]\np_w = [0, 400, 650, 700, 300]\nprint(trapezoid(t_h, p_w), "Wh")\n',
    tests='''
@@ -137,12 +137,13 @@ check(call(ns, "trapezoid", [1], [5]) is None, "Ein einzelner Punkt liefert None
 
 ex(id="k7-std", ch="7", lvl=3,
    title={"de": "Mittelwert und Standardabweichung", "en": "Mean and standard deviation"},
-   task={"de": "Schreiben Sie `mean_std(values)`, die Mittelwert und **Stichproben**-Standardabweichung s = √( Σ(xᵢ − x̄)² / (n − 1) ) zurückgibt (zwei Rückgabewerte). Bei weniger als zwei Werten wird `None` zurückgegeben. Schreiben Sie außerdem `outliers(values, k=2.0)`, die eine Liste aller Werte zurückgibt, die mehr als `k` Standardabweichungen vom Mittelwert entfernt sind.",
-         "en": "Write `mean_std(values)` that returns the mean and the **sample** standard deviation s = √( Σ(xᵢ − x̄)² / (n − 1) ) (two return values). With fewer than two values, return `None`. Also write `outliers(values, k=2.0)` that returns a list of all values more than `k` standard deviations away from the mean."},
+   task={"de": "Schreiben Sie `mean_std(values)`, die Mittelwert und **Stichproben**-Standardabweichung zurückgibt (zwei Rückgabewerte):\n\n$$s = \\sqrt{\\dfrac{\\sum_i (x_i - \\bar{x})^2}{n - 1}}$$\n\nBei weniger als zwei Werten wird `None` zurückgegeben. Schreiben Sie außerdem `outliers(values, k=2.0)`, die eine Liste aller Werte zurückgibt, die mehr als `k` Standardabweichungen vom Mittelwert entfernt sind.",
+         "en": "Write `mean_std(values)` that returns the mean and the **sample** standard deviation (two return values):\n\n$$s = \\sqrt{\\dfrac{\\sum_i (x_i - \\bar{x})^2}{n - 1}}$$\n\nWith fewer than two values, return `None`. Also write `outliers(values, k=2.0)` that returns a list of all values more than `k` standard deviations away from the mean."},
    starter={"de": "def mean_std(values):\n    ...\n", "en": "def mean_std(values):\n    ...\n"},
    solution='def mean_std(values):\n    n = len(values)\n    if n < 2:\n        return None\n    mean = sum(values) / n\n    squares = 0\n    for x in values:\n        squares += (x - mean) ** 2\n    std = (squares / (n - 1)) ** 0.5\n    return mean, std\n\ndef outliers(values, k=2.0):\n    stats = mean_std(values)\n    if stats is None:\n        return []\n    mean, std = stats\n    result = []\n    for x in values:\n        if abs(x - mean) > k * std:\n            result.append(x)\n    return result\n\nprint(mean_std([9.8, 10.1, 10.0, 9.9, 10.2]))\n',
    tests='''
 import statistics as _st
+_srt = lambda x: sorted(x) if isinstance(x, (list, tuple)) else x
 ns, out = run()
 for v in [[9.8, 10.1, 10.0, 9.9, 10.2], [1, 2, 3, 4], [5.0, 5.0]]:
     r = call(ns, "mean_std", v)
@@ -150,8 +151,8 @@ for v in [[9.8, 10.1, 10.0, 9.9, 10.2], [1, 2, 3, 4], [5.0, 5.0]]:
 check(call(ns, "mean_std", [3.0]) is None, "Ein einzelner Wert liefert None", "A single value returns None")
 data = [10.0, 10.2, 9.9, 10.1, 9.8, 10.0, 14.0]
 m, s = _st.mean(data), _st.stdev(data)
-check(call(ns, "outliers", data) == [x for x in data if abs(x - m) > 2 * s], "outliers erkennt 14.0 als Ausreißer", "outliers detects 14.0 as an outlier")
-check(call(ns, "outliers", data, k=0.5) == [x for x in data if abs(x - m) > 0.5 * s], "outliers mit k=0.5", "outliers with k=0.5")
+check(_srt(call(ns, "outliers", data)) == sorted(x for x in data if abs(x - m) > 2 * s), "outliers erkennt 14.0 als Ausreißer", "outliers detects 14.0 as an outlier")
+check(_srt(call(ns, "outliers", data, k=0.5)) == sorted(x for x in data if abs(x - m) > 0.5 * s), "outliers mit k=0.5", "outliers with k=0.5")
 ''',
    require=["def", "return"], refs=["7.3r", "7.2s"])
 

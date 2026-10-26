@@ -4,8 +4,8 @@ from exlib import ex
 
 ex(id="k8-tuple", ch="8", lvl=1,
    title={"de": "Messpunkt als Tupel", "en": "Measuring point as a tuple"},
-   task={"de": "Ein Koordinatenmessgerät liefert den Punkt `point` als Tupel (x, y, z) in mm.\n- Entpacken Sie das Tupel in `x`, `y`, `z`.\n- Berechnen Sie den Abstand zum Ursprung `dist` = √(x² + y² + z²).\n- Der Taster war um `offset` mm in z-Richtung verschoben. Erzeugen Sie das **neue** Tupel `corrected` mit korrigiertem z-Wert (z − offset). Ein Tupel kann man nicht verändern!",
-         "en": "A coordinate measuring machine delivers the point `point` as a tuple (x, y, z) in mm.\n- Unpack the tuple into `x`, `y`, `z`.\n- Compute the distance to the origin `dist` = √(x² + y² + z²).\n- The probe was offset by `offset` mm in z direction. Create the **new** tuple `corrected` with the corrected z value (z − offset). A tuple cannot be modified!"},
+   task={"de": "Ein Koordinatenmessgerät liefert den Punkt `point` als Tupel (x, y, z) in mm.\n- Entpacken Sie das Tupel in `x`, `y`, `z`.\n- Berechnen Sie den Abstand zum Ursprung `dist` = $\\sqrt{x^2 + y^2 + z^2}$.\n- Der Taster war um `offset` mm in z-Richtung verschoben. Erzeugen Sie das **neue** Tupel `corrected` mit korrigiertem z-Wert ($z - \\mathit{offset}$). Ein Tupel kann man nicht verändern!",
+         "en": "A coordinate measuring machine delivers the point `point` as a tuple (x, y, z) in mm.\n- Unpack the tuple into `x`, `y`, `z`.\n- Compute the distance to the origin `dist` = $\\sqrt{x^2 + y^2 + z^2}$.\n- The probe was offset by `offset` mm in z direction. Create the **new** tuple `corrected` with the corrected z value ($z - \\mathit{offset}$). A tuple cannot be modified!"},
    starter={"de": "point = (12.0, -4.0, 3.5)\noffset = 0.5\n\n# Ihr Code:\n", "en": "point = (12.0, -4.0, 3.5)\noffset = 0.5\n\n# your code:\n"},
    solution='point = (12.0, -4.0, 3.5)\noffset = 0.5\nx, y, z = point\ndist = (x**2 + y**2 + z**2) ** 0.5\ncorrected = (x, y, z - offset)\nprint(dist, corrected)\n',
    tests='''
@@ -21,8 +21,8 @@ for p, o in [((12.0, -4.0, 3.5), 0.5), ((0.0, 0.0, 0.0), 1.0), ((3.0, 4.0, 12.0)
 
 ex(id="k8-colorcode", ch="8", lvl=1,
    title={"de": "Widerstands-Farbcode", "en": "Resistor colour code"},
-   task={"de": "Das Dictionary `colors` ordnet Farben ihre Ziffer zu. Ein Widerstand mit drei Ringen `band1`, `band2`, `band3` hat den Wert R = (10 · Ziffer1 + Ziffer2) · 10^Ziffer3.\n- Ermitteln Sie die drei Ziffern per Dictionary-Zugriff und berechnen Sie `R`.\n- Speichern Sie in `known` mit dem Operator `in`, ob die Farbe `test_color` im Dictionary vorkommt, und in `digit_or_minus1` ihre Ziffer – oder −1, falls unbekannt (mit `.get()`).",
-         "en": "The dictionary `colors` maps colours to their digit. A resistor with three bands `band1`, `band2`, `band3` has the value R = (10 · digit1 + digit2) · 10^digit3.\n- Look up the three digits in the dictionary and compute `R`.\n- Store in `known` (using the operator `in`) whether the colour `test_color` is in the dictionary, and in `digit_or_minus1` its digit – or −1 if unknown (using `.get()`)."},
+   task={"de": "Das Dictionary `colors` ordnet Farben ihre Ziffer zu. Ein Widerstand mit drei Ringen `band1`, `band2`, `band3` hat den Wert $R = (10 \\cdot \\text{Ziffer}_1 + \\text{Ziffer}_2) \\cdot 10^{\\text{Ziffer}_3}$.\n- Ermitteln Sie die drei Ziffern per Dictionary-Zugriff und berechnen Sie `R`.\n- Speichern Sie in `known` mit dem Operator `in`, ob die Farbe `test_color` im Dictionary vorkommt, und in `digit_or_minus1` ihre Ziffer – oder −1, falls unbekannt (mit `.get()`).",
+         "en": "The dictionary `colors` maps colours to their digit. A resistor with three bands `band1`, `band2`, `band3` has the value $R = (10 \\cdot \\text{digit}_1 + \\text{digit}_2) \\cdot 10^{\\text{digit}_3}$.\n- Look up the three digits in the dictionary and compute `R`.\n- Store in `known` (using the operator `in`) whether the colour `test_color` is in the dictionary, and in `digit_or_minus1` its digit – or −1 if unknown (using `.get()`)."},
    starter={"de": "colors = {'schwarz': 0, 'braun': 1, 'rot': 2, 'orange': 3, 'gelb': 4,\n          'grün': 5, 'blau': 6, 'violett': 7, 'grau': 8, 'weiß': 9}\nband1, band2, band3 = 'gelb', 'violett', 'rot'\ntest_color = 'gold'\n\n# Ihr Code:\n",
             "en": "colors = {'schwarz': 0, 'braun': 1, 'rot': 2, 'orange': 3, 'gelb': 4,\n          'grün': 5, 'blau': 6, 'violett': 7, 'grau': 8, 'weiß': 9}\nband1, band2, band3 = 'gelb', 'violett', 'rot'\ntest_color = 'gold'\n\n# your code:\n"},
    solution="colors = {'schwarz': 0, 'braun': 1, 'rot': 2, 'orange': 3, 'gelb': 4,\n          'grün': 5, 'blau': 6, 'violett': 7, 'grau': 8, 'weiß': 9}\nband1, band2, band3 = 'gelb', 'violett', 'rot'\ntest_color = 'gold'\nR = (10 * colors[band1] + colors[band2]) * 10 ** colors[band3]\nknown = test_color in colors\ndigit_or_minus1 = colors.get(test_color, -1)\nprint(R, known, digit_or_minus1)\n",
@@ -39,16 +39,17 @@ for t in ["blau", "schwarz"]:
 
 ex(id="k8-kelvin-comp", ch="8", lvl=1,
    title={"de": "Comprehensions für Temperaturen", "en": "Comprehensions for temperatures"},
-   task={"de": "Erzeugen Sie aus der Liste `celsius` jeweils mit einer **List Comprehension**:\n- `kelvin`: alle Werte in Kelvin\n- `frost`: nur die Werte unter 0 °C\n- `labels`: für jeden Wert `'Frost'` (unter 0 °C) oder `'ok'`",
-         "en": "From the list `celsius`, create with a **list comprehension** each:\n- `kelvin`: all values in kelvin\n- `frost`: only the values below 0 °C\n- `labels`: for every value `'Frost'` (below 0 °C) or `'ok'`"},
+   task={"de": "Erzeugen Sie aus der Liste `celsius` jeweils mit einer **List Comprehension** (Reihenfolge wie in `celsius`):\n- `kelvin`: alle Werte in Kelvin\n- `frost`: nur die Werte unter 0 °C\n- `labels`: für jeden Wert `'Frost'` (unter 0 °C) oder `'ok'`",
+         "en": "From the list `celsius`, create with a **list comprehension** each (same order as in `celsius`):\n- `kelvin`: all values in kelvin\n- `frost`: only the values below 0 °C\n- `labels`: for every value `'Frost'` (below 0 °C) or `'ok'`"},
    starter={"de": "celsius = [3.5, -2.0, 0.0, -7.5, 12.1]\n\n# Ihr Code:\n", "en": "celsius = [3.5, -2.0, 0.0, -7.5, 12.1]\n\n# your code:\n"},
    solution="celsius = [3.5, -2.0, 0.0, -7.5, 12.1]\nkelvin = [t + 273.15 for t in celsius]\nfrost = [t for t in celsius if t < 0]\nlabels = ['Frost' if t < 0 else 'ok' for t in celsius]\nprint(kelvin, frost, labels)\n",
    tests='''
+_srt = lambda x: sorted(x) if isinstance(x, (list, tuple)) else x
 for c in [[3.5, -2.0, 0.0, -7.5, 12.1], [10.0, 20.0], [-1.0]]:
     ns, out = run(sub={"celsius": c})
     k, f, l = need(ns, "kelvin", "frost", "labels")
     check(len(k) == len(c) and all(approx(a, b + 273.15) for a, b in zip(k, c)), f"kelvin für {c}", f"kelvin for {c}")
-    check(f == [t for t in c if t < 0], f"frost = {[t for t in c if t < 0]}", f"frost = {[t for t in c if t < 0]}")
+    check(_srt(f) == sorted(t for t in c if t < 0), f"frost = {[t for t in c if t < 0]}", f"frost = {[t for t in c if t < 0]}")
     check(l == ['Frost' if t < 0 else 'ok' for t in c], "labels stimmen", "labels are correct")
 ''',
    require=["listcomp"], forbid=["for"], refs=["8.8"])

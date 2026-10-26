@@ -3,6 +3,8 @@
 <!--FONTS--><link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap"><!--/FONTS-->
+<link rel="stylesheet" href="katex/katex.min.css">
+<script src="katex/katex.min.js"></script>
 <style>
 /* Layout: Zeichnungs-Schriftfeld als Kopf, darunter drei Spalten – Kapitel | Aufgabe + Editor | KI-Tutor. Millimeterpapier als Grund. */
 :root {
@@ -180,6 +182,8 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; le
 }
 .btn:hover { border-color: var(--ink); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
+#subtitle a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 2px; }
+#subtitle a:hover { color: var(--accent); text-decoration-color: currentColor; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .btn.primary:hover { filter: brightness(1.08); }
 .btn.dark { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
@@ -535,7 +539,7 @@ const VERSION = "1.0";
 const STANDALONE = /*STANDALONE*/false;   // true: Version für eigenen Webserver (KI-Tutor über Claude-Link)
 if (STANDALONE) document.documentElement.classList.add("standalone");
 // Semester-Einstellungen: werden aus config.json neben index.html gelesen (siehe LIESMICH)
-let CONFIG = { semester: "", chapters: null, topics: { numpy: true, pandas: true }, tutor: { claude_link: true } };
+let CONFIG = { semester: "", chapters: null, topics: { numpy: true, pandas: true }, tutor: { claude_link: true, artifact_url: "" } };
 async function loadConfig() {
   try {
     const ctl = new AbortController();
@@ -549,6 +553,9 @@ async function loadConfig() {
     if (c.topics && typeof c.topics === "object") Object.assign(CONFIG.topics, c.topics);
     if (c.tutor && typeof c.tutor === "object") Object.assign(CONFIG.tutor, c.tutor);
   } catch (e) { /* ohne config.json gelten die Standardwerte */ }
+  // Nur Links auf claude.ai zulassen (Version mit eingebautem KI-Tutor)
+  const u = CONFIG.tutor.artifact_url;
+  if (typeof u !== "string" || !/^https:\/\/claude\.ai\/[\w\/-]+$/.test(u)) CONFIG.tutor.artifact_url = "";
 }
 const offKeys = () => Object.entries(CONFIG.topics).filter(([k, v]) => v === false).map(([k]) => k);
 const chapterOn = id => !CONFIG.chapters || CONFIG.chapters.includes(id);
@@ -768,6 +775,8 @@ const I18N = {
   constructOff: { de: "wird in diesem Semester nicht behandelt. Lösen Sie die Aufgabe ohne.", en: "is not covered this semester. Solve the exercise without it." },
   withoutTopics: { de: "ohne {t} (dieses Semester)", en: "without {t} (this semester)" },
   linkIntro: { de: "Der KI-Tutor öffnet **Claude in einem neuen Tab** – mit einer fertig vorbereiteten Anfrage: Aufgabe, Ihr Code, das letzte Testergebnis, die Regeln für den Tutor und die passenden Stellen im Skript.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Bitte keine persönlichen Daten in den Code schreiben.", en: "The AI tutor opens **Claude in a new tab** – with a ready-made request: the exercise, your code, the latest test result, the tutor rules and the matching sections of the notes.\n\nYou need a (free) Claude account; requests count towards your own usage. Please don't put personal data in your code." },
+  gotoIntro: { de: "Der KI-Tutor arbeitet **direkt in dieser Seite**, wenn Sie den Trainer in Claude öffnen: Er sieht Aufgabe, Code und Testergebnis und antwortet hier im Seitenbereich – ohne Kopieren und ohne neuen Tab.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Ihr Lernfortschritt wird in jeder Version getrennt gespeichert.", en: "The AI tutor works **right inside the page** when you open the trainer in Claude: it sees the exercise, your code and the test result and answers here in the side panel – no copying, no new tab.\n\nYou need a (free) Claude account; requests count towards your own usage. Your progress is saved separately in each version." },
+  gotoBtn: { de: "Trainer mit KI-Tutor öffnen", en: "Open the trainer with AI tutor" },
   linkOpened: { de: "In Claude geöffnet. Ist das Eingabefeld dort leer, liegt der Text in der Zwischenablage: mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "Opened in Claude. If the input field there is empty, the text is on the clipboard: paste with Ctrl+V (Mac: ⌘+V) and send." },
   linkOpenedLong: { de: "Die Anfrage ist für einen direkten Link zu lang und liegt in der Zwischenablage: In Claude mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "The request is too long for a direct link and is on the clipboard: paste it in Claude with Ctrl+V (Mac: ⌘+V) and send." },
   copyPrompt: { de: "Anfrage kopieren", en: "Copy request" },
@@ -877,21 +886,41 @@ function highlight(src) {
   return out;
 }
 
+/* ---- Formeln: $…$ im Text, $$…$$ abgesetzt (LaTeX-Schreibweise), gesetzt mit KaTeX (lokal unter katex/) */
+function texHtml(src, display) {
+  if (window.katex) {
+    try { return katex.renderToString(src, { displayMode: display, throwOnError: false, output: "html", strict: "ignore" }); } catch (e) {}
+  }
+  return `<code class="tex">${esc(src)}</code>`;
+}
+function mathOut(text, store) {
+  const keep = html => { store.push(html); return "\u0000" + (store.length - 1) + "\u0000"; };
+  // nur außerhalb von `Code`
+  return text.split(/(`[^`\n]*`)/).map((seg, i) => i % 2 ? seg : seg
+    .replace(/\$\$([^$]+?)\$\$/g, (a, m) => keep(texHtml(m.trim(), true)))
+    .replace(/(^|[^\\$\w])\$(?=\S)([^$\n]*?\S)\$(?![\w$])/g, (a, pre, m) => pre + keep(texHtml(m, false)))
+  ).join("");
+}
+const mathIn = (html, store) => html.replace(/\u0000(\d+)\u0000/g, (a, n) => store[+n]);
+
 /* ---- Mini-Markdown (Aufgaben & Tutor) */
 function inlineMd(s) {
-  // s ist bereits escaped
+  // s ist bereits escaped; Code-Abschnitte zuerst herausnehmen, damit * darin nicht als Hervorhebung gilt
+  const codes = [];
   return s
-    .replace(/`([^`\n]+)`/g, "<code>$1</code>")
+    .replace(/`([^`\n]+)`/g, (all, c) => { codes.push(c); return "\u0001" + (codes.length - 1) + "\u0001"; })
     .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
     .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
-    .replace(/\[\[\s*([0-9AB]+(?:\.[0-9]+)?[a-z]?)\s*\]\]/g, (all, id) => SEC[id] ? refChip(id) : all);
+    .replace(/\[\[\s*([0-9AB]+(?:\.[0-9]+)?[a-z]?)\s*\]\]/g, (all, id) => SEC[id] ? refChip(id) : all)
+    .replace(/\u0001(\d+)\u0001/g, (all, n) => `<code>${codes[+n]}</code>`);
 }
 function md(text) {
   const parts = String(text).split(/```[a-zA-Z]*\n?/);
   let html = "";
   parts.forEach((part, i) => {
     if (i % 2 === 1) { html += `<pre><code>${highlight(part.replace(/\n$/, ""))}</code></pre>`; return; }
-    const lines = esc(part).split("\n");
+    const store = [], start = html.length;
+    const lines = esc(mathOut(part, store)).split("\n");
     let list = null, para = [];
     const flush = () => { if (para.length) { html += `<p>${inlineMd(para.join("<br>"))}</p>`; para = []; } };
     const closeList = () => { if (list) { html += `</${list}>`; list = null; } };
@@ -908,6 +937,7 @@ function md(text) {
       else { closeList(); para.push(line); }
     }
     flush(); closeList();
+    if (store.length) html = html.slice(0, start) + mathIn(html.slice(start), store);
   });
   return html;
 }
@@ -1111,7 +1141,10 @@ function openExercise(id) {
 function renderStatic() {
   document.documentElement.lang = LANG;
   document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
-  $("subtitle").textContent = t("subtitle") + " · v" + VERSION;
+  // Skripttitel im Untertitel verlinken
+  const sub = t("subtitle"), stitle = "Programmierung für Ingenieurinnen und Ingenieure", si = sub.indexOf(stitle);
+  $("subtitle").innerHTML = si < 0 ? esc(sub) + " · v" + VERSION
+    : esc(sub.slice(0, si)) + `<a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">${esc(stitle)}</a>` + esc(sub.slice(si + stitle.length)) + " · v" + VERSION;
   $("stdin").placeholder = t("stdinPh");
   $("chat-input").placeholder = t("chatPh");
   $("lang-de").setAttribute("aria-pressed", LANG === "de");
@@ -1394,7 +1427,8 @@ const Tutor = {
   mode() {
     if (this.sample && !this.disabled) return "inline";
     if (this.sample === undefined && !STANDALONE) return "pending";
-    return CONFIG.tutor.claude_link === false ? "off" : "link";
+    if (CONFIG.tutor.claude_link === false) return "off";
+    return CONFIG.tutor.artifact_url ? "goto" : "link";
   },
   hintLevel() { const ex = current(); return ex ? (this.hints[ex.id] || 0) : 0; },
   reset() {
@@ -1408,7 +1442,8 @@ const Tutor = {
     const inExam = S.view === "exam";
     const mode = this.mode();
     $("tutor").classList.toggle("link-mode", mode === "link");
-    ["tutor-actions", "chat-form"].forEach(id => { $(id).hidden = inExam; });
+    ["tutor-actions", "chat-form"].forEach(id => { $(id).hidden = inExam || mode === "goto"; });
+    $("hintmeter").hidden = mode === "goto";
     document.querySelector(".gen").hidden = inExam || mode !== "inline";
     const on = (mode === "inline" || mode === "link") && !inExam;
     const ex = current();
@@ -1426,6 +1461,10 @@ const Tutor = {
     const mode = this.mode();
     if (mode === "pending") { chat.innerHTML = ""; return; }
     if (mode === "off") { chat.innerHTML = `<div class="ai-off">${esc(this.disabled ? t("aiDenied") : t("aiUnavailable"))}</div>`; return; }
+    if (mode === "goto") {
+      chat.innerHTML = `<div class="link-intro">${md(t("gotoIntro"))}<p style="margin-top:10px"><a class="btn primary" style="text-decoration:none" href="${esc(CONFIG.tutor.artifact_url)}" target="_top">${esc(t("gotoBtn"))}</a></p></div>`;
+      return;
+    }
     if (mode === "link") {
       let h = `<div class="link-intro">${md(t("linkIntro"))}</div>`;
       this.turns.forEach((turn, i) => {
@@ -1584,7 +1623,7 @@ function tutorRules() {
        : `3. Only use and recommend Python constructs that appear in the lecture notes up to chapter ${ex.ch}. Allowed: ${allowed.join(", ")}. Only later in the notes: ${later.join(", ") || "–"}. Not in the notes at all (never recommend; if the code uses them, point it out kindly): ${absent.join(", ")}, as well as string methods such as upper/lower/join/find and modules such as collections, itertools, re.`,
     de ? "4. Verweise auf passende Stellen im Skript, indem du die Abschnitts-ID in doppelten eckigen Klammern schreibst, z.B. [[6.2b]]. Nutze nur IDs aus diesem Verzeichnis, mindestens einen Verweis pro Antwort:" : "4. Point to matching places in the lecture notes by writing the section ID in double square brackets, e.g. [[6.2b]]. Only use IDs from this index, at least one reference per answer (the notes are in German):",
     sectionIndex(ex.ch),
-    de ? "5. Format: einfaches Markdown (**fett**, `code`, kurze Listen, ```python Codeblöcke```). Keine Überschriften." : "5. Format: simple Markdown (**bold**, `code`, short lists, ```python code blocks```). No headings.",
+    de ? "5. Format: einfaches Markdown (**fett**, `code`, kurze Listen, ```python Codeblöcke```). Keine Überschriften. Formeln in LaTeX zwischen einfachen Dollarzeichen, z.B. $U = R \\cdot I$." : "5. Format: simple Markdown (**bold**, `code`, short lists, ```python code blocks```). No headings. Formulas in LaTeX between single dollar signs, e.g. $U = R \\cdot I$.",
     de ? "6. Beziehe dich auf die Testergebnisse und Konstrukt-Hinweise im Kontext. Gibt es Tests, die fehlschlagen, erkläre, was sie erwarten." : "6. Refer to the test results and construct notes in the context. If tests fail, explain what they expect.",
   ].join("\n");
 }

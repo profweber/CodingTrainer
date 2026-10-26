@@ -1,15 +1,25 @@
 """Erzeugt index.html und worker.js der Website neu.
 
 Aufruf im Ordner quellcode:  python3 build_website.py
-(schreibt in den übergeordneten Ordner, also die Wurzel des Repositorys;
+(schreibt in den Ordner ohne-tutor/ der Version ohne KI-Tutor;
  ein anderer Zielordner kann als Argument angegeben werden).
-Die Ordner py/ und fonts/ sowie config.json im Zielordner bleiben unverändert.
+Die Ordner py/ und fonts/ sowie config.json dort bleiben unverändert.
+Die Claude-Version mit KI-Tutor wird über Claude veröffentlicht (siehe LIESMICH.txt).
 Vorher prüfen:  python3 verify.py   (alle Musterlösungen bestehen, Startcode fällt durch)
+
+python3 build_website.py --claude
+erzeugt stattdessen die Claude-Version (KI-Tutor eingebaut) im Ordner claude/:
+index.html und worker.js; claude/config.json ist die Semester-Einstellung dieser Version.
+Veröffentlicht wird sie mit dem Artifact-Werkzeug von Claude: index.html als Seite,
+worker.js und config.json als zusätzliche Dateien, an dieselbe Adresse wie bisher
+(die Python-Dateien unter py/ liegen dort bereits und bleiben erhalten).
 """
 import json, re, sys
 import harness, bank
 
-target = sys.argv[1] if len(sys.argv) > 1 else ".."
+CLAUDE = "--claude" in sys.argv
+args = [a for a in sys.argv[1:] if a != "--claude"]
+target = args[0] if args else ("claude" if CLAUDE else "../ohne-tutor")
 js_safe = lambda s: s.replace("</", "<\\/")
 tpl = open("template.html", encoding="utf-8").read()
 for e in bank.EX:   # Themen für config.json (Bibliotheken, die die Musterlösung braucht)
@@ -17,6 +27,12 @@ for e in bank.EX:   # Themen für config.json (Bibliotheken, die die Musterlösu
     e["topics"] = [t for t in ("numpy", "pandas") if t in found]
 cons = {k: list(v) for k, v in harness.C.items()}
 page = tpl.replace("/*BANK*/", js_safe(json.dumps(bank.EX, ensure_ascii=False))).replace("/*CONSTRUCTS*/", js_safe(json.dumps(cons, ensure_ascii=False)))
+if CLAUDE:
+    open(target + "/index.html", "w", encoding="utf-8").write(page)
+    worker = open("worker_template.js", encoding="utf-8").read().replace('/*HARNESS*/""', json.dumps(open("harness.py", encoding="utf-8").read()))
+    open(target + "/worker.js", "w", encoding="utf-8").write(worker)
+    print("Claude-Version geschrieben nach", target, "-", len(bank.EX), "Aufgaben")
+    sys.exit()
 page = page.replace("/*STANDALONE*/false", "true")
 page = re.sub(r"<!--FONTS-->.*?<!--/FONTS-->", '<link rel="stylesheet" href="fonts/fonts.css">', page, flags=re.S)
 title = re.search(r"<title>.*?</title>", page).group(0)

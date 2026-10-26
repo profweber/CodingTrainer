@@ -24,8 +24,8 @@ check("3.00" in out, "Ausgabe für U = 12 V, R = 4 Ω lautet ‚3.00‘", "Outpu
 
 ex(id="k4-temp", ch="4", lvl=1,
    title={"de": "Temperatur umrechnen", "en": "Converting temperatures"},
-   task={"de": "Gegeben ist eine Temperatur `celsius`. Berechnen Sie `fahrenheit` (°F = °C · 9/5 + 32) und `kelvin` (K = °C + 273.15). Geben Sie beides in einer Zeile aus, z.B. `21.5 °C = 70.7 °F = 294.65 K` (Fahrenheit mit einer, Kelvin mit zwei Nachkommastellen).",
-         "en": "A temperature `celsius` is given. Compute `fahrenheit` (°F = °C · 9/5 + 32) and `kelvin` (K = °C + 273.15). Print both in one line, e.g. `21.5 °C = 70.7 °F = 294.65 K` (Fahrenheit with one, Kelvin with two decimals)."},
+   task={"de": "Gegeben ist eine Temperatur `celsius`. Berechnen Sie `fahrenheit` ($\\vartheta_\\mathrm{F} = \\vartheta_\\mathrm{C} \\cdot \\frac{9}{5} + 32$) und `kelvin` ($T = \\vartheta_\\mathrm{C} + 273.15$). Geben Sie beides in einer Zeile aus, z.B. `21.5 °C = 70.7 °F = 294.65 K` (Fahrenheit mit einer, Kelvin mit zwei Nachkommastellen).",
+         "en": "A temperature `celsius` is given. Compute `fahrenheit` ($\\vartheta_\\mathrm{F} = \\vartheta_\\mathrm{C} \\cdot \\frac{9}{5} + 32$) and `kelvin` ($T = \\vartheta_\\mathrm{C} + 273.15$). Print both in one line, e.g. `21.5 °C = 70.7 °F = 294.65 K` (Fahrenheit with one, Kelvin with two decimals)."},
    starter={"de": "celsius = 21.5\n\n# Ihr Code:\n", "en": "celsius = 21.5\n\n# your code:\n"},
    solution='celsius = 21.5\nfahrenheit = celsius * 9 / 5 + 32\nkelvin = celsius + 273.15\nprint(f"{celsius} °C = {fahrenheit:.1f} °F = {kelvin:.2f} K")\n',
    tests='''
@@ -73,8 +73,8 @@ for m, exp in cases:
 
 ex(id="k4-brake", ch="4", lvl=3,
    title={"de": "Anhalteweg", "en": "Stopping distance"},
-   task={"de": "Faustformeln der Fahrschule (v in km/h): Reaktionsweg = (v/10)·3, Bremsweg = (v/10)². Berechnen Sie `reaction`, `braking` und `total` (Summe, in m). Speichern Sie in `safe`, ob `total` kleiner als der Abstand `distance` zum Hindernis ist. Ausgabe z.B.: `Anhalteweg: 40.0 m, sicher: True`.",
-         "en": "Driving-school rules of thumb (v in km/h): reaction distance = (v/10)·3, braking distance = (v/10)². Compute `reaction`, `braking` and `total` (sum, in m). Store in `safe` whether `total` is less than `distance` to the obstacle. Output e.g.: `Stopping distance: 40.0 m, safe: True`."},
+   task={"de": "Faustformeln der Fahrschule ($v$ in km/h): Reaktionsweg = $(v/10) \\cdot 3$, Bremsweg = $(v/10)^2$. Berechnen Sie `reaction`, `braking` und `total` (Summe, in m). Speichern Sie in `safe`, ob `total` kleiner als der Abstand `distance` zum Hindernis ist. Ausgabe mit dem Anhalteweg auf eine Nachkommastelle, z.B.: `Anhalteweg: 40.0 m, sicher: True`.",
+         "en": "Driving-school rules of thumb ($v$ in km/h): reaction distance = $(v/10) \\cdot 3$, braking distance = $(v/10)^2$. Compute `reaction`, `braking` and `total` (sum, in m). Store in `safe` whether `total` is less than `distance` to the obstacle. Output with the stopping distance to one decimal, e.g.: `Stopping distance: 40.0 m, safe: True`."},
    starter={"de": "v = 50          # km/h\ndistance = 45.0 # m\n\n# Ihr Code:\n", "en": "v = 50          # km/h\ndistance = 45.0 # m\n\n# your code:\n"},
    solution='v = 50\ndistance = 45.0\nreaction = (v / 10) * 3\nbraking = (v / 10) ** 2\ntotal = reaction + braking\nsafe = total < distance\nprint(f"Anhalteweg: {total:.1f} m, sicher: {safe}")\n',
    tests='''
@@ -91,8 +91,8 @@ for v, d in [(50, 45.0), (100, 120.0), (30, 20.0)]:
 
 ex(id="k4-pq", ch="4", lvl=3,
    title={"de": "p-q-Formel", "en": "Quadratic formula"},
-   task={"de": "Lösen Sie x² + p·x + q = 0 mit der p-q-Formel. Die Wurzel berechnen Sie mit `** 0.5`. Speichern Sie die Lösungen in `x1` (mit +) und `x2` (mit −) und geben Sie beide auf drei Nachkommastellen aus. Achten Sie auf die Klammern! Sie dürfen voraussetzen, dass es zwei reelle Lösungen gibt.",
-         "en": "Solve x² + p·x + q = 0 with the p-q formula (x = −p/2 ± √(p²/4 − q)). Compute the root with `** 0.5`. Store the solutions in `x1` (with +) and `x2` (with −) and print both with three decimals. Mind the parentheses! You may assume that two real solutions exist."},
+   task={"de": "Lösen Sie $x^2 + p x + q = 0$ mit der p-q-Formel $x_{1,2} = -\\frac{p}{2} \\pm \\sqrt{\\frac{p^2}{4} - q}$. Die Wurzel berechnen Sie mit `** 0.5`. Speichern Sie die Lösungen in `x1` (mit +) und `x2` (mit −) und geben Sie beide auf drei Nachkommastellen aus. Achten Sie auf die Klammern! Sie dürfen voraussetzen, dass es zwei reelle Lösungen gibt.",
+         "en": "Solve $x^2 + p x + q = 0$ with the p-q formula $x_{1,2} = -\\frac{p}{2} \\pm \\sqrt{\\frac{p^2}{4} - q}$. Compute the root with `** 0.5`. Store the solutions in `x1` (with +) and `x2` (with −) and print both with three decimals. Mind the parentheses! You may assume that two real solutions exist."},
    starter={"de": "p = -3.0\nq = 2.0\n\n# Ihr Code:\n", "en": "p = -3.0\nq = 2.0\n\n# your code:\n"},
    solution='p = -3.0\nq = 2.0\nroot = (p**2 / 4 - q) ** 0.5\nx1 = -p / 2 + root\nx2 = -p / 2 - root\nprint(f"x1 = {x1:.3f}, x2 = {x2:.3f}")\n',
    tests='''
@@ -211,8 +211,8 @@ for c, k in [("A", 3), ("X", 5), ("M", 13), ("B", 27)]:
 # =================================================================== Kapitel 6
 ex(id="k6-breaker", ch="6", lvl=1,
    title={"de": "Leitungsschutzschalter", "en": "Circuit breaker"},
-   task={"de": "Ein Leitungsschutzschalter mit dem Nennstrom `I_n` reagiert (vereinfacht) je nach Verhältnis r = I / I_n unterschiedlich. Lesen Sie den Strom `I` in A ein und speichern Sie die Stufe als Zahl in `stage`:\n- r ≤ 1: Stufe 0, Meldung `normal`\n- 1 < r ≤ 1.45: Stufe 1, `Überlast – Auslösung nach Minuten`\n- 1.45 < r ≤ 5: Stufe 2, `Überlast – Auslösung nach Sekunden`\n- r > 5: Stufe 3, `Kurzschluss – sofortige Auslösung`\n\nGeben Sie die passende Meldung aus.",
-         "en": "A circuit breaker with rated current `I_n` reacts (simplified) depending on the ratio r = I / I_n. Read the current `I` in A and store the stage as a number in `stage`:\n- r ≤ 1: stage 0, message `normal`\n- 1 < r ≤ 1.45: stage 1, `Overload – trips after minutes`\n- 1.45 < r ≤ 5: stage 2, `Overload – trips after seconds`\n- r > 5: stage 3, `Short circuit – trips instantly`\n\nPrint the matching message."},
+   task={"de": "Ein Leitungsschutzschalter mit dem Nennstrom `I_n` reagiert (vereinfacht) je nach Verhältnis $r = I / I_n$ unterschiedlich. Lesen Sie den Strom `I` in A ein und speichern Sie die Stufe als Zahl in `stage`:\n- $r \\le 1$: Stufe 0, Meldung `normal`\n- $1 < r \\le 1.45$: Stufe 1, `Überlast – Auslösung nach Minuten`\n- $1.45 < r \\le 5$: Stufe 2, `Überlast – Auslösung nach Sekunden`\n- $r > 5$: Stufe 3, `Kurzschluss – sofortige Auslösung`\n\nGeben Sie die passende Meldung aus.",
+         "en": "A circuit breaker with rated current `I_n` reacts (simplified) depending on the ratio $r = I / I_n$. Read the current `I` in A and store the stage as a number in `stage`:\n- $r \\le 1$: stage 0, message `normal`\n- $1 < r \\le 1.45$: stage 1, `Overload – trips after minutes`\n- $1.45 < r \\le 5$: stage 2, `Overload – trips after seconds`\n- $r > 5$: stage 3, `Short circuit – trips instantly`\n\nPrint the matching message."},
    starter={"de": "I_n = 16.0  # A\nI = float(input(\"Strom in A: \"))\n\n# Ihr Code:\n", "en": "I_n = 16.0  # A\nI = float(input(\"Current in A: \"))\n\n# your code:\n"},
    solution='I_n = 16.0\nI = float(input("Strom in A: "))\nr = I / I_n\nif r <= 1:\n    stage = 0\n    print("normal")\nelif r <= 1.45:\n    stage = 1\n    print("Überlast – Auslösung nach Minuten")\nelif r <= 5:\n    stage = 2\n    print("Überlast – Auslösung nach Sekunden")\nelse:\n    stage = 3\n    print("Kurzschluss – sofortige Auslösung")\n',
    tests='''
@@ -230,8 +230,8 @@ check("sekund" in o or "second" in o, "Für Stufe 2 wird die passende Meldung au
 
 ex(id="k6-rms", ch="6", lvl=1,
    title={"de": "Effektivwert einer Wechselspannung", "en": "RMS value of an AC voltage"},
-   task={"de": "Für Wechselspannungen ist der Effektivwert wichtig: U_eff = √( (u₁² + u₂² + … + uₙ²) / n ). Berechnen Sie mit einer `for`-Schleife die Summe der Quadrate `sum_sq` der Abtastwerte `samples` und daraus `u_rms` (Wurzel mit `** 0.5`). Verwenden Sie **nicht** `sum()` – die Schleife ist hier das Ziel. Geben Sie `u_rms` mit einer Nachkommastelle aus.\n\nZur Kontrolle: Bei einer Sinusspannung ist U_eff ≈ Û / √2, für Û = 325 V also etwa 230 V.",
-         "en": "For AC voltages, the RMS value matters: U_rms = √( (u₁² + u₂² + … + uₙ²) / n ). Use a `for` loop to compute the sum of squares `sum_sq` of the samples `samples`, and from it `u_rms` (root with `** 0.5`). Do **not** use `sum()` – the loop is the point here. Print `u_rms` with one decimal.\n\nCheck: for a sine voltage, U_rms ≈ Û / √2, i.e. about 230 V for Û = 325 V."},
+   task={"de": "Für Wechselspannungen ist der Effektivwert wichtig: $U_\\mathrm{eff} = \\sqrt{\\dfrac{u_1^2 + u_2^2 + \\dots + u_n^2}{n}}$. Berechnen Sie mit einer `for`-Schleife die Summe der Quadrate `sum_sq` der Abtastwerte `samples` und daraus `u_rms` (Wurzel mit `** 0.5`). Verwenden Sie **nicht** `sum()` – die Schleife ist hier das Ziel. Geben Sie `u_rms` mit einer Nachkommastelle aus.\n\nZur Kontrolle: Bei einer Sinusspannung ist $U_\\mathrm{eff} \\approx \\hat{U} / \\sqrt{2}$, für $\\hat{U} = 325\\,\\mathrm{V}$ also etwa 230 V.",
+         "en": "For AC voltages, the RMS value matters: $U_\\mathrm{rms} = \\sqrt{\\dfrac{u_1^2 + u_2^2 + \\dots + u_n^2}{n}}$. Use a `for` loop to compute the sum of squares `sum_sq` of the samples `samples`, and from it `u_rms` (root with `** 0.5`). Do **not** use `sum()` – the loop is the point here. Print `u_rms` with one decimal.\n\nCheck: for a sine voltage, $U_\\mathrm{rms} \\approx \\hat{U} / \\sqrt{2}$, i.e. about 230 V for $\\hat{U} = 325\\,\\mathrm{V}$."},
    starter={"de": "samples = [0.0, 229.8, 325.0, 229.8, 0.0, -229.8, -325.0, -229.8]  # V\nsum_sq = 0\n\n# Ihr Code:\n", "en": "samples = [0.0, 229.8, 325.0, 229.8, 0.0, -229.8, -325.0, -229.8]  # V\nsum_sq = 0\n\n# your code:\n"},
    solution='samples = [0.0, 229.8, 325.0, 229.8, 0.0, -229.8, -325.0, -229.8]\nsum_sq = 0\nfor u in samples:\n    sum_sq += u**2\nu_rms = (sum_sq / len(samples)) ** 0.5\nprint(f"U_eff = {u_rms:.1f} V")\n',
    tests='''
@@ -284,8 +284,8 @@ for T0, lim in [(90.0, 40.0), (90.0, 25.0), (35.0, 40.0), (40.0, 40.0)]:
 
 ex(id="k6-newton", ch="6", lvl=3,
    title={"de": "Wurzel mit dem Newton-Verfahren", "en": "Square root via Newton's method"},
-   task={"de": "Berechnen Sie √a mit dem Newton-Verfahren: Start `x = a`, Iteration `x = (x + a / x) / 2`. Brechen Sie ab, sobald `abs(x*x - a) < 1e-10`, spätestens aber nach 100 Iterationen. Speichern Sie das Ergebnis in `x`, die Anzahl der benötigten Iterationen in `iterations`, und geben Sie beides aus. `** 0.5` ist hier nicht erlaubt.",
-         "en": "Compute √a with Newton's method: start `x = a`, iteration `x = (x + a / x) / 2`. Stop as soon as `abs(x*x - a) < 1e-10`, but after 100 iterations at the latest. Store the result in `x`, the number of iterations used in `iterations`, and print both. `** 0.5` is not allowed here."},
+   task={"de": "Berechnen Sie $\\sqrt{a}$ mit dem Newton-Verfahren: Start `x = a`, Iteration `x = (x + a / x) / 2`. Brechen Sie ab, sobald `abs(x*x - a) < 1e-10`, spätestens aber nach 100 Iterationen. Speichern Sie das Ergebnis in `x`, die Anzahl der benötigten Iterationen in `iterations`, und geben Sie beides aus. `** 0.5` ist hier nicht erlaubt.",
+         "en": "Compute $\\sqrt{a}$ with Newton's method: start `x = a`, iteration `x = (x + a / x) / 2`. Stop as soon as `abs(x*x - a) < 1e-10`, but after 100 iterations at the latest. Store the result in `x`, the number of iterations used in `iterations`, and print both. `** 0.5` is not allowed here."},
    starter={"de": "a = float(input(\"a = \"))\n\n# Ihr Code:\n", "en": "a = float(input(\"a = \"))\n\n# your code:\n"},
    solution='a = float(input("a = "))\nx = a\niterations = 0\nfor i in range(100):\n    if abs(x * x - a) < 1e-10:\n        break\n    x = (x + a / x) / 2\n    iterations += 1\nprint(x, iterations)\n',
    tests='''
@@ -304,8 +304,8 @@ check("**0.5" not in SOURCE.replace(" ", "") and "sqrt" not in SOURCE, "Ohne ** 
 
 ex(id="k6-diagdom", ch="6", lvl=3,
    title={"de": "Diagonaldominanz prüfen", "en": "Checking diagonal dominance"},
-   task={"de": "Iterative Gleichungslöser (z.B. das Jacobi-Verfahren) konvergieren sicher, wenn die Matrix **streng diagonaldominant** ist: In jeder Zeile ist der Betrag des Diagonalelements größer als die Summe der Beträge aller anderen Elemente dieser Zeile. Bestimmen Sie für die quadratische Matrix `M` (verschachtelte Liste)\n- `trace`: die Spur (Summe der Diagonalelemente)\n- `row_ok`: eine Liste mit einem Wahrheitswert pro Zeile, ob die Bedingung dort erfüllt ist\n- `dominant`: ob die Bedingung in allen Zeilen erfüllt ist\n\nVerwenden Sie verschachtelte Schleifen und `abs()`; `sum()` kommt erst in Kapitel 7.",
-         "en": "Iterative equation solvers (e.g. the Jacobi method) are guaranteed to converge if the matrix is **strictly diagonally dominant**: in every row, the magnitude of the diagonal element is greater than the sum of the magnitudes of all other elements in that row. For the square matrix `M` (nested list) determine\n- `trace`: the trace (sum of the diagonal elements)\n- `row_ok`: a list with one boolean per row, whether the condition holds there\n- `dominant`: whether the condition holds in every row\n\nUse nested loops and `abs()`; `sum()` only comes in chapter 7."},
+   task={"de": "Iterative Gleichungslöser (z.B. das Jacobi-Verfahren) konvergieren sicher, wenn die Matrix **streng diagonaldominant** ist: In jeder Zeile ist der Betrag des Diagonalelements größer als die Summe der Beträge aller anderen Elemente dieser Zeile. Bestimmen Sie für die quadratische Matrix `M` (verschachtelte Liste)\n- `trace`: die Spur (Summe der Diagonalelemente)\n- `row_ok`: eine Liste mit einem Wahrheitswert pro Zeile (in der Reihenfolge der Zeilen), ob die Bedingung dort erfüllt ist\n- `dominant`: ob die Bedingung in allen Zeilen erfüllt ist\n\nVerwenden Sie verschachtelte Schleifen und `abs()`; `sum()` kommt erst in Kapitel 7.",
+         "en": "Iterative equation solvers (e.g. the Jacobi method) are guaranteed to converge if the matrix is **strictly diagonally dominant**: in every row, the magnitude of the diagonal element is greater than the sum of the magnitudes of all other elements in that row. For the square matrix `M` (nested list) determine\n- `trace`: the trace (sum of the diagonal elements)\n- `row_ok`: a list with one boolean per row (in the order of the rows), whether the condition holds there\n- `dominant`: whether the condition holds in every row\n\nUse nested loops and `abs()`; `sum()` only comes in chapter 7."},
    starter={"de": "M = [[10.0, -1.0, 2.0],\n     [-1.0, 11.0, -1.0],\n     [2.0, -1.0, 10.0]]\n\n# Ihr Code:\n", "en": "M = [[10.0, -1.0, 2.0],\n     [-1.0, 11.0, -1.0],\n     [2.0, -1.0, 10.0]]\n\n# your code:\n"},
    solution='M = [[10.0, -1.0, 2.0],\n     [-1.0, 11.0, -1.0],\n     [2.0, -1.0, 10.0]]\nn = len(M)\ntrace = 0\nrow_ok = []\nfor i in range(n):\n    trace += M[i][i]\n    others = 0\n    for j in range(n):\n        if j != i:\n            others += abs(M[i][j])\n    row_ok.append(abs(M[i][i]) > others)\ndominant = True\nfor ok in row_ok:\n    if not ok:\n        dominant = False\nprint(trace, row_ok, dominant)\n',
    tests='''
@@ -340,8 +340,8 @@ for n in [10, 2, 1, 50]:
 # =================================================================== Kapitel 7
 ex(id="k7-bmi", ch="7", lvl=1,
    title={"de": "Leistung und Energie", "en": "Power and energy"},
-   task={"de": "Schreiben Sie eine Funktion `power(u, i)`, die die elektrische Leistung P = U · I **zurückgibt** (nicht ausgibt!), und eine Funktion `energy_kwh(p, hours)`, die aus Leistung in W und Dauer in h die Energie in kWh zurückgibt. Testen Sie beide mit `print`.",
-         "en": "Write a function `power(u, i)` that **returns** (not prints!) the electric power P = U · I, and a function `energy_kwh(p, hours)` that returns the energy in kWh from power in W and duration in h. Test both with `print`."},
+   task={"de": "Schreiben Sie eine Funktion `power(u, i)`, die die elektrische Leistung $P = U \\cdot I$ **zurückgibt** (nicht ausgibt!), und eine Funktion `energy_kwh(p, hours)`, die aus Leistung in W und Dauer in h die Energie in kWh zurückgibt. Testen Sie beide mit `print`.",
+         "en": "Write a function `power(u, i)` that **returns** (not prints!) the electric power $P = U \\cdot I$, and a function `energy_kwh(p, hours)` that returns the energy in kWh from power in W and duration in h. Test both with `print`."},
    starter={"de": "def power(u, i):\n    # Ihr Code\n    ...\n\n", "en": "def power(u, i):\n    # your code\n    ...\n\n"},
    solution='def power(u, i):\n    return u * i\n\ndef energy_kwh(p, hours):\n    return p * hours / 1000\n\nprint(power(230, 2.5))\nprint(energy_kwh(power(230, 2.5), 3))\n',
    tests='''
@@ -357,8 +357,8 @@ for p, h in [(1000, 1), (575.0, 3), (60, 24)]:
 
 ex(id="k7-junction", ch="7", lvl=2,
    title={"de": "Sperrschichttemperatur", "en": "Junction temperature"},
-   task={"de": "Ein Leistungshalbleiter erzeugt die Verlustleistung `p_loss` (W). Mit dem Wärmewiderstand `r_th` (K/W) gilt für die Sperrschichttemperatur T_j = t_amb + p_loss · r_th. Schreiben Sie `junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0)`, die **zwei Werte** zurückgibt: T_j und die verbleibende Reserve t_max − T_j (negativ, wenn die Grenze überschritten ist).\n\nRufen Sie die Funktion einmal mit den Standardwerten und einmal für einen warmen Schaltschrank mit `t_amb=45.0` als Keyword-Argument auf.",
-         "en": "A power semiconductor produces the power loss `p_loss` (W). With the thermal resistance `r_th` (K/W), the junction temperature is T_j = t_amb + p_loss · r_th. Write `junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0)` that returns **two values**: T_j and the remaining margin t_max − T_j (negative if the limit is exceeded).\n\nCall the function once with the default values and once for a warm control cabinet with `t_amb=45.0` as a keyword argument."},
+   task={"de": "Ein Leistungshalbleiter erzeugt die Verlustleistung `p_loss` (W). Mit dem Wärmewiderstand `r_th` (K/W) gilt für die Sperrschichttemperatur $T_j = t_\\mathrm{amb} + p_\\mathrm{loss} \\cdot r_\\mathrm{th}$. Schreiben Sie `junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0)`, die **zwei Werte** zurückgibt: $T_j$ und die verbleibende Reserve $t_\\mathrm{max} - T_j$ (negativ, wenn die Grenze überschritten ist).\n\nRufen Sie die Funktion einmal mit den Standardwerten und einmal für einen warmen Schaltschrank mit `t_amb=45.0` als Keyword-Argument auf.",
+         "en": "A power semiconductor produces the power loss `p_loss` (W). With the thermal resistance `r_th` (K/W), the junction temperature is $T_j = t_\\mathrm{amb} + p_\\mathrm{loss} \\cdot r_\\mathrm{th}$. Write `junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0)` that returns **two values**: $T_j$ and the remaining margin $t_\\mathrm{max} - T_j$ (negative if the limit is exceeded).\n\nCall the function once with the default values and once for a warm control cabinet with `t_amb=45.0` as a keyword argument."},
    starter={"de": "def junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0):\n    ...\n", "en": "def junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0):\n    ...\n"},
    solution='def junction_temp(p_loss, r_th, t_amb=25.0, t_max=150.0):\n    t_j = t_amb + p_loss * r_th\n    margin = t_max - t_j\n    return t_j, margin\n\nprint(junction_temp(40, 2.5))\nprint(junction_temp(40, 2.5, t_amb=45.0))\n',
    tests='''
@@ -392,8 +392,8 @@ check(call(ns, "stats") is None, "stats() ohne Argumente gibt None zurück", "st
 
 ex(id="k7-normalize", ch="7", lvl=3,
    title={"de": "Normieren ohne Seiteneffekt", "en": "Normalising without side effects"},
-   task={"de": "Schreiben Sie `normalize(values)`, die eine **neue** Liste zurückgibt, in der jeder Wert durch das Maximum der Beträge geteilt ist (größter Betrag wird 1.0). Die übergebene Liste darf **nicht** verändert werden! Ist die Liste leer oder sind alle Werte 0, wird eine Kopie der Liste zurückgegeben.",
-         "en": "Write `normalize(values)` that returns a **new** list in which each value is divided by the maximum absolute value (largest magnitude becomes 1.0). The list passed in must **not** be modified! If the list is empty or all values are 0, return a copy of the list."},
+   task={"de": "Schreiben Sie `normalize(values)`, die eine **neue** Liste zurückgibt, in der jeder Wert (in derselben Reihenfolge) durch das Maximum der Beträge geteilt ist (größter Betrag wird 1.0). Die übergebene Liste darf **nicht** verändert werden! Ist die Liste leer oder sind alle Werte 0, wird eine Kopie der Liste zurückgegeben.",
+         "en": "Write `normalize(values)` that returns a **new** list in which each value (in the same order) is divided by the maximum absolute value (largest magnitude becomes 1.0). The list passed in must **not** be modified! If the list is empty or all values are 0, return a copy of the list."},
    starter={"de": "def normalize(values):\n    ...\n", "en": "def normalize(values):\n    ...\n"},
    solution='def normalize(values):\n    biggest = 0\n    for v in values:\n        if abs(v) > biggest:\n            biggest = abs(v)\n    result = []\n    for v in values:\n        if biggest == 0:\n            result.append(v)\n        else:\n            result.append(v / biggest)\n    return result\n\ndata = [2.0, -4.0, 1.0]\nprint(normalize(data), data)\n',
    tests='''
@@ -412,8 +412,8 @@ for d in [[2.0, -4.0, 1.0], [5, 10, 2.5], [0, 0], []]:
 
 ex(id="k7-resist", ch="7", lvl=3,
    title={"de": "Widerstandsnetzwerk", "en": "Resistor network"},
-   task={"de": "Schreiben Sie `total_resistance(resistors, mode=\"series\")`. `resistors` ist eine Liste von Widerständen in Ω. Bei `mode=\"series\"` wird die Summe zurückgegeben, bei `mode=\"parallel\"` der Wert 1 / (1/R₁ + 1/R₂ + …). Bei einem anderen `mode` oder einer leeren Liste soll `None` zurückgegeben werden. Dokumentieren Sie die Funktion mit einem Docstring.",
-         "en": "Write `total_resistance(resistors, mode=\"series\")`. `resistors` is a list of resistances in Ω. For `mode=\"series\"` return the sum, for `mode=\"parallel\"` the value 1 / (1/R₁ + 1/R₂ + …). For any other `mode` or an empty list, return `None`. Document the function with a docstring."},
+   task={"de": "Schreiben Sie `total_resistance(resistors, mode=\"series\")`. `resistors` ist eine Liste von Widerständen in Ω. Bei `mode=\"series\"` wird die Summe zurückgegeben, bei `mode=\"parallel\"` der Wert $\\dfrac{1}{1/R_1 + 1/R_2 + \\dots}$. Bei einem anderen `mode` oder einer leeren Liste soll `None` zurückgegeben werden. Dokumentieren Sie die Funktion mit einem Docstring.",
+         "en": "Write `total_resistance(resistors, mode=\"series\")`. `resistors` is a list of resistances in Ω. For `mode=\"series\"` return the sum, for `mode=\"parallel\"` the value $\\dfrac{1}{1/R_1 + 1/R_2 + \\dots}$. For any other `mode` or an empty list, return `None`. Document the function with a docstring."},
    starter={"de": "def total_resistance(resistors, mode=\"series\"):\n    \"\"\"...\"\"\"\n    ...\n", "en": "def total_resistance(resistors, mode=\"series\"):\n    \"\"\"...\"\"\"\n    ...\n"},
    solution='def total_resistance(resistors, mode="series"):\n    """Gesamtwiderstand einer Reihen- oder Parallelschaltung.\n\n    Args:\n        resistors (list): Widerstände in Ohm.\n        mode (str): "series" oder "parallel".\n    Returns:\n        float: Gesamtwiderstand oder None bei ungültiger Eingabe.\n    """\n    if len(resistors) == 0:\n        return None\n    if mode == "series":\n        return sum(resistors)\n    elif mode == "parallel":\n        inverse = 0\n        for r in resistors:\n            inverse += 1 / r\n        return 1 / inverse\n    return None\n\nprint(total_resistance([100, 220]), total_resistance([100, 100], mode="parallel"))\n',
    tests='''
@@ -483,16 +483,17 @@ for st, dl in [({'M8': 120, 'M6': 4, 'Lager': 9}, [('M6', 50), ('Dichtung', 3), 
 
 ex(id="k8-comp", ch="8", lvl=2,
    title={"de": "Widerstände aussortieren", "en": "Sorting out resistors"},
-   task={"de": "Gemessene Widerstände (Nennwert 220 Ω, Toleranz ±5 %) stehen in `measured`. Erzeugen Sie jeweils mit einer **List Comprehension**:\n- `good`: alle Werte innerhalb der Toleranz\n- `deviation`: für jeden Messwert die Abweichung in Prozent, auf eine Nachkommastelle gerundet\n- `labels`: für jeden Messwert `'ok'` oder `'Ausschuss'`",
-         "en": "Measured resistors (nominal 220 Ω, tolerance ±5 %) are in `measured`. Using a **list comprehension** each time, create:\n- `good`: all values within tolerance\n- `deviation`: for every value the deviation in percent, rounded to one decimal\n- `labels`: for every value `'ok'` or `'scrap'`"},
+   task={"de": "Gemessene Widerstände (Nennwert 220 Ω, Toleranz ±5 %) stehen in `measured`. Erzeugen Sie jeweils mit einer **List Comprehension** (Reihenfolge wie in `measured`):\n- `good`: alle Werte innerhalb der Toleranz\n- `deviation`: für jeden Messwert die Abweichung in Prozent, auf eine Nachkommastelle gerundet\n- `labels`: für jeden Messwert `'ok'` oder `'Ausschuss'`",
+         "en": "Measured resistors (nominal 220 Ω, tolerance ±5 %) are in `measured`. Using a **list comprehension** each time, create (same order as in `measured`):\n- `good`: all values within tolerance\n- `deviation`: for every value the deviation in percent, rounded to one decimal\n- `labels`: for every value `'ok'` or `'scrap'`"},
    starter={"de": "nominal = 220\nmeasured = [218.0, 231.5, 209.0, 225.4, 240.1, 220.0]\n\n# Ihr Code:\n", "en": "nominal = 220\nmeasured = [218.0, 231.5, 209.0, 225.4, 240.1, 220.0]\n\n# your code:\n"},
    solution="nominal = 220\nmeasured = [218.0, 231.5, 209.0, 225.4, 240.1, 220.0]\ngood = [r for r in measured if abs(r - nominal) <= 0.05 * nominal]\ndeviation = [round((r - nominal) / nominal * 100, 1) for r in measured]\nlabels = ['ok' if abs(r - nominal) <= 0.05 * nominal else 'Ausschuss' for r in measured]\nprint(good, deviation, labels)\n",
    tests='''
+_srt = lambda x: sorted(x) if isinstance(x, (list, tuple)) else x
 for m in [[218.0, 231.5, 209.0, 225.4, 240.1, 220.0], [200.0, 230.0]]:
     ns, out = run(sub={"measured": m})
     g, d, l = need(ns, "good", "deviation", "labels")
     ok = [abs(r - 220) <= 11 for r in m]
-    check(g == [r for r, o in zip(m, ok) if o], "good enthält genau die Werte in Toleranz", "good contains exactly the values within tolerance")
+    check(_srt(g) == sorted(r for r, o in zip(m, ok) if o), "good enthält genau die Werte in Toleranz", "good contains exactly the values within tolerance")
     ed = [round((r - 220) / 220 * 100, 1) for r in m]
     check(len(d) == len(ed) and all(approx(a, b, 1e-3) for a, b in zip(d, ed)), f"deviation = {ed}", f"deviation = {ed}")
     check(len(l) == len(m) and all((x == "ok") == o for x, o in zip(l, ok)), "labels markiert jeden Wert richtig", "labels marks every value correctly")
@@ -558,8 +559,8 @@ for r in [[3, 5, 3, 7, 5, 3, 9, 7, 1], [4, 2, 4, 2, 8], [6]]:
 # =================================================================== Kapitel 9
 ex(id="k9-incline", ch="9", lvl=1,
    title={"de": "Schiefe Ebene mit math", "en": "Inclined plane with math"},
-   task={"de": "Ein Körper der Masse `m` (kg) liegt auf einer schiefen Ebene mit Neigungswinkel `alpha_deg` (Grad). Importieren Sie `math`, rechnen Sie den Winkel ins Bogenmaß um (`* math.pi / 180`) und berechnen Sie Hangabtriebskraft `F_H = m·g·sin(α)` und Normalkraft `F_N = m·g·cos(α)` mit g = 9.81 m/s².",
-         "en": "A body of mass `m` (kg) rests on an inclined plane with angle `alpha_deg` (degrees). Import `math`, convert the angle to radians (`* math.pi / 180`) and compute the downhill force `F_H = m·g·sin(α)` and the normal force `F_N = m·g·cos(α)` with g = 9.81 m/s²."},
+   task={"de": "Ein Körper der Masse `m` (kg) liegt auf einer schiefen Ebene mit Neigungswinkel `alpha_deg` (Grad). Importieren Sie `math`, rechnen Sie den Winkel ins Bogenmaß um (`* math.pi / 180`) und berechnen Sie Hangabtriebskraft `F_H = m·g·sin(α)` und Normalkraft `F_N = m·g·cos(α)` mit $g = 9.81\\,\\mathrm{m/s^2}$.",
+         "en": "A body of mass `m` (kg) rests on an inclined plane with angle `alpha_deg` (degrees). Import `math`, convert the angle to radians (`* math.pi / 180`) and compute the downhill force `F_H = m·g·sin(α)` and the normal force `F_N = m·g·cos(α)` with $g = 9.81\\,\\mathrm{m/s^2}$."},
    starter={"de": "m = 12.0          # kg\nalpha_deg = 30.0  # Grad\n\n# Ihr Code:\n", "en": "m = 12.0          # kg\nalpha_deg = 30.0  # degrees\n\n# your code:\n"},
    solution='import math\n\nm = 12.0\nalpha_deg = 30.0\nalpha = alpha_deg * math.pi / 180\nF_H = m * 9.81 * math.sin(alpha)\nF_N = m * 9.81 * math.cos(alpha)\nprint(f"F_H = {F_H:.1f} N, F_N = {F_N:.1f} N")\n',
    tests='''
@@ -592,8 +593,8 @@ check(approx(ns["x"][-1], 17), "Mit a = 0 ergibt sich x(10 s) = 17 m", "With a =
 
 ex(id="k9-rod", ch="9", lvl=2,
    title={"de": "Temperatur in einem Stab", "en": "Temperature in a rod"},
-   task={"de": "Ein Stab wird links auf `T_left` und rechts auf `T_right` gehalten (°C). Teilt man ihn in vier gleiche Abschnitte, gilt für die drei inneren Temperaturen T₁, T₂, T₃ im stationären Zustand: Jeder innere Wert ist der Mittelwert seiner Nachbarn. Umgestellt ergibt das\n\n  −2·T₁ + T₂ = −T_left\n  T₁ − 2·T₂ + T₃ = 0\n  T₂ − 2·T₃ = −T_right\n\nLegen Sie die Koeffizientenmatrix `A` und die rechte Seite `b` als NumPy-Arrays an, lösen Sie mit `np.linalg.solve` nach `T` und speichern Sie in `ok`, ob `A @ T` mit `b` übereinstimmt (`np.allclose`).",
-         "en": "A rod is held at `T_left` on the left and `T_right` on the right (°C). Dividing it into four equal sections, the three inner temperatures T₁, T₂, T₃ satisfy in the steady state: each inner value is the mean of its neighbours. Rearranged, this gives\n\n  −2·T₁ + T₂ = −T_left\n  T₁ − 2·T₂ + T₃ = 0\n  T₂ − 2·T₃ = −T_right\n\nCreate the coefficient matrix `A` and the right-hand side `b` as NumPy arrays, solve for `T` with `np.linalg.solve` and store in `ok` whether `A @ T` matches `b` (`np.allclose`)."},
+   task={"de": "Ein Stab wird links auf `T_left` und rechts auf `T_right` gehalten (°C). Teilt man ihn in vier gleiche Abschnitte, gilt für die drei inneren Temperaturen $T_1, T_2, T_3$ im stationären Zustand: Jeder innere Wert ist der Mittelwert seiner Nachbarn. Umgestellt ergibt das\n\n$$\\begin{aligned} -2T_1 + T_2 &= -T_\\mathrm{left} \\\\ T_1 - 2T_2 + T_3 &= 0 \\\\ T_2 - 2T_3 &= -T_\\mathrm{right} \\end{aligned}$$\n\nLegen Sie die Koeffizientenmatrix `A` und die rechte Seite `b` als NumPy-Arrays an, lösen Sie mit `np.linalg.solve` nach `T` und speichern Sie in `ok`, ob `A @ T` mit `b` übereinstimmt (`np.allclose`).",
+         "en": "A rod is held at `T_left` on the left and `T_right` on the right (°C). Dividing it into four equal sections, the three inner temperatures $T_1, T_2, T_3$ satisfy in the steady state: each inner value is the mean of its neighbours. Rearranged, this gives\n\n$$\\begin{aligned} -2T_1 + T_2 &= -T_\\mathrm{left} \\\\ T_1 - 2T_2 + T_3 &= 0 \\\\ T_2 - 2T_3 &= -T_\\mathrm{right} \\end{aligned}$$\n\nCreate the coefficient matrix `A` and the right-hand side `b` as NumPy arrays, solve for `T` with `np.linalg.solve` and store in `ok` whether `A @ T` matches `b` (`np.allclose`)."},
    starter={"de": "import numpy as np\n\nT_left = 100.0\nT_right = 20.0\n\n# Ihr Code:\n", "en": "import numpy as np\n\nT_left = 100.0\nT_right = 20.0\n\n# your code:\n"},
    solution='import numpy as np\n\nT_left = 100.0\nT_right = 20.0\nA = np.array([[-2.0, 1.0, 0.0],\n              [1.0, -2.0, 1.0],\n              [0.0, 1.0, -2.0]])\nb = np.array([-T_left, 0.0, -T_right])\nT = np.linalg.solve(A, b)\nok = np.allclose(A @ T, b)\nprint(T, ok)\n',
    tests='''
@@ -627,8 +628,8 @@ check(approx(tm, 25.9), "T_max = 25.9 °C", "T_max = 25.9 °C")
 # =================================================================== Kapitel 10
 ex(id="k10-resistor", ch="10", lvl=1,
    title={"de": "Klasse Resistor", "en": "Class Resistor"},
-   task={"de": "Schreiben Sie eine Klasse `Resistor`. Der Konstruktor erhält den Widerstand `r` (Ω) und speichert ihn im Attribut `r`. Die Methode `current(u)` gibt den Strom I = U/R zurück, die Methode `power(u)` die Leistung P = U²/R.",
-         "en": "Write a class `Resistor`. The constructor receives the resistance `r` (Ω) and stores it in the attribute `r`. The method `current(u)` returns the current I = U/R, the method `power(u)` the power P = U²/R."},
+   task={"de": "Schreiben Sie eine Klasse `Resistor`. Der Konstruktor erhält den Widerstand `r` (Ω) und speichert ihn im Attribut `r`. Die Methode `current(u)` gibt den Strom $I = U/R$ zurück, die Methode `power(u)` die Leistung $P = U^2/R$.",
+         "en": "Write a class `Resistor`. The constructor receives the resistance `r` (Ω) and stores it in the attribute `r`. The method `current(u)` returns the current $I = U/R$, the method `power(u)` the power $P = U^2/R$."},
    starter={"de": "class Resistor:\n    def __init__(self, r):\n        ...\n", "en": "class Resistor:\n    def __init__(self, r):\n        ...\n"},
    solution='class Resistor:\n    def __init__(self, r):\n        self.r = r\n\n    def current(self, u):\n        return u / self.r\n\n    def power(self, u):\n        return u**2 / self.r\n\nr1 = Resistor(100)\nprint(r1.current(12), r1.power(12))\n',
    tests='''
@@ -686,8 +687,8 @@ check(method(t, "set_level", 0) is True and method(t, "set_level", 80) is True a
 
 ex(id="k10-dimension", ch="10", lvl=3,
    title={"de": "Maße mit Abmaßen", "en": "Dimensions with tolerances"},
-   task={"de": "In technischen Zeichnungen werden Maße mit Abmaßen angegeben, z.B. 25 +0.05/−0.02 mm. Schreiben Sie die Klasse `Dimension(nominal, upper, lower)` (`upper` ≥ 0, `lower` ≤ 0):\n- `max_size()` und `min_size()`: Höchst- und Mindestmaß\n- `fits(measured)`: ob ein Messwert im zulässigen Bereich liegt (Grenzen eingeschlossen)\n- `__add__`: Maßkette – Nennmaße, obere und untere Abmaße werden jeweils addiert; das Ergebnis ist eine neue `Dimension`\n- `__str__`: z.B. `25.00 +0.05/-0.02` (zwei Nachkommastellen, Vorzeichen immer angeben; Tipp: die Formatangabe `:+.2f` erzwingt ein Vorzeichen)",
-         "en": "Technical drawings give dimensions with tolerances, e.g. 25 +0.05/−0.02 mm. Write the class `Dimension(nominal, upper, lower)` (`upper` ≥ 0, `lower` ≤ 0):\n- `max_size()` and `min_size()`: maximum and minimum size\n- `fits(measured)`: whether a measurement lies within the permitted range (limits included)\n- `__add__`: dimension chain – nominal sizes, upper and lower deviations are added separately; the result is a new `Dimension`\n- `__str__`: e.g. `25.00 +0.05/-0.02` (two decimals, always show the sign; tip: the format spec `:+.2f` forces a sign)"},
+   task={"de": "In technischen Zeichnungen werden Maße mit Abmaßen angegeben, z.B. $25^{+0.05}_{-0.02}$ mm. Schreiben Sie die Klasse `Dimension(nominal, upper, lower)` (`upper` ≥ 0, `lower` ≤ 0):\n- `max_size()` und `min_size()`: Höchst- und Mindestmaß\n- `fits(measured)`: ob ein Messwert im zulässigen Bereich liegt (Grenzen eingeschlossen)\n- `__add__`: Maßkette – Nennmaße, obere und untere Abmaße werden jeweils addiert; das Ergebnis ist eine neue `Dimension`\n- `__str__`: z.B. `25.00 +0.05/-0.02` (zwei Nachkommastellen, Vorzeichen immer angeben; Tipp: die Formatangabe `:+.2f` erzwingt ein Vorzeichen)",
+         "en": "Technical drawings give dimensions with tolerances, e.g. $25^{+0.05}_{-0.02}$ mm. Write the class `Dimension(nominal, upper, lower)` (`upper` ≥ 0, `lower` ≤ 0):\n- `max_size()` and `min_size()`: maximum and minimum size\n- `fits(measured)`: whether a measurement lies within the permitted range (limits included)\n- `__add__`: dimension chain – nominal sizes, upper and lower deviations are added separately; the result is a new `Dimension`\n- `__str__`: e.g. `25.00 +0.05/-0.02` (two decimals, always show the sign; tip: the format spec `:+.2f` forces a sign)"},
    starter={"de": "class Dimension:\n    def __init__(self, nominal, upper, lower):\n        self.nominal = nominal\n        self.upper = upper\n        self.lower = lower\n", "en": "class Dimension:\n    def __init__(self, nominal, upper, lower):\n        self.nominal = nominal\n        self.upper = upper\n        self.lower = lower\n"},
    solution='class Dimension:\n    def __init__(self, nominal, upper, lower):\n        self.nominal = nominal\n        self.upper = upper\n        self.lower = lower\n\n    def max_size(self):\n        return self.nominal + self.upper\n\n    def min_size(self):\n        return self.nominal + self.lower\n\n    def fits(self, measured):\n        return self.min_size() <= measured <= self.max_size()\n\n    def __add__(self, other):\n        return Dimension(self.nominal + other.nominal, self.upper + other.upper, self.lower + other.lower)\n\n    def __str__(self):\n        return f"{self.nominal:.2f} {self.upper:+.2f}/{self.lower:+.2f}"\n\nshaft = Dimension(25, 0.05, -0.02)\nring = Dimension(40, 0.1, 0.0)\nprint(shaft, "|", shaft + ring, "|", shaft.fits(25.03))\n',
    tests='''
@@ -707,8 +708,8 @@ check(safe(lambda: str(call(ns, "Dimension", 12.5, 0.0, -0.1))) == "12.50 +0.00/
 
 ex(id="k10-abstract", ch="10", lvl=3,
    title={"de": "Abstrakte Klasse: Lasten", "en": "Abstract class: loads"},
-   task={"de": "Definieren Sie die abstrakte Klasse `Load(ABC)` mit der abstrakten Methode `force()` (Kraft in N). Leiten Sie davon ab:\n- `PointLoad(f)`: Einzellast, `force()` gibt `f` zurück\n- `LineLoad(q, length)`: Streckenlast q (N/m) über die Länge (m), `force()` gibt q·length zurück\n\nSchreiben Sie außerdem die Funktion `total_force(loads)`, die die Summe der Kräfte einer Liste von Lasten liefert.",
-         "en": "Define the abstract class `Load(ABC)` with the abstract method `force()` (force in N). Derive from it:\n- `PointLoad(f)`: point load, `force()` returns `f`\n- `LineLoad(q, length)`: distributed load q (N/m) over the length (m), `force()` returns q·length\n\nAlso write the function `total_force(loads)` returning the sum of the forces of a list of loads."},
+   task={"de": "Definieren Sie die abstrakte Klasse `Load(ABC)` mit der abstrakten Methode `force()` (Kraft in N). Leiten Sie davon ab:\n- `PointLoad(f)`: Einzellast, `force()` gibt `f` zurück\n- `LineLoad(q, length)`: Streckenlast q (N/m) über die Länge (m), `force()` gibt `q * length` zurück\n\nSchreiben Sie außerdem die Funktion `total_force(loads)`, die die Summe der Kräfte einer Liste von Lasten liefert.",
+         "en": "Define the abstract class `Load(ABC)` with the abstract method `force()` (force in N). Derive from it:\n- `PointLoad(f)`: point load, `force()` returns `f`\n- `LineLoad(q, length)`: distributed load q (N/m) over the length (m), `force()` returns `q * length`\n\nAlso write the function `total_force(loads)` returning the sum of the forces of a list of loads."},
    starter={"de": "from abc import ABC, abstractmethod\n\nclass Load(ABC):\n    ...\n", "en": "from abc import ABC, abstractmethod\n\nclass Load(ABC):\n    ...\n"},
    solution='from abc import ABC, abstractmethod\n\nclass Load(ABC):\n    @abstractmethod\n    def force(self):\n        pass\n\nclass PointLoad(Load):\n    def __init__(self, f):\n        self._f = f\n\n    def force(self):\n        return self._f\n\nclass LineLoad(Load):\n    def __init__(self, q, length):\n        self._q = q\n        self._length = length\n\n    def force(self):\n        return self._q * self._length\n\ndef total_force(loads):\n    total = 0\n    for load in loads:\n        total += load.force()\n    return total\n\nprint(total_force([PointLoad(500), LineLoad(200, 3)]))\n',
    tests='''
@@ -725,8 +726,8 @@ check(approx(call(ns, "total_force", []), 0), "total_force([]) = 0", "total_forc
 # =================================================================== Anhang A
 ex(id="kA-write", ch="A", lvl=1,
    title={"de": "Messprotokoll schreiben", "en": "Writing a measurement log"},
-   task={"de": "Schreiben Sie die Messreihe in die Datei `data/protokoll.txt` (Encoding `utf-8`, `with`-Anweisung). Erste Zeile: `# Zeit [min];Temperatur [°C]`, danach eine Zeile pro Messung im Format `0;21.4`.",
-         "en": "Write the measurement series to the file `data/protokoll.txt` (encoding `utf-8`, `with` statement). First line: `# Zeit [min];Temperatur [°C]`, then one line per measurement in the format `0;21.4`."},
+   task={"de": "Schreiben Sie die Messreihe in die Datei `data/protokoll.txt` (Encoding `utf-8`, `with`-Anweisung). Erste Zeile: `# Zeit [min];Temperatur [°C]`, danach eine Zeile pro Messung in der Reihenfolge der Messreihe, im Format `0;21.4`.",
+         "en": "Write the measurement series to the file `data/protokoll.txt` (encoding `utf-8`, `with` statement). First line: `# Zeit [min];Temperatur [°C]`, then one line per measurement in the order of the series, in the format `0;21.4`."},
    starter={"de": "times = [0, 10, 20, 30]\ntemps = [18.6, 22.4, 25.9, 27.3]\n\n# Ihr Code:\n", "en": "times = [0, 10, 20, 30]\ntemps = [18.6, 22.4, 25.9, 27.3]\n\n# your code:\n"},
    solution='times = [0, 10, 20, 30]\ntemps = [18.6, 22.4, 25.9, 27.3]\nwith open("data/protokoll.txt", "w", encoding="utf-8") as f:\n    f.write("# Zeit [min];Temperatur [°C]\\n")\n    for t, temp in zip(times, temps):\n        f.write(f"{t};{temp}\\n")\n',
    tests='''
@@ -799,8 +800,8 @@ for t, e in [("22,8", 22.8), ("3.5", 3.5), ("-7", -7.0), ("abc", None), ("", Non
 
 ex(id="kB-raise", ch="B", lvl=2,
    title={"de": "Eigene Fehler auslösen", "en": "Raising your own errors"},
-   task={"de": "Schreiben Sie `wire_resistance(rho, length, area)` für den Widerstand eines Drahts R = ρ · l / A. Lösen Sie aus:\n- `TypeError`, wenn eines der Argumente keine Zahl (`int` oder `float`) ist,\n- `ValueError`, wenn `length` oder `area` nicht positiv ist.\nGeben Sie den Fehlern eine aussagekräftige Meldung.",
-         "en": "Write `wire_resistance(rho, length, area)` for the resistance of a wire R = ρ · l / A. Raise:\n- `TypeError` if one of the arguments is not a number (`int` or `float`),\n- `ValueError` if `length` or `area` is not positive.\nGive the errors a meaningful message."},
+   task={"de": "Schreiben Sie `wire_resistance(rho, length, area)` für den Widerstand eines Drahts $R = \\rho \\cdot l / A$. Lösen Sie aus:\n- `TypeError`, wenn eines der Argumente keine Zahl (`int` oder `float`) ist,\n- `ValueError`, wenn `length` oder `area` nicht positiv ist.\nGeben Sie den Fehlern eine aussagekräftige Meldung.",
+         "en": "Write `wire_resistance(rho, length, area)` for the resistance of a wire $R = \\rho \\cdot l / A$. Raise:\n- `TypeError` if one of the arguments is not a number (`int` or `float`),\n- `ValueError` if `length` or `area` is not positive.\nGive the errors a meaningful message."},
    starter={"de": "def wire_resistance(rho, length, area):\n    ...\n", "en": "def wire_resistance(rho, length, area):\n    ...\n"},
    solution='def wire_resistance(rho, length, area):\n    for x in (rho, length, area):\n        if not isinstance(x, (int, float)):\n            raise TypeError(f"Zahl erwartet, nicht {x!r}")\n    if length <= 0 or area <= 0:\n        raise ValueError("Länge und Querschnitt müssen positiv sein.")\n    return rho * length / area\n\nprint(wire_resistance(0.0178, 10, 1.5))\n',
    tests='''
@@ -838,6 +839,7 @@ check(("keine zahl" in o or "not a number" in o) and ("zwischen 1 und 10" in o o
 # ------------------------------------------------------------------ Erweiterungen
 import bank_k4, bank_k5, bank_k6, bank_k7, bank_k8, bank_k9, bank_k10, bank_kAB  # noqa: E402,F401
 import bank2_k4, bank2_k5, bank2_k6, bank2_k7, bank2_k8, bank2_k9, bank2_k10, bank2_kAB  # noqa: E402,F401
+import bank3  # noqa: E402,F401
 
 _ORDER = ["4", "5", "6", "7", "8", "9", "10", "A", "B"]
 EX.sort(key=lambda e: (_ORDER.index(e["ch"]), e["lvl"]))

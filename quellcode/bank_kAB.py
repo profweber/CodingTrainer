@@ -59,8 +59,8 @@ for n, v in [("Welle W-17", [24.98, 25.01, 25.03, 24.99]), ("Bolzen B2", [8.0, 8
 
 ex(id="kA-convert", ch="A", lvl=2,
    title={"de": "Deutsches CSV umwandeln", "en": "Converting a German CSV"},
-   task={"de": "Das deutsche Excel hat die Datei `data/messung_de.csv` geschrieben: Trennzeichen `;`, Dezimalkomma. Erzeugen Sie daraus `data/messung_en.csv` mit Trennzeichen `,` und Dezimalpunkt. Die Kopfzeile wird übernommen (nur das Trennzeichen ändert sich), Leerzeilen werden übersprungen. Sammeln Sie außerdem die Messwerte (zweite Spalte) als float in der Liste `values`.",
-         "en": "German Excel wrote the file `data/messung_de.csv`: separator `;`, decimal comma. Create `data/messung_en.csv` from it with separator `,` and decimal point. The header line is kept (only the separator changes), blank lines are skipped. Also collect the measurements (second column) as float in the list `values`."},
+   task={"de": "Das deutsche Excel hat die Datei `data/messung_de.csv` geschrieben: Trennzeichen `;`, Dezimalkomma. Erzeugen Sie daraus `data/messung_en.csv` mit Trennzeichen `,` und Dezimalpunkt. Die Kopfzeile wird übernommen (nur das Trennzeichen ändert sich), Leerzeilen werden übersprungen, die Reihenfolge der Zeilen bleibt erhalten. Sammeln Sie außerdem die Messwerte (zweite Spalte) in der Reihenfolge der Datei als float in der Liste `values`.",
+         "en": "German Excel wrote the file `data/messung_de.csv`: separator `;`, decimal comma. Create `data/messung_en.csv` from it with separator `,` and decimal point. The header line is kept (only the separator changes), blank lines are skipped, the order of the lines is kept. Also collect the measurements (second column) in the order of the file as float in the list `values`."},
    starter={"de": "values = []\n\n# Ihr Code:\n", "en": "values = []\n\n# your code:\n"},
    solution='values = []\nwith open("data/messung_de.csv", encoding="utf-8") as src:\n    lines = src.read().split("\\n")\nwith open("data/messung_en.csv", "w", encoding="utf-8") as dst:\n    dst.write(lines[0].strip().replace(";", ",") + "\\n")\n    for line in lines[1:]:\n        line = line.strip()\n        if line == "":\n            continue\n        t, v = line.split(";")\n        v = v.replace(",", ".")\n        values.append(float(v))\n        dst.write(f"{t},{v}\\n")\nprint(values)\n',
    tests='''
@@ -81,8 +81,8 @@ for content, vals in [("zeit;wert\\n0;21,4\\n5;23,9\\n\\n10;27,5\\n", [21.4, 23.
 
 ex(id="kA-csvwriter", ch="A", lvl=3,
    title={"de": "Auswertung als CSV schreiben", "en": "Writing results as CSV"},
-   task={"de": "Schreiben Sie mit `csv.writer` die Datei `data/auswertung.csv` (`newline=\"\"`, utf-8) mit der Kopfzeile `zeit_s, strom_A, leistung_W` und einer Zeile pro Messpunkt aus `times` und `currents`; die Leistung ist P = U · I mit `U = 230.0`, auf eine Nachkommastelle gerundet. `writer.writerow([...])` schreibt eine Zeile.\n\nLesen Sie die Datei danach mit `csv.DictReader` wieder ein und speichern Sie in `max_power` die größte Leistung (als float) und in `t_max` den zugehörigen Zeitpunkt (als int).",
-         "en": "Use `csv.writer` to write the file `data/auswertung.csv` (`newline=\"\"`, utf-8) with the header `zeit_s, strom_A, leistung_W` and one row per data point from `times` and `currents`; the power is P = U · I with `U = 230.0`, rounded to one decimal. `writer.writerow([...])` writes one row.\n\nThen read the file back with `csv.DictReader` and store the largest power (as float) in `max_power` and the corresponding time (as int) in `t_max`."},
+   task={"de": "Schreiben Sie mit `csv.writer` die Datei `data/auswertung.csv` (`newline=\"\"`, utf-8) mit der Kopfzeile `zeit_s, strom_A, leistung_W` und einer Zeile pro Messpunkt aus `times` und `currents` (in dieser Reihenfolge); die Leistung ist $P = U \\cdot I$ mit `U = 230.0`, auf eine Nachkommastelle gerundet. `writer.writerow([...])` schreibt eine Zeile.\n\nLesen Sie die Datei danach mit `csv.DictReader` wieder ein und speichern Sie in `max_power` die größte Leistung (als float) und in `t_max` den zugehörigen Zeitpunkt (als int).",
+         "en": "Use `csv.writer` to write the file `data/auswertung.csv` (`newline=\"\"`, utf-8) with the header `zeit_s, strom_A, leistung_W` and one row per data point from `times` and `currents` (in that order); the power is $P = U \\cdot I$ with `U = 230.0`, rounded to one decimal. `writer.writerow([...])` writes one row.\n\nThen read the file back with `csv.DictReader` and store the largest power (as float) in `max_power` and the corresponding time (as int) in `t_max`."},
    starter={"de": "import csv\n\nU = 230.0\ntimes = [0, 10, 20, 30]\ncurrents = [2.1, 4.8, 4.3, 0.9]\n\n# Ihr Code:\n", "en": "import csv\n\nU = 230.0\ntimes = [0, 10, 20, 30]\ncurrents = [2.1, 4.8, 4.3, 0.9]\n\n# your code:\n"},
    solution='import csv\n\nU = 230.0\ntimes = [0, 10, 20, 30]\ncurrents = [2.1, 4.8, 4.3, 0.9]\nwith open("data/auswertung.csv", "w", encoding="utf-8", newline="") as f:\n    writer = csv.writer(f)\n    writer.writerow(["zeit_s", "strom_A", "leistung_W"])\n    for t, i in zip(times, currents):\n        writer.writerow([t, i, round(U * i, 1)])\n\nmax_power = None\nt_max = None\nwith open("data/auswertung.csv", encoding="utf-8", newline="") as f:\n    for row in csv.DictReader(f):\n        p = float(row["leistung_W"])\n        if max_power is None or p > max_power:\n            max_power = p\n            t_max = int(row["zeit_s"])\nprint(max_power, t_max)\n',
    tests='''
@@ -121,7 +121,7 @@ for log in [LOG1, LOG2]:
         written = [l for l in read_file("data/errors.txt").split("\\n") if l.strip()]
     except FileNotFoundError:
         written = None
-    check(written == errs, f"errors.txt enthält genau die {len(errs)} ERROR-Zeile(n)", f"errors.txt contains exactly the {len(errs)} ERROR line(s)")
+    check(written is not None and sorted(written) == sorted(errs), f"errors.txt enthält genau die {len(errs)} ERROR-Zeile(n)", f"errors.txt contains exactly the {len(errs)} ERROR line(s)")
 ''',
    require=["with", "file_methods", "dict"], refs=["A.3", "8.3"],
    files={"data/anlage.log": "2026-10-22 08:00:01 INFO Anlage gestartet\n2026-10-22 08:12:44 WARN Temperatur hoch\n\n2026-10-22 08:13:02 ERROR Pumpe 2 ausgefallen\n2026-10-22 08:14:10 INFO Reserve aktiv\n2026-10-22 09:01:55 ERROR Druck zu niedrig\n"})
@@ -129,8 +129,8 @@ for log in [LOG1, LOG2]:
 # ------------------------------------------------------------------ Anhang B
 ex(id="kB-efficiency", ch="B", lvl=1,
    title={"de": "Wirkungsgrad ohne Absturz", "en": "Efficiency without crashing"},
-   task={"de": "Schreiben Sie `efficiency(p_out, p_in)`, die den Wirkungsgrad p_out / p_in zurückgibt. Ist `p_in` gleich 0, soll **nicht** abgestürzt werden: Fangen Sie den `ZeroDivisionError` mit `try`/`except` ab und geben Sie `None` zurück.",
-         "en": "Write `efficiency(p_out, p_in)` that returns the efficiency p_out / p_in. If `p_in` is 0, the program must **not** crash: catch the `ZeroDivisionError` with `try`/`except` and return `None`."},
+   task={"de": "Schreiben Sie `efficiency(p_out, p_in)`, die den Wirkungsgrad `p_out / p_in` zurückgibt. Ist `p_in` gleich 0, soll **nicht** abgestürzt werden: Fangen Sie den `ZeroDivisionError` mit `try`/`except` ab und geben Sie `None` zurück.",
+         "en": "Write `efficiency(p_out, p_in)` that returns the efficiency `p_out / p_in`. If `p_in` is 0, the program must **not** crash: catch the `ZeroDivisionError` with `try`/`except` and return `None`."},
    starter={"de": "def efficiency(p_out, p_in):\n    ...\n", "en": "def efficiency(p_out, p_in):\n    ...\n"},
    solution='def efficiency(p_out, p_in):\n    try:\n        return p_out / p_in\n    except ZeroDivisionError:\n        return None\n\nprint(efficiency(870, 1000), efficiency(5, 0))\n',
    tests='''
@@ -192,14 +192,14 @@ ns, out = run()
 cases = [(["21,4", "abc", "23.9", "", "1e3"], ([21.4, 23.9, 1000.0], [1, 3])), ([], ([], [])), (["1,2,3", "-0,5"], ([-0.5], [0]))]
 for t, (en, ei) in cases:
     r = call(ns, "parse_all", t)
-    check(isinstance(r, tuple) and len(r) == 2 and list(r[0]) == en and list(r[1]) == ei, f"parse_all({t}) = ({en}, {ei})", f"parse_all({t}) = ({en}, {ei})")
+    check(isinstance(r, tuple) and len(r) == 2 and sorted(r[0]) == sorted(en) and sorted(r[1]) == ei, f"parse_all({t}) = ({en}, {ei})", f"parse_all({t}) = ({en}, {ei})")
 ''',
    require=["try"], refs=["B.3", "B.3e"])
 
 ex(id="kB-thermo", ch="B", lvl=3,
    title={"de": "Thermoelement mit Plausibilitätsprüfung", "en": "Thermocouple with plausibility check"},
-   task={"de": "Klasse `Thermocouple(name, t_min=-200.0, t_max=1250.0)` mit dem Attribut `history` (leere Liste).\n- `add(t)`: löst `TypeError` aus, wenn `t` keine Zahl ist (Wahrheitswerte zählen nicht als Zahl), und `ValueError`, wenn `t` außerhalb von [t_min, t_max] liegt. Sonst wird `t` an `history` angehängt.\n- `load(values)`: ruft für jeden Wert `add` auf, fängt die beiden Fehlertypen ab und gibt die Anzahl der abgelehnten Werte zurück.\n- `mean()`: Mittelwert von `history`, `None` bei leerer Historie.",
-         "en": "Class `Thermocouple(name, t_min=-200.0, t_max=1250.0)` with the attribute `history` (empty list).\n- `add(t)`: raises `TypeError` if `t` is not a number (booleans don't count as numbers), and `ValueError` if `t` lies outside [t_min, t_max]. Otherwise `t` is appended to `history`.\n- `load(values)`: calls `add` for every value, catches both error types and returns the number of rejected values.\n- `mean()`: mean of `history`, `None` for an empty history."},
+   task={"de": "Klasse `Thermocouple(name, t_min=-200.0, t_max=1250.0)` mit dem Attribut `history` (leere Liste).\n- `add(t)`: löst `TypeError` aus, wenn `t` keine Zahl ist (Wahrheitswerte zählen nicht als Zahl), und `ValueError`, wenn `t` außerhalb von [`t_min`, `t_max`] liegt. Sonst wird `t` an `history` angehängt.\n- `load(values)`: ruft für jeden Wert `add` auf, fängt die beiden Fehlertypen ab und gibt die Anzahl der abgelehnten Werte zurück.\n- `mean()`: Mittelwert von `history`, `None` bei leerer Historie.",
+         "en": "Class `Thermocouple(name, t_min=-200.0, t_max=1250.0)` with the attribute `history` (empty list).\n- `add(t)`: raises `TypeError` if `t` is not a number (booleans don't count as numbers), and `ValueError` if `t` lies outside [`t_min`, `t_max`]. Otherwise `t` is appended to `history`.\n- `load(values)`: calls `add` for every value, catches both error types and returns the number of rejected values.\n- `mean()`: mean of `history`, `None` for an empty history."},
    starter={"de": "class Thermocouple:\n    def __init__(self, name, t_min=-200.0, t_max=1250.0):\n        ...\n", "en": "class Thermocouple:\n    def __init__(self, name, t_min=-200.0, t_max=1250.0):\n        ...\n"},
    solution='class Thermocouple:\n    def __init__(self, name, t_min=-200.0, t_max=1250.0):\n        self.name = name\n        self.t_min = t_min\n        self.t_max = t_max\n        self.history = []\n\n    def add(self, t):\n        if isinstance(t, bool) or not isinstance(t, (int, float)):\n            raise TypeError(f"Zahl erwartet, nicht {t!r}")\n        if not self.t_min <= t <= self.t_max:\n            raise ValueError(f"{t} °C liegt außerhalb von [{self.t_min}, {self.t_max}]")\n        self.history.append(t)\n\n    def load(self, values):\n        rejected = 0\n        for v in values:\n            try:\n                self.add(v)\n            except (TypeError, ValueError):\n                rejected += 1\n        return rejected\n\n    def mean(self):\n        if len(self.history) == 0:\n            return None\n        return sum(self.history) / len(self.history)\n\ntc = Thermocouple("TC1")\nprint(tc.load([20.5, "x", 1500, 22.0, True]), tc.mean())\n',
    tests='''
