@@ -1,0 +1,2118 @@
+<title>CodingTrainer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--FONTS--><link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap"><!--/FONTS-->
+<style>
+/* Layout: Zeichnungs-Schriftfeld als Kopf, darunter drei Spalten – Kapitel | Aufgabe + Editor | KI-Tutor. Millimeterpapier als Grund. */
+:root {
+  --paper: #edf1ef;
+  --sheet: #fbfcfb;
+  --ink: #17242c;
+  --muted: #586972;
+  --line: #cbd6d2;
+  --grid: rgba(23, 36, 44, .045);
+  --accent: #2344c4;
+  --accent-soft: #e3e8fb;
+  --accent-ink: #ffffff;
+  --hi: #f6dc7a;
+  --ok: #1b7546;
+  --ok-soft: #e1f2e8;
+  --warn: #9a5d06;
+  --warn-soft: #fbf0dc;
+  --bad: #b3232b;
+  --bad-soft: #fbe5e6;
+  --code-bg: #f5f7f6;
+  --code-ink: #1e2a31;
+  --tk-kw: #8b1fa6;
+  --tk-str: #1b7546;
+  --tk-num: #b2520b;
+  --tk-com: #7b8a91;
+  --tk-fn: #2344c4;
+  --tk-bi: #0f6f86;
+  --font-display: "Barlow Semi Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Barlow", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --r: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0e1417; --sheet: #151d21; --ink: #e1e8e5; --muted: #93a39d; --line: #283439; --grid: rgba(225, 232, 229, .035);
+    --accent: #93a8ff; --accent-soft: #1d2747; --accent-ink: #0e1417; --hi: #5f5216;
+    --ok: #63cf93; --ok-soft: #12291d; --warn: #e7ae55; --warn-soft: #2c220f; --bad: #ff8086; --bad-soft: #321619;
+    --code-bg: #10171a; --code-ink: #dfe7e4;
+    --tk-kw: #d99cf0; --tk-str: #8fd8a9; --tk-num: #f2ad6f; --tk-com: #6f8088; --tk-fn: #93a8ff; --tk-bi: #6fd0e2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e1417; --sheet: #151d21; --ink: #e1e8e5; --muted: #93a39d; --line: #283439; --grid: rgba(225, 232, 229, .035);
+  --accent: #93a8ff; --accent-soft: #1d2747; --accent-ink: #0e1417; --hi: #5f5216;
+  --ok: #63cf93; --ok-soft: #12291d; --warn: #e7ae55; --warn-soft: #2c220f; --bad: #ff8086; --bad-soft: #321619;
+  --code-bg: #10171a; --code-ink: #dfe7e4;
+  --tk-kw: #d99cf0; --tk-str: #8fd8a9; --tk-num: #f2ad6f; --tk-com: #6f8088; --tk-fn: #93a8ff; --tk-bi: #6fd0e2;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 8px 8px;
+  color: var(--ink);
+  font: 15px/1.5 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 12px 32px;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, pre, kbd { font-family: var(--font-mono); font-size: .88em; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: .01em; }
+
+/* ---------- Kopf: Schriftfeld */
+.titleblock {
+  max-width: 1560px; margin: 0 auto 12px;
+  display: grid; grid-template-columns: auto 1fr auto; align-items: stretch;
+  border: 1.5px solid var(--ink); background: var(--sheet);
+}
+.tb-mark {
+  display: grid; place-items: center; padding: 6px 14px; border-right: 1.5px solid var(--ink);
+  font: 700 22px/1 var(--font-display); letter-spacing: .04em;
+}
+.tb-mark span { display: block; font-size: 10px; letter-spacing: .14em; font-weight: 600; color: var(--muted); margin-top: 3px; }
+.tb-name { padding: 8px 14px; min-width: 0; }
+.tb-name h1 { font-size: 22px; line-height: 1.1; font-weight: 700; }
+.tb-name p { margin: 2px 0 0; color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
+.tb-tools { display: flex; align-items: stretch; border-left: 1.5px solid var(--ink); }
+.tb-cell { display: flex; flex-direction: column; justify-content: center; gap: 3px; padding: 6px 12px; border-left: 1px solid var(--line); }
+.tb-cell:first-child { border-left: 0; }
+.tb-label { font: 600 10px/1 var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.tb-value { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 14px; white-space: nowrap; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--warn); margin-right: 6px; vertical-align: 1px; }
+.dot.ready { background: var(--ok); }
+.dot.err { background: var(--bad); }
+
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; background: var(--sheet); }
+.seg button { border: 0; background: transparent; padding: 3px 10px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--sheet); }
+
+/* ---------- Grundraster */
+.app {
+  max-width: 1560px; margin: 0 auto;
+  display: grid; gap: 12px;
+  grid-template-columns: 280px minmax(0, 1fr) 380px;
+  align-items: start;
+}
+.panel { background: var(--sheet); border: 1px solid var(--line); border-radius: var(--r); min-width: 0; }
+.panel-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.panel-h h2 { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.panel-b { padding: 12px 14px; }
+.eyebrow { font: 600 11px/1.2 var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+/* ---------- Kapitel */
+.side { position: sticky; top: env(safe-area-inset-top, 0px); display: grid; gap: 12px; }
+.chapters { list-style: none; margin: 0; padding: 6px; display: grid; gap: 2px; }
+.chap { border-radius: var(--r); }
+.chap-row { display: grid; grid-template-columns: auto 30px minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 6px 6px; cursor: pointer; border-radius: var(--r); }
+.chap-row:hover { background: var(--code-bg); }
+.chap-row input { margin: 0; accent-color: var(--accent); width: 16px; height: 16px; }
+.chap-num { font: 700 15px/1 var(--font-display); border: 1.5px solid var(--ink); height: 26px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.chap-title { font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; }
+.chap-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.chap-bar { grid-column: 3 / 5; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.chap-bar i { display: block; height: 100%; background: var(--ok); }
+.chap.off .chap-num { border-color: var(--line); color: var(--muted); }
+.chap.off .chap-title { color: var(--muted); }
+.ex-list { list-style: none; margin: 2px 0 6px 44px; padding: 0; display: grid; gap: 1px; }
+.ex-list button { width: 100%; text-align: left; display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 6px; align-items: center; border: 0; background: transparent; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+.ex-list button:hover { background: var(--code-bg); }
+.ex-list button.off-level { opacity: .45; }
+.ex-list button.off-level:hover, .ex-list button.off-level[aria-current="true"] { opacity: 1; }
+.ex-list button[aria-current="true"] { background: var(--accent-soft); }
+.ex-state { width: 10px; height: 10px; border: 1.5px solid var(--muted); border-radius: 50%; }
+.ex-state.solved { background: var(--ok); border-color: var(--ok); }
+.ex-state.tried { border-color: var(--warn); background: var(--warn-soft); }
+.ex-state.peek { border-color: var(--muted); background: var(--line); }
+.pips { display: inline-flex; gap: 2px; }
+.pips i { width: 6px; height: 10px; border: 1px solid var(--muted); }
+.pips i.on { background: var(--ink); border-color: var(--ink); }
+.ex-ai { font-size: 10px; font-weight: 700; color: var(--accent); margin-left: 4px; }
+
+.field { display: grid; gap: 6px; }
+.field + .field { margin-top: 12px; }
+.switch { display: flex; gap: 8px; align-items: flex-start; font-size: 13px; color: var(--muted); }
+.switch input { margin-top: 3px; accent-color: var(--accent); }
+.levelnote { font-size: 13px; color: var(--muted); margin: 0; }
+.levelnote b { color: var(--ink); }
+
+/* ---------- Aufgabe */
+.main { display: grid; gap: 12px; min-width: 0; }
+.task-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 14px 16px 6px; }
+.task-head h2 { font-size: 26px; font-weight: 700; line-height: 1.1; flex: 1 1 260px; }
+.tag { display: inline-flex; gap: 6px; align-items: center; font: 600 12px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tag .pips i { height: 11px; }
+.badge-ai { font: 600 11px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 3px 6px; border-radius: 3px; }
+.task-body { padding: 4px 16px 12px; max-width: 78ch; }
+.task-body p { margin: 0 0 .6em; }
+.task-body ul, .task-body ol { margin: 0 0 .6em; padding-left: 1.3em; }
+.task-body code, .md code { background: var(--code-bg); border: 1px solid var(--line); border-radius: 3px; padding: 0 4px; }
+.refs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 0 16px 14px; }
+.ref {
+  display: inline-flex; align-items: baseline; gap: 6px; text-decoration: none; color: var(--ink);
+  border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px 3px 4px; font-size: 13px; background: var(--sheet);
+}
+.ref:hover { border-color: var(--accent); }
+.ref b { font: 700 11px/1 var(--font-mono); background: var(--ink); color: var(--sheet); border-radius: 999px; padding: 3px 6px; }
+.ref::after { content: "↗"; color: var(--muted); font-size: 11px; }
+
+/* ---------- Editor */
+.editor-wrap { border-top: 1px solid var(--line); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--sheet); }
+.toolbar .grow { flex: 1; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--sheet);
+  padding: 6px 12px; border-radius: var(--r); cursor: pointer; font-weight: 600; font-size: 14px; white-space: nowrap;
+}
+.btn:hover { border-color: var(--ink); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.dark { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); }
+.btn.ghost:hover { color: var(--ink); border-color: var(--line); }
+.kbd { font: 500 11px/1 var(--font-mono); opacity: .7; }
+
+.ed { position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); background: var(--code-bg); font: 14px/21px var(--font-mono); }
+.ed-gutter { padding: 12px 8px 12px 12px; text-align: right; color: var(--tk-com); user-select: none; border-right: 1px solid var(--line); font-variant-numeric: tabular-nums; white-space: pre; min-width: 3.2em; }
+.ed-gutter .err { color: var(--bad); font-weight: 600; }
+.ed-area { position: relative; min-width: 0; overflow: hidden; }
+.ed-area pre, .ed-area textarea {
+  margin: 0; padding: 12px 14px; border: 0; font: inherit; white-space: pre; tab-size: 4; letter-spacing: 0;
+  width: 100%; min-height: 100%;
+}
+.ed-area pre { position: absolute; inset: 0; color: var(--code-ink); pointer-events: none; overflow: hidden; }
+.ed-area textarea {
+  position: relative; display: block; resize: none; background: transparent; color: transparent; caret-color: var(--ink);
+  overflow-x: auto; overflow-y: hidden; outline: none;
+}
+.ed-area textarea::selection { background: color-mix(in srgb, var(--accent) 28%, transparent); color: transparent; }
+.tk-kw { color: var(--tk-kw); font-weight: 600; }
+.tk-str { color: var(--tk-str); }
+.tk-num { color: var(--tk-num); }
+.tk-com { color: var(--tk-com); font-style: italic; }
+.tk-fn { color: var(--tk-fn); font-weight: 600; }
+.tk-bi { color: var(--tk-bi); }
+.tk-self { color: var(--tk-kw); font-style: italic; }
+.errline { position: absolute; left: 0; right: 0; height: 21px; background: var(--bad-soft); pointer-events: none; }
+
+.io { display: grid; grid-template-columns: minmax(0, 1fr) 200px; border-top: 1px solid var(--line); }
+.io > div { min-width: 0; }
+.io .io-out { border-right: 1px solid var(--line); }
+.io-h { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; border-bottom: 1px solid var(--line); }
+.console { margin: 0; padding: 10px 12px; font: 13px/1.5 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 280px; overflow: auto; min-height: 64px; }
+.console .stderr { color: var(--bad); }
+.console .muted { color: var(--muted); }
+#stdin { width: 100%; height: calc(100% - 31px); min-height: 72px; border: 0; padding: 10px 12px; font: 13px/1.5 var(--font-mono); resize: vertical; background: transparent; }
+
+/* ---------- Ergebnisse */
+.verdict { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.verdict strong { font: 700 18px/1.1 var(--font-display); letter-spacing: .02em; }
+.verdict.ok { background: var(--ok-soft); color: var(--ok); }
+.verdict.bad { background: var(--bad-soft); color: var(--bad); }
+.verdict.warn { background: var(--warn-soft); color: var(--warn); }
+.verdict p { margin: 0; color: var(--ink); font-size: 14px; }
+.meter { margin-left: auto; font: 700 20px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.checks { list-style: none; margin: 0; padding: 8px 16px 12px; display: grid; gap: 4px; }
+.checks li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; font-size: 14px; }
+.checks li::before { font-weight: 700; }
+.checks li.ok::before { content: "✓"; color: var(--ok); }
+.checks li.no::before { content: "✗"; color: var(--bad); }
+.notes { padding: 0 16px 14px; display: grid; gap: 6px; }
+.note { border-left: 3px solid var(--warn); background: var(--warn-soft); padding: 6px 10px; font-size: 14px; border-radius: 0 4px 4px 0; }
+.note.absent, .note.forbidden { border-color: var(--bad); background: var(--bad-soft); }
+.note.missing { border-color: var(--accent); background: var(--accent-soft); }
+.note a { margin-left: 4px; }
+.solution { margin: 0 16px 16px; border: 1px dashed var(--line); border-radius: var(--r); }
+.solution summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+.codeblock { margin: 0; padding: 10px 12px; background: var(--code-bg); font: 13px/1.5 var(--font-mono); overflow-x: auto; white-space: pre; border-radius: 0 0 var(--r) var(--r); }
+
+/* ---------- KI-Tutor */
+.tutor { position: sticky; top: env(safe-area-inset-top, 0px); display: flex; flex-direction: column; max-height: calc(100vh - 24px); }
+.tutor-actions { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.tutor-actions .btn { font-size: 13px; padding: 5px 10px; }
+.hintmeter { display: inline-flex; gap: 2px; margin-left: 2px; }
+.hintmeter i { width: 5px; height: 9px; border: 1px solid currentColor; opacity: .5; }
+.hintmeter i.on { background: currentColor; opacity: 1; }
+.chat { flex: 1; overflow-y: auto; padding: 12px 14px; display: grid; gap: 10px; align-content: start; min-height: 200px; }
+.msg { font-size: 14px; line-height: 1.5; max-width: 100%; min-width: 0; }
+.msg.user { justify-self: end; background: var(--accent-soft); border-radius: 10px 10px 2px 10px; padding: 6px 10px; max-width: 88%; }
+.msg.ai { border-left: 2px solid var(--ink); padding-left: 10px; }
+.msg.ai .who { font: 600 11px/1 var(--font-display); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.msg.sys { color: var(--muted); font-size: 13px; font-style: italic; }
+.md p { margin: 0 0 .5em; }
+.md ul, .md ol { margin: 0 0 .5em; padding-left: 1.2em; }
+.md pre { margin: 0 0 .5em; padding: 8px 10px; background: var(--code-bg); border: 1px solid var(--line); border-radius: 4px; overflow-x: auto; font: 12.5px/1.45 var(--font-mono); white-space: pre; }
+.md pre code { background: none; border: 0; padding: 0; }
+.md .ref { font-size: 12px; margin: 1px 0; }
+.thinking { color: var(--muted); font-style: italic; }
+.chat-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px; padding: 10px 14px; border-top: 1px solid var(--line); }
+.chat-form textarea { resize: none; height: 40px; border: 1px solid var(--line); border-radius: var(--r); padding: 8px 10px; background: var(--sheet); font-size: 14px; }
+.ai-off { padding: 14px; font-size: 14px; color: var(--muted); }
+.gen { padding: 10px 14px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+.gen p { margin: 0; font-size: 13px; color: var(--muted); }
+
+dialog { border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--sheet); color: var(--ink); max-width: min(640px, calc(100vw - 32px)); padding: 0; }
+dialog::backdrop { background: rgba(10, 16, 20, .45); }
+dialog .panel-b p { margin: 0 0 .7em; }
+dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
+
+.empty { padding: 24px 16px; color: var(--muted); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- Klausurtraining */
+.seg-wide { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+.seg-wide button { padding: 6px 8px; font-size: 14px; }
+.seg-fill { width: 100%; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+.exam-timer { font: 700 40px/1 var(--font-display); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.exam-timer.low { color: var(--bad); }
+.exam-sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.exam-nav { list-style: none; margin: 0; padding: 6px; display: grid; gap: 2px; }
+.exam-nav button { width: 100%; text-align: left; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 8px; align-items: center; border: 0; background: transparent; padding: 6px; border-radius: var(--r); cursor: pointer; font-size: 14px; }
+.exam-nav button:hover { background: var(--code-bg); }
+.exam-nav button[aria-current="true"] { background: var(--accent-soft); }
+.exam-nav .num { font: 700 15px/1 var(--font-display); border: 1.5px solid var(--ink); height: 26px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.exam-nav .meta { display: block; font-size: 12px; color: var(--muted); }
+.exam-nav .state { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.exam-nav .state.edited { color: var(--ok); }
+.exam-nav .state.full { color: var(--ok); font-weight: 600; }
+.exam-nav .state.part { color: var(--warn); font-weight: 600; }
+.exam-nav .state.zero { color: var(--bad); font-weight: 600; }
+.confirm { display: grid; gap: 8px; padding: 10px; border: 1px solid var(--bad); background: var(--bad-soft); border-radius: var(--r); font-size: 14px; }
+.confirm .row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn.danger { background: var(--bad); border-color: var(--bad); color: var(--sheet); }
+.history { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 13px; }
+.history li { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; align-items: baseline; }
+.history .pct { font-weight: 700; font-variant-numeric: tabular-nums; }
+.history .when { color: var(--muted); font-variant-numeric: tabular-nums; }
+.history .chs { color: var(--muted); overflow-wrap: anywhere; }
+.intro { padding: 16px; max-width: 78ch; }
+.disclaimer { border: 1.5px solid var(--warn); background: var(--warn-soft); border-radius: var(--r); padding: 12px 14px; margin-bottom: 16px; }
+.disclaimer h3 { font: 700 14px/1.2 var(--font-display); letter-spacing: .1em; text-transform: uppercase; color: var(--warn); margin-bottom: 6px; }
+.disclaimer ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.disclaimer li { font-size: 14px; }
+.intro h2 { font-size: 24px; margin-bottom: 8px; }
+.intro p { margin: 0 0 .7em; }
+.intro ul { margin: 0 0 .7em; padding-left: 1.2em; }
+.points-table { border-collapse: collapse; margin: 4px 0 10px; font-size: 14px; }
+.points-table td, .points-table th { border: 1px solid var(--line); padding: 4px 10px; text-align: left; font-variant-numeric: tabular-nums; }
+.points-table th { font: 600 12px/1.2 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.score-head { display: grid; gap: 10px; padding: 16px; border-bottom: 1px solid var(--line); }
+.score-head .big { font: 700 34px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.score-head .big small { font-size: 18px; color: var(--muted); font-weight: 600; }
+.bar { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.score-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.task-res { border-bottom: 1px solid var(--line); }
+.task-res > summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 12px 16px; }
+.task-res > summary::-webkit-details-marker { display: none; }
+.task-res > summary .num { font: 700 15px/1 var(--font-display); border: 1.5px solid var(--ink); height: 26px; display: grid; place-items: center; }
+.task-res > summary .pts { font: 700 18px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.task-res .pts.full { color: var(--ok); } .task-res .pts.part { color: var(--warn); } .task-res .pts.zero { color: var(--bad); }
+.task-res .body { padding: 0 16px 14px; display: grid; gap: 8px; }
+.task-res .checks, .task-res .notes { padding: 0; }
+.task-res details.code { border: 1px dashed var(--line); border-radius: var(--r); }
+.task-res details.code summary { cursor: pointer; padding: 6px 10px; font-weight: 600; font-size: 14px; }
+.review-refs { padding: 14px 16px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+/* ---------- Ohne KI-Tutor (per Konfiguration abgeschaltet) */
+.no-tutor .tutor { display: none !important; }
+.no-tutor .app { grid-template-columns: 280px minmax(0, 1fr); }
+.note.off { border-color: var(--bad); background: var(--bad-soft); }
+.link-intro { border: 1px solid var(--line); border-radius: var(--r); padding: 10px 12px; font-size: 13.5px; background: var(--code-bg); }
+.link-intro p { margin: 0 0 .4em; } .link-intro p:last-child { margin: 0; }
+.link-mode .tutor-actions .btn::after, .link-mode .chat-form .btn::after { content: " ↗"; }
+.chap-sub { display: block; font-size: 11.5px; color: var(--muted); }
+
+@media (max-width: 1280px) {
+  .app { grid-template-columns: 260px minmax(0, 1fr); grid-template-rows: auto 1fr; }
+  .side { grid-row: 1 / span 2; }
+  .tutor { grid-column: 2; position: static; max-height: none; }
+  .chat { max-height: 480px; }
+}
+@media (max-width: 860px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .app { grid-template-rows: none; }
+  .side { position: static; grid-row: auto; }
+  .tutor { grid-column: 1; }
+  .titleblock { grid-template-columns: auto minmax(0, 1fr); }
+  .tb-tools { grid-column: 1 / -1; border-left: 0; border-top: 1.5px solid var(--ink); flex-wrap: wrap; }
+  .io { grid-template-columns: minmax(0, 1fr); }
+  .io .io-out { border-right: 0; border-bottom: 1px solid var(--line); }
+  .task-head h2 { font-size: 22px; }
+}
+@media (max-width: 860px) { .no-tutor .app { grid-template-columns: minmax(0, 1fr); } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<header class="titleblock">
+  <div class="tb-mark" aria-hidden="true">CT<span id="tb-version">v1.0</span></div>
+  <div class="tb-name">
+    <h1>CodingTrainer</h1>
+    <p id="subtitle"></p>
+  </div>
+  <div class="tb-tools">
+    <div class="tb-cell">
+      <span class="tb-label" data-t="lang"></span>
+      <div class="seg" role="group" aria-label="Sprache / Language">
+        <button type="button" id="lang-de" aria-pressed="true">DE</button>
+        <button type="button" id="lang-en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+    <div class="tb-cell">
+      <span class="tb-label" data-t="solved"></span>
+      <span class="tb-value" id="solved-count">0 / 0</span>
+    </div>
+    <div class="tb-cell">
+      <span class="tb-label">Python</span>
+      <span class="tb-value" id="py-status"><span class="dot"></span><span></span></span>
+    </div>
+    <div class="tb-cell">
+      <button type="button" class="btn ghost" id="info-btn" data-t="info"></button>
+    </div>
+  </div>
+</header>
+
+<div class="app">
+  <!-- Kapitel & Einstellungen -->
+  <aside class="side">
+    <section class="panel">
+      <div class="panel-b" style="padding:10px">
+        <div class="seg seg-wide" role="group" id="view-seg">
+          <button type="button" data-view="practice" data-t="viewPractice"></button>
+          <button type="button" data-view="exam" data-t="viewExam"></button>
+        </div>
+      </div>
+    </section>
+    <section class="panel" id="exam-run" hidden></section>
+    <section class="panel" id="chap-panel">
+      <div class="panel-h"><h2 data-t="chapters"></h2><button type="button" class="btn ghost" id="toggle-all" style="padding:2px 6px;font-size:12px"></button></div>
+      <ul class="chapters" id="chapters"></ul>
+    </section>
+    <section class="panel" id="diff-panel">
+      <div class="panel-h"><h2 data-t="difficulty"></h2></div>
+      <div class="panel-b">
+        <div class="field">
+          <div class="seg" role="group" id="mode-seg" style="width:100%;display:grid;grid-template-columns:2fr 1fr 1fr 1fr">
+            <button type="button" data-mode="auto" data-t="auto"></button>
+            <button type="button" data-mode="1">1</button>
+            <button type="button" data-mode="2">2</button>
+            <button type="button" data-mode="3">3</button>
+          </div>
+          <p class="levelnote" id="level-note"></p>
+        </div>
+        <div class="field">
+          <label class="switch"><input type="checkbox" id="strict" checked> <span data-t="strict"></span></label>
+        </div>
+        <div class="field">
+          <button type="button" class="btn dark" id="next-btn" style="justify-content:center"></button>
+        </div>
+      </div>
+    </section>
+    <section class="panel" id="exam-setup" hidden>
+      <div class="panel-h"><h2 data-t="examSetup"></h2></div>
+      <div class="panel-b">
+        <div class="field">
+          <span class="eyebrow" data-t="examCount"></span>
+          <div class="seg seg-fill" role="group" id="cfg-count">
+            <button type="button" data-v="3">3</button><button type="button" data-v="5">5</button><button type="button" data-v="8">8</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="eyebrow" data-t="examTime"></span>
+          <div class="seg seg-fill" role="group" id="cfg-minutes">
+            <button type="button" data-v="0" data-t="noLimit"></button><button type="button" data-v="30">30</button><button type="button" data-v="60">60</button><button type="button" data-v="90">90</button>
+          </div>
+        </div>
+        <div class="field">
+          <span class="eyebrow" data-t="examMix"></span>
+          <div class="seg seg-fill" role="group" id="cfg-mix">
+            <button type="button" data-v="mixed" data-t="mixMixed"></button><button type="button" data-v="hard" data-t="mixHard"></button>
+          </div>
+        </div>
+        <div class="field">
+          <label class="switch"><input type="checkbox" id="cfg-run"> <span data-t="examAllowRun"></span></label>
+        </div>
+        <div class="field">
+          <label class="switch"><input type="checkbox" id="cfg-ack"> <span data-t="disclaimerAck"></span></label>
+        </div>
+        <div class="field">
+          <button type="button" class="btn primary" id="exam-start" style="justify-content:center"></button>
+        </div>
+        <div class="field" id="history-wrap"></div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- Aufgabe -->
+  <main class="main">
+    <section class="panel" id="exam-intro" hidden></section>
+    <section class="panel" id="exam-result" hidden></section>
+    <section class="panel" id="task-panel" aria-live="polite">
+      <div class="task-head">
+        <h2 id="task-title"></h2>
+        <span class="tag" id="task-tag"></span>
+      </div>
+      <div class="task-body" id="task-body"></div>
+      <div class="refs" id="task-refs"></div>
+      <div class="editor-wrap">
+        <div class="toolbar">
+          <button type="button" class="btn" id="run-btn"><span data-t="run"></span> <span class="kbd">Ctrl+↵</span></button>
+          <button type="button" class="btn primary" id="check-btn"><span data-t="check"></span> <span class="kbd">⇧Ctrl+↵</span></button>
+          <span class="grow"></span>
+          <button type="button" class="btn ghost" id="reset-btn" data-t="reset"></button>
+        </div>
+        <div class="ed" id="editor">
+          <div class="ed-gutter" id="ed-gutter" aria-hidden="true">1</div>
+          <div class="ed-area">
+            <pre id="ed-hl" aria-hidden="true"></pre>
+            <textarea id="ed-ta" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" aria-label="Python-Code"></textarea>
+          </div>
+        </div>
+        <div class="io">
+          <div class="io-out">
+            <div class="io-h"><span class="eyebrow" data-t="output"></span><button type="button" class="btn ghost" id="clear-out" style="padding:0 6px;font-size:12px" data-t="clear"></button></div>
+            <pre class="console" id="console"></pre>
+          </div>
+          <div>
+            <div class="io-h"><label class="eyebrow" for="stdin" data-t="stdin"></label></div>
+            <textarea id="stdin" spellcheck="false"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="result-panel" hidden></section>
+  </main>
+
+  <!-- KI-Tutor -->
+  <aside class="panel tutor" id="tutor">
+    <div class="panel-h"><h2 data-t="tutor"></h2><button type="button" class="btn ghost" id="stop-btn" hidden style="padding:2px 8px;font-size:12px" data-t="stop"></button></div>
+    <div class="tutor-actions" id="tutor-actions">
+      <button type="button" class="btn" id="ai-feedback" data-t="aiFeedback"></button>
+      <button type="button" class="btn" id="ai-hint"><span data-t="aiHint"></span><span class="hintmeter" id="hintmeter"><i></i><i></i><i></i></span></button>
+      <button type="button" class="btn" id="ai-error" data-t="aiError"></button>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <form class="chat-form" id="chat-form">
+      <textarea id="chat-input" rows="1"></textarea>
+      <button type="submit" class="btn dark" data-t="send"></button>
+    </form>
+    <div class="gen">
+      <button type="button" class="btn" id="gen-btn" data-t="genBtn"></button>
+      <p data-t="genNote"></p>
+    </div>
+  </aside>
+</div>
+
+<dialog id="info-dlg">
+  <div class="panel-h"><h2 data-t="info"></h2><button type="button" class="btn ghost" id="info-close">✕</button></div>
+  <div class="panel-b" id="info-body"></div>
+</dialog>
+
+<script type="application/json" id="bank-data">/*BANK*/</script>
+<script type="application/json" id="constructs-data">/*CONSTRUCTS*/</script>
+<script>
+"use strict";
+/* ====================================================================== Daten */
+const BANK = JSON.parse(document.getElementById("bank-data").textContent);
+const CONSTRUCTS = JSON.parse(document.getElementById("constructs-data").textContent);
+const VERSION = "1.0";
+const STANDALONE = /*STANDALONE*/false;   // true: Version für eigenen Webserver (KI-Tutor über Claude-Link)
+if (STANDALONE) document.documentElement.classList.add("standalone");
+// Semester-Einstellungen: werden aus config.json neben index.html gelesen (siehe LIESMICH)
+let CONFIG = { semester: "", chapters: null, topics: { numpy: true, pandas: true }, tutor: { claude_link: true } };
+async function loadConfig() {
+  try {
+    const ctl = new AbortController();
+    const timer = setTimeout(() => ctl.abort(), 3000);
+    const r = await fetch("config.json", { cache: "no-store", signal: ctl.signal });
+    clearTimeout(timer);
+    if (!r.ok) return;
+    const c = await r.json();
+    if (typeof c.semester === "string") CONFIG.semester = c.semester;
+    if (Array.isArray(c.chapters)) CONFIG.chapters = c.chapters.map(String);
+    if (c.topics && typeof c.topics === "object") Object.assign(CONFIG.topics, c.topics);
+    if (c.tutor && typeof c.tutor === "object") Object.assign(CONFIG.tutor, c.tutor);
+  } catch (e) { /* ohne config.json gelten die Standardwerte */ }
+}
+const offKeys = () => Object.entries(CONFIG.topics).filter(([k, v]) => v === false).map(([k]) => k);
+const chapterOn = id => !CONFIG.chapters || CONFIG.chapters.includes(id);
+const exerciseOn = e => chapterOn(e.ch) && !(e.topics || []).some(tp => CONFIG.topics[tp] === false);
+const SECTION_TOPIC = { "9.2": "numpy", "9.2m": "numpy", "9.2v": "numpy", "9.2b": "numpy", "9.4": "pandas" };
+const sectionOn = id => !SECTION_TOPIC[id] || CONFIG.topics[SECTION_TOPIC[id]] !== false;
+const SCRIPT_BASE = "https://profweber.github.io/programming/notebooks/";
+const CHAPTERS = [
+  { id: "4", file: "2-basics.html", de: "Einführung ins Programmieren", en: "Introduction to programming" },
+  { id: "5", file: "3-datatypes.html", de: "Datentypen und ihre Repräsentation", en: "Data types and their representation" },
+  { id: "6", file: "4-controls.html", de: "Kontrollstrukturen", en: "Control structures" },
+  { id: "7", file: "5-functions.html", de: "Funktionen", en: "Functions" },
+  { id: "8", file: "6-sequences.html", de: "Datenstrukturen in Python", en: "Data structures in Python" },
+  { id: "9", file: "7-bibs.html", de: "Die Verwendung von Bibliotheken", en: "Using libraries" },
+  { id: "10", file: "8-oop.html", de: "Objektorientierte Programmierung", en: "Object-oriented programming" },
+  { id: "A", file: "A-dateien.html", de: "Dateien lesen und schreiben", en: "Reading and writing files" },
+  { id: "B", file: "B-fehlerbehandlung.html", de: "Fehlerbehandlung", en: "Error handling" },
+];
+const CH_ORDER = CHAPTERS.map(c => c.id);
+// Abschnitte des Skripts (ID → Kapitel, Nummer, Titel, Anker)
+const SEC = {};
+[
+  ["4.1", "4", "4.1", "Das erste Programm: Hello, World", "The first program: Hello, World", "das-erste-programm-hello-world"],
+  ["4.2", "4", "4.2", "Python als Taschenrechner", "Python as a calculator", "python-als-taschenrechner"],
+  ["4.3", "4", "4.3", "Zuweisungen und f-Strings", "Assignments and f-strings", "zuweisungen"],
+  ["4.3e", "4", "4.3", "Einschub: Benutzereingaben", "Aside: user input", "einschub-benutzereingaben"],
+  ["4.4", "4", "4.4", "Vergleiche", "Comparisons", "vergleiche"],
+  ["4.5", "4", "4.5", "Anweisung, Ausdruck, Literal", "Statement, expression, literal", "zum-abschluss-des-kapitels-ein-wenig-fachsprache"],
+  ["5.1", "5", "5.1", "Grundlegende Datentypen", "Basic data types", "grundlegende-datentypen"],
+  ["5.2", "5", "5.2", "Casting (Typumwandlung)", "Casting (type conversion)", "casting-typumwandlung"],
+  ["5.2e", "5", "5.2", "Explizites Casting", "Explicit casting", "explizites-casting"],
+  ["5.3", "5", "5.3", "Listen", "Lists", "listen"],
+  ["5.3m", "5", "5.3", "Methoden der Liste", "List methods", "methoden-der-liste"],
+  ["5.4", "5", "5.4", "Instanzen und Referenzen", "Instances and references", "instanzen-und-referenzen"],
+  ["5.4s", "5", "5.4", "Seiteneffekte", "Side effects", "seiteneffekte-wenn-mehrere-referenzen-auf-dieselbe-instanz-zeigen"],
+  ["5.4m", "5", "5.4", "Mutable und immutable Datentypen", "Mutable and immutable types", "mutable-und-immutable-datentypen"],
+  ["5.5", "5", "5.5", "Binäre Darstellung von Daten", "Binary representation of data", "bin%C3%A4re-darstellung-von-daten"],
+  ["5.5i", "5", "5.5", "Binäre Darstellung von Ganzzahlen", "Binary representation of integers", "bin%C3%A4re-darstellung-von-ganzzahlen"],
+  ["5.5f", "5", "5.5", "Binäre Darstellung von Gleitkommazahlen", "Binary floating-point numbers", "bin%C3%A4re-darstellung-von-gleitkommazahlen"],
+  ["5.5s", "5", "5.5", "Binäre Darstellung von Strings", "Binary representation of strings", "bin%C3%A4re-darstellung-von-strings"],
+  ["6.1", "6", "6.1", "Verzweigungen", "Branching", "verzweigungen"],
+  ["6.1a", "6", "6.1", "Verzweigungen mit if und else", "Branching with if and else", "verzweigungen-mit-if-und-else"],
+  ["6.1b", "6", "6.1", "if, elif, else und Conditional Expressions", "if, elif, else and conditional expressions", "verzweigungen-mit-if-elif-und-else"],
+  ["6.1c", "6", "6.1", "Bedingungen mit and, or, not", "Conditions with and, or, not", "zusammengesetzte-bedingungen-mit-and-or-und-not"],
+  ["6.2a", "6", "6.2", "While-Schleife", "While loop", "while-schleife"],
+  ["6.2b", "6", "6.2", "For-Schleife und range()", "For loop and range()", "for-schleife"],
+  ["6.2c", "6", "6.2", "break und continue", "break and continue", "den-schleifenfluss-kontrollieren-mit-break-und-continue"],
+  ["6.2d", "6", "6.2", "Verschachtelte Schleifen", "Nested loops", "verschachtelte-schleifen"],
+  ["6.3a", "6", "6.3", "Das Newton-Verfahren", "Newton's method", "das-newton-verfahren"],
+  ["6.3b", "6", "6.3", "Lineare Algebra mit Listen", "Linear algebra with lists", "lineare-algebra-mit-listen"],
+  ["7.2", "7", "7.2", "Built-in Functions", "Built-in functions", "built-in-functions"],
+  ["7.2s", "7", "7.2", "Funktionen für Sequenzen", "Functions for sequences", "n%C3%BCtzliche-funktionen-f%C3%BCr-sequenzen"],
+  ["7.3", "7", "7.3", "Eigene Funktionen programmieren", "Writing your own functions", "eigene-funktionen-programmieren"],
+  ["7.3p", "7", "7.3", "Parameter, Argumente, Standardargumente", "Parameters, arguments, defaults", "parameter-und-argumente"],
+  ["7.3r", "7", "7.3", "Rückgabewerte", "Return values", "r%C3%BCckgabewerte"],
+  ["7.3k", "7", "7.3", "Keyword-Argumente", "Keyword arguments", "keyword-argumente"],
+  ["7.4", "7", "7.4", "Dynamische Typisierung und isinstance", "Dynamic typing and isinstance", "dynamische-typisierung-und-m%C3%B6gliche-gefahren"],
+  ["7.5", "7", "7.5", "Beliebig viele Parameter (*args)", "Any number of parameters (*args)", "funktionen-mit-beliebig-vielen-parametern"],
+  ["7.6", "7", "7.6", "Scope", "Scope", "scope"],
+  ["7.6g", "7", "7.6", "Das Keyword global", "The keyword global", "das-keyword-global-in-python"],
+  ["7.7", "7", "7.7", "Funktionsaufrufe mit mutable Datentypen", "Calls with mutable types", "funktionsaufrufe-mit-mutable-datentypen"],
+  ["7.8", "7", "7.8", "Docstrings und Typ-Annotationen", "Docstrings and type annotations", "docstrings-und-typ-annotationen-meine-funktion-f%C3%BCr-andere-dokumentieren"],
+  ["8.1s", "8", "8.1", "Sortieren: sort() und sorted()", "Sorting: sort() and sorted()", "sortieren-der-messungen"],
+  ["8.1x", "8", "8.1", "Indexzugriff und List Slicing", "Indexing and list slicing", "werte-extrahieren-indexzugriff-und-list-slicing"],
+  ["8.2", "8", "8.2", "Das Set", "Sets", "analyse-der-verschiedenen-messwerte-anwendung-des-sets"],
+  ["8.3", "8", "8.3", "Das Dictionary", "Dictionaries", "hinzuf%C3%BCgen-von-zeitstempeln-anwendung-des-dictionaries"],
+  ["8.4", "8", "8.4", "Das Tupel", "Tuples", "speichern-einer-zweiten-messgr%C3%B6%C3%9Fe-anwendung-des-tupels-engl.-tuple"],
+  ["8.5", "8", "8.5", "Verschachtelte Dictionaries", "Nested dictionaries", "daten-mehrerer-sensoren-verschachtelte-dictionaries"],
+  ["8.6", "8", "8.6", "Mutable und immutable Datenstrukturen", "Mutable and immutable data structures", "mutable-und-immutable-datenstrukturen"],
+  ["8.7", "8", "8.7", "Sicheres Kopieren von Listen", "Copying lists safely", "sicheres-kopieren-von-listen"],
+  ["8.8", "8", "8.8", "List Comprehensions", "List comprehensions", "list-comprehensions"],
+  ["8.9", "8", "8.9", "enumerate() und zip()", "enumerate() and zip()", "sec-enumerate-zip"],
+  ["9.1", "9", "9.1", "Bibliotheken importieren, Aliase", "Importing libraries, aliases", "einf%C3%BChrung"],
+  ["9.2", "9", "9.2", "NumPy-Arrays", "NumPy arrays", "arrays"],
+  ["9.2m", "9", "9.2", "Matrixoperationen mit Arrays", "Matrix operations with arrays", "demo-matrixoperationen-mit-arrays"],
+  ["9.2v", "9", "9.2", "Vektorisierung", "Vectorisation", "demo-vektorisierung"],
+  ["9.2b", "9", "9.2", "Broadcasting", "Broadcasting", "demo-broadcasting"],
+  ["9.4", "9", "9.4", "pandas", "pandas", "pandas"],
+  ["10.2", "10", "10.2", "Methoden und Attribute", "Methods and attributes", "bestandteile-einer-klasse-methoden-und-attribute"],
+  ["10.3", "10", "10.3", "Erste eigene Klassen, Vererbung", "First classes, inheritance", "erste-eigene-klassen"],
+  ["10.5", "10", "10.5", "Mit super() auf die Basisklasse zugreifen", "Accessing the base class with super()", "mit-super-auf-die-basisklasse-zugreifen"],
+  ["10.6", "10", "10.6", "Public, Protected, Private", "Public, protected, private", "public-protected-private"],
+  ["10.6g", "10", "10.6", "Getter und Setter", "Getters and setters", "getter-und-setter"],
+  ["10.7", "10", "10.7", "Magic Methods", "Magic methods", "magic-methods"],
+  ["10.8", "10", "10.8", "Abstrakte Klassen", "Abstract classes", "abstrakte-klassen"],
+  ["A.1", "A", "A.1", "Dateien, Pfade, pathlib", "Files, paths, pathlib", "dateien-pfade-und-das-arbeitsverzeichnis"],
+  ["A.2", "A", "A.2", "Textdateien schreiben", "Writing text files", "textdateien-schreiben"],
+  ["A.3", "A", "A.3", "Textdateien lesen", "Reading text files", "textdateien-lesen"],
+  ["A.4", "A", "A.4", "CSV-Dateien mit dem Modul csv", "CSV files with the csv module", "csv-dateien-mit-dem-modul-csv"],
+  ["B.2", "B", "B.2", "Eine Fehlermeldung lesen", "Reading an error message", "eine-fehlermeldung-lesen"],
+  ["B.3", "B", "B.3", "Fehler abfangen mit try und except", "Catching errors with try and except", "fehler-abfangen-mit-try-und-except"],
+  ["B.3e", "B", "B.3", "else und finally", "else and finally", "else-und-finally"],
+  ["B.4", "B", "B.4", "Fehler selbst auslösen mit raise", "Raising errors with raise", "fehler-selbst-ausl%C3%B6sen-mit-raise"],
+  ["B.5", "B", "B.5", "Typische Fehler bei der Fehlerbehandlung", "Common mistakes in error handling", "typische-fehler-bei-der-fehlerbehandlung"],
+].forEach(([id, ch, num, de, en, anchor]) => {
+  const c = CHAPTERS.find(x => x.id === ch);
+  SEC[id] = { id, ch, num, de, en, url: SCRIPT_BASE + c.file + "#" + anchor };
+});
+
+/* ====================================================================== Texte */
+const I18N = {
+  subtitle: { de: "Übungen zum Skript „Programmierung für Ingenieurinnen und Ingenieure“ · Prof. Dr. Maik Weber · Hochschule Trier", en: "Exercises for the lecture notes “Programmierung für Ingenieurinnen und Ingenieure” · Prof. Dr. Maik Weber · Trier University of Applied Sciences" },
+  lang: { de: "Sprache", en: "Language" },
+  solved: { de: "Gelöst", en: "Solved" },
+  info: { de: "Info", en: "About" },
+  chapters: { de: "Kapitel", en: "Chapters" },
+  all: { de: "alle", en: "all" },
+  none: { de: "keine", en: "none" },
+  difficulty: { de: "Schwierigkeit", en: "Difficulty" },
+  auto: { de: "Automatisch", en: "Adaptive" },
+  strict: { de: "Nur Konstrukte aus dem Skript gelten lassen (bis zum Kapitel der Aufgabe)", en: "Only accept constructs from the lecture notes (up to the exercise's chapter)" },
+  next: { de: "Nächste Aufgabe →", en: "Next exercise →" },
+  run: { de: "Ausführen", en: "Run" },
+  check: { de: "Prüfen", en: "Check" },
+  reset: { de: "Code zurücksetzen", en: "Reset code" },
+  output: { de: "Ausgabe", en: "Output" },
+  clear: { de: "leeren", en: "clear" },
+  stdin: { de: "Eingaben für input()", en: "Input for input()" },
+  stdinPh: { de: "eine Eingabe pro Zeile", en: "one input per line" },
+  tutor: { de: "KI-Tutor", en: "AI tutor" },
+  stop: { de: "Stopp", en: "Stop" },
+  aiFeedback: { de: "Feedback zu meinem Code", en: "Feedback on my code" },
+  aiHint: { de: "Tipp", en: "Hint" },
+  aiError: { de: "Fehlermeldung erklären", en: "Explain the error" },
+  send: { de: "Fragen", en: "Ask" },
+  chatPh: { de: "Frage zur Aufgabe oder zum Skript …", en: "Question about the exercise or the notes …" },
+  genBtn: { de: "Neue Aufgabe von Claude erzeugen", en: "Generate a new exercise with Claude" },
+  genNote: { de: "Passend zu Kapitel und Niveau; wird vor dem Anzeigen automatisch gegen die Musterlösung getestet.", en: "Matches chapter and level; automatically tested against its reference solution before it is shown." },
+  levelLabel: { de: "Stufe", en: "Level" },
+  levelNames: { de: ["", "Einstieg", "Anwendung", "Transfer"], en: ["", "Basics", "Application", "Transfer"] },
+  pyLoading: { de: "wird geladen …", en: "loading …" },
+  pyPackages: { de: "lädt NumPy/pandas …", en: "loading NumPy/pandas …" },
+  pyReady: { de: "bereit", en: "ready" },
+  pyError: { de: "nicht verfügbar", en: "unavailable" },
+  running: { de: "läuft …", en: "running …" },
+  noOutput: { de: "(keine Ausgabe)", en: "(no output)" },
+  outHint: { de: "Hier erscheint die Ausgabe von print().", en: "The output of print() appears here." },
+  allPassed: { de: "Alle Tests bestanden", en: "All tests passed" },
+  someFailed: { de: "Noch nicht ganz", en: "Not quite yet" },
+  passedButConstructs: { de: "Tests bestanden – aber nicht mit Skript-Mitteln", en: "Tests passed – but not with tools from the notes" },
+  runtimeError: { de: "Ihr Code hat einen Fehler ausgelöst", en: "Your code raised an error" },
+  syntaxError: { de: "Syntaxfehler – der Code läuft gar nicht erst los", en: "Syntax error – the code doesn't start at all" },
+  solvedMsg: { de: "Gelöst! Weiter mit der nächsten Aufgabe?", en: "Solved! On to the next exercise?" },
+  constructLater: { de: "kommt erst in Kapitel {ch} – diese Aufgabe lässt sich ohne lösen.", en: "is only introduced in chapter {ch} – this exercise can be solved without it." },
+  constructAbsent: { de: "kommt im Skript nicht vor. Lösen Sie die Aufgabe mit den Mitteln aus dem Skript.", en: "does not appear in the lecture notes. Solve the exercise with the tools from the notes." },
+  constructMissing: { de: "Diese Aufgabe verlangt:", en: "This exercise requires:" },
+  constructForbidden: { de: "Bitte hier nicht verwenden:", en: "Please don't use here:" },
+  line: { de: "Zeile", en: "line" },
+  showSolution: { de: "Musterlösung anzeigen", en: "Show reference solution" },
+  solutionLocked: { de: "Die Musterlösung erscheint nach zwei Prüfversuchen oder dem dritten Tipp.", en: "The reference solution appears after two check attempts or the third hint." },
+  solutionNote: { de: "Wer die Lösung ansieht, bekommt die nächste Aufgabe eine Stufe leichter.", en: "Viewing the solution makes the next exercise one level easier." },
+  scriptRefs: { de: "Im Skript:", en: "In the notes:" },
+  aiUnavailable: { de: "Der KI-Tutor ist nur verfügbar, wenn diese Seite in Claude geöffnet ist und Sie angemeldet sind. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "The AI tutor is only available when this page is opened in Claude and you are signed in. All exercises and tests work without it." },
+  aiDenied: { de: "Der KI-Tutor wurde für diese Seite nicht freigegeben. Die Übungen funktionieren weiterhin.", en: "The AI tutor was not allowed for this page. The exercises still work." },
+  aiRate: { de: "Gerade zu viele Anfragen. Bitte in einer Minute erneut versuchen.", en: "Too many requests right now. Please try again in a minute." },
+  aiFail: { de: "Die Antwort konnte nicht geladen werden. Bitte erneut versuchen.", en: "The answer could not be loaded. Please try again." },
+  aiThinking: { de: "Der Tutor denkt nach …", en: "The tutor is thinking …" },
+  aiWelcome: { de: "Ich kenne die Aufgabe, Ihren Code und das letzte Testergebnis. Ich verrate keine fertige Lösung, sondern helfe Ihnen, selbst draufzukommen – und zeige die passenden Stellen im Skript.", en: "I know the exercise, your code and the latest test result. I won't hand out a finished solution, but I'll help you get there yourself – and point you to the right places in the notes." },
+  noError: { de: "Es gibt gerade keine Fehlermeldung. Führen Sie den Code aus oder prüfen Sie ihn zuerst.", en: "There is no error message right now. Run or check your code first." },
+  genWorking: { de: "Claude entwirft eine Aufgabe und testet sie …", en: "Claude is drafting an exercise and testing it …" },
+  genFailed: { de: "Die erzeugte Aufgabe hat die automatische Prüfung nicht bestanden und wird nicht angezeigt. Versuchen Sie es noch einmal.", en: "The generated exercise failed the automatic check and is not shown. Please try again." },
+  genOk: { de: "Neue Aufgabe erzeugt und geprüft.", en: "New exercise generated and verified." },
+  genNoChapter: { de: "Wählen Sie mindestens ein Kapitel aus.", en: "Select at least one chapter." },
+  aiMade: { de: "von Claude erzeugt", en: "generated by Claude" },
+  noChapters: { de: "Wählen Sie links mindestens ein Kapitel, das Sie üben möchten.", en: "Select at least one chapter on the left that you want to practise." },
+  allDone: { de: "Sie haben alle Aufgaben der gewählten Kapitel gelöst. Lassen Sie sich eine neue Aufgabe erzeugen oder wählen Sie weitere Kapitel.", en: "You have solved every exercise in the selected chapters. Generate a new one or select more chapters." },
+  timeout: { de: "Abbruch nach Zeitlimit. Python wird neu gestartet …", en: "Stopped after the time limit. Restarting Python …" },
+  engineFail: { de: "Python konnte in dieser Ansicht nicht gestartet werden. Der KI-Tutor kann Ihren Code trotzdem besprechen.", en: "Python could not be started in this view. The AI tutor can still review your code." },
+  autoNote: { de: "Automatisch: Stufe <b>{l}</b> ({n}) in Kapitel {ch}. Zwei saubere Lösungen in Folge → eine Stufe höher.", en: "Adaptive: level <b>{l}</b> ({n}) in chapter {ch}. Two clean solutions in a row → one level up." },
+  fixedNote: { de: "Feste Stufe {l} ({n}) für alle gewählten Kapitel. Aufgaben anderer Stufen sind in der Liste abgeblendet, bleiben aber anklickbar.", en: "Fixed level {l} ({n}) for all selected chapters. Exercises of other levels are dimmed in the list but stay clickable." },
+  levelUp: { de: "Stark! In Kapitel {ch} geht es jetzt auf Stufe {l} weiter.", en: "Nice! Chapter {ch} continues at level {l}." },
+  levelDown: { de: "In Kapitel {ch} geht es auf Stufe {l} weiter – erst festigen, dann steigern.", en: "Chapter {ch} continues at level {l} – consolidate first, then step up." },
+  viewPractice: { de: "Üben", en: "Practice" },
+  viewExam: { de: "Klausurtraining", en: "Exam practice" },
+  examSetup: { de: "Klausur einstellen", en: "Exam settings" },
+  examCount: { de: "Anzahl Aufgaben", en: "Number of exercises" },
+  examTime: { de: "Bearbeitungszeit (Minuten)", en: "Time limit (minutes)" },
+  noLimit: { de: "ohne", en: "none" },
+  examMix: { de: "Niveau", en: "Level" },
+  mixMixed: { de: "gemischt", en: "mixed" },
+  mixHard: { de: "anspruchsvoll", en: "demanding" },
+  examAllowRun: { de: "Code ausführen erlaubt (aus = wie in einer Papierklausur)", en: "Running code allowed (off = like a paper exam)" },
+  examStart: { de: "Klausur starten", en: "Start exam" },
+  examStartNo: { de: "Erst Kapitel wählen", en: "Select chapters first" },
+  examHistory: { de: "Letzte Ergebnisse", en: "Recent results" },
+  examRunning: { de: "Klausur läuft", en: "Exam in progress" },
+  examReview: { de: "Auswertung", en: "Results" },
+  examNoLimit: { de: "ohne Zeitlimit", en: "no time limit" },
+  examElapsed: { de: "{m} min vergangen", en: "{m} min elapsed" },
+  examLeft: { de: "verbleibend", en: "remaining" },
+  examEdited: { de: "bearbeitet", en: "edited" },
+  examOpen: { de: "offen", en: "open" },
+  examSubmit: { de: "Abgeben", en: "Submit" },
+  examSubmitQ: { de: "Wirklich abgeben? Danach lässt sich nichts mehr ändern.", en: "Really submit? You can't change anything afterwards." },
+  examSubmitYes: { de: "Jetzt abgeben", en: "Submit now" },
+  examContinue: { de: "Weiter bearbeiten", en: "Keep working" },
+  examAbort: { de: "Klausur verwerfen", en: "Discard exam" },
+  examAbortQ: { de: "Klausur ohne Auswertung verwerfen?", en: "Discard the exam without grading?" },
+  examAbortYes: { de: "Verwerfen", en: "Discard" },
+  examGrading: { de: "Wird ausgewertet … {i}/{n}", en: "Grading … {i}/{n}" },
+  examGradeFail: { de: "Die Auswertung ist fehlgeschlagen, weil Python nicht verfügbar ist. Ihr Code bleibt erhalten.", en: "Grading failed because Python is unavailable. Your code is kept." },
+  examNew: { de: "Neue Klausur", en: "New exam" },
+  examToPractice: { de: "Zum Üben", en: "Back to practice" },
+  examTaskOf: { de: "Aufgabe {i} von {n}", en: "Exercise {i} of {n}" },
+  points: { de: "Punkte", en: "points" },
+  examScore: { de: "{p} von {m} Punkten", en: "{p} of {m} points" },
+  examTimeUsed: { de: "Bearbeitungszeit: {m} min", en: "Time used: {m} min" },
+  examAuto: { de: "Die Zeit ist abgelaufen – die Klausur wurde automatisch abgegeben.", en: "Time is up – the exam was submitted automatically." },
+  examPenalty: { de: "Halbe Punktzahl: Die Lösung nutzt Konstrukte, die nicht bis zu diesem Kapitel im Skript stehen (oder eine verlangte Technik fehlt).", en: "Half points: the solution uses constructs that aren't in the notes up to this chapter (or a required technique is missing)." },
+  examYourCode: { de: "Ihr Code", en: "Your code" },
+  examRepeat: { de: "Wiederholen Sie diese Abschnitte im Skript:", en: "Review these sections of the notes:" },
+  examAllFull: { de: "Volle Punktzahl in allen Aufgaben – sehr gut!", en: "Full marks on every exercise – excellent!" },
+  examNotEdited: { de: "nicht bearbeitet", en: "not attempted" },
+  tutorExamOff: { de: "Im Klausurtraining ist der KI-Tutor ausgeschaltet – wie in der echten Klausur. Nach der Abgabe erhalten Sie eine ausführliche Auswertung mit Musterlösungen.", en: "The AI tutor is switched off during exam practice – just like in the real exam. After submitting you get a detailed evaluation with reference solutions." },
+  tutorExamDone: { de: "Wechseln Sie zu „Üben“, um mit dem KI-Tutor an einzelnen Aufgaben weiterzuarbeiten.", en: "Switch to “Practice” to keep working on single exercises with the AI tutor." },
+  examIntroTitle: { de: "Klausurtraining", en: "Exam practice" },
+  constructOff: { de: "wird in diesem Semester nicht behandelt. Lösen Sie die Aufgabe ohne.", en: "is not covered this semester. Solve the exercise without it." },
+  withoutTopics: { de: "ohne {t} (dieses Semester)", en: "without {t} (this semester)" },
+  linkIntro: { de: "Der KI-Tutor öffnet **Claude in einem neuen Tab** – mit einer fertig vorbereiteten Anfrage: Aufgabe, Ihr Code, das letzte Testergebnis, die Regeln für den Tutor und die passenden Stellen im Skript.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Bitte keine persönlichen Daten in den Code schreiben.", en: "The AI tutor opens **Claude in a new tab** – with a ready-made request: the exercise, your code, the latest test result, the tutor rules and the matching sections of the notes.\n\nYou need a (free) Claude account; requests count towards your own usage. Please don't put personal data in your code." },
+  linkOpened: { de: "In Claude geöffnet. Ist das Eingabefeld dort leer, liegt der Text in der Zwischenablage: mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "Opened in Claude. If the input field there is empty, the text is on the clipboard: paste with Ctrl+V (Mac: ⌘+V) and send." },
+  linkOpenedLong: { de: "Die Anfrage ist für einen direkten Link zu lang und liegt in der Zwischenablage: In Claude mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "The request is too long for a direct link and is on the clipboard: paste it in Claude with Ctrl+V (Mac: ⌘+V) and send." },
+  copyPrompt: { de: "Anfrage kopieren", en: "Copy request" },
+  openAgain: { de: "Claude erneut öffnen", en: "Open Claude again" },
+  copied: { de: "Kopiert ✓", en: "Copied ✓" },
+  copyFailed: { de: "Kopieren nicht möglich", en: "Copy not possible" },
+  disclaimerTitle: { de: "Wichtiger Hinweis", en: "Important notice" },
+  disclaimerItems: {
+    de: [
+      "Das Klausurtraining ist ein freiwilliges Übungsangebot, keine Probeklausur.",
+      "Aufgabentypen, Umfang, Schwierigkeit und Bewertung können von der echten Klausur abweichen. Die Klausur enthält auch andere Aufgabentypen, z.B. Wissensfragen, Fehlersuche oder das Lesen und Erklären von Code.",
+      "Punkte und Prozentwerte erlauben keinen Rückschluss auf Ihr Klausurergebnis. Die automatische Auswertung kann Fehler enthalten.",
+      "Verbindlich sind allein die Vorlesung, die dort gegebenen Hinweise zur Klausur und die geltende Prüfungsordnung. Aus dem Training lassen sich keine Ansprüche ableiten.",
+    ],
+    en: [
+      "Exam practice is a voluntary practice tool, not a mock exam.",
+      "Task types, scope, difficulty and grading may differ from the real exam. The exam also contains other task types, e.g. knowledge questions, finding errors, or reading and explaining code.",
+      "Points and percentages do not predict your exam result. The automatic grading may contain errors.",
+      "Only the lecture, the information about the exam given there and the applicable examination regulations are binding. No claims of any kind can be derived from this practice tool.",
+    ],
+  },
+  disclaimerAck: { de: "Ich habe den Hinweis zum Klausurtraining gelesen und akzeptiert.", en: "I have read and accept the notice on exam practice." },
+  examStartAck: { de: "Erst Hinweis bestätigen", en: "Accept the notice first" },
+  resultNotice: { de: "Kein Rückschluss auf die Klausur – siehe Hinweis im Klausurtraining.", en: "Not a prediction of your exam result – see the notice in exam practice." },
+};
+let LANG = "de";
+const t = (k, vars) => {
+  let s = (I18N[k] && I18N[k][LANG]) || k;
+  if (vars) for (const [a, b] of Object.entries(vars)) s = s.split("{" + a + "}").join(b);
+  return s;
+};
+const L = obj => (obj && typeof obj === "object") ? (obj[LANG] ?? obj.de ?? "") : (obj ?? "");
+const chName = id => L(CHAPTERS.find(c => c.id === id));
+const chIdx = id => CH_ORDER.indexOf(id);
+
+/* ====================================================================== Speicher (nur dieser Browser) */
+const store = {
+  get(k, d) { try { const v = localStorage.getItem("ct." + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem("ct." + k, JSON.stringify(v)); } catch (e) {} },
+};
+const S = {
+  lang: store.get("lang", (navigator.language || "de").startsWith("de") ? "de" : "en"),
+  selected: new Set(store.get("selected", ["4", "5", "6"])),
+  mode: store.get("mode", "auto"),
+  strict: store.get("strict", true),
+  progress: store.get("progress", {}),     // id -> {solved, attempts, hints, peeked, clean}
+  levels: store.get("levels", {}),         // chapter -> {level, streak, struggle}
+  drafts: store.get("drafts", {}),         // id -> code
+  generated: store.get("generated", []),   // von Claude erzeugte, geprüfte Aufgaben
+  currentId: store.get("current", null),
+  expanded: new Set(store.get("expanded", [])),
+  view: store.get("view", "practice"),             // "practice" | "exam"
+  exam: store.get("exam", null),                   // laufende oder zuletzt abgegebene Klausur
+  examCfg: store.get("examCfg", { count: 5, minutes: 60, mix: "mixed", allowRun: true }),
+  examHistory: store.get("examHistory", []),
+  examAck: store.get("examAck", false),
+  lastResult: null, lastError: null, lastOut: "",
+};
+LANG = S.lang;
+const save = () => {
+  store.set("lang", S.lang); store.set("selected", [...S.selected]); store.set("mode", S.mode); store.set("strict", S.strict);
+  store.set("progress", S.progress); store.set("levels", S.levels); store.set("drafts", S.drafts);
+  store.set("generated", S.generated); store.set("current", S.currentId); store.set("expanded", [...S.expanded]);
+  store.set("view", S.view); store.set("exam", S.exam); store.set("examCfg", S.examCfg); store.set("examHistory", S.examHistory); store.set("examAck", S.examAck);
+};
+const examRunning = () => S.view === "exam" && !!S.exam && !S.exam.submitted;
+const examDone = () => S.view === "exam" && !!S.exam && !!S.exam.submitted;
+const allExercises = () => BANK.concat(S.generated).filter(exerciseOn);
+const visibleChapters = () => CHAPTERS.filter(c => chapterOn(c.id));
+const byId = id => allExercises().find(e => e.id === id);
+const prog = id => (S.progress[id] ||= { solved: false, attempts: 0, hints: 0, peeked: false, clean: false });
+const lvlState = ch => (S.levels[ch] ||= { level: 1, streak: 0, struggle: 0 });
+
+/* ====================================================================== Hilfsfunktionen */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pips = (n, max = 3) => `<span class="pips" aria-label="${t("levelLabel")} ${n}">${Array.from({ length: max }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("")}</span>`;
+
+function refChip(id) {
+  const s = SEC[id];
+  if (!s) return esc(id);
+  return `<a class="ref" href="${s.url}" target="_blank" rel="noopener"><b>${esc(s.num)}</b>${esc(L(s))}</a>`;
+}
+
+/* ---- Python-Hervorhebung */
+const KW = new Set("False None True and as assert async await break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield".split(" "));
+const BI = new Set("print input len range int float str bool list dict set tuple type sum min max sorted abs round enumerate zip isinstance super open id bin hex oct ord chr divmod help complex".split(" "));
+const TOKEN_RE = /(#[^\n]*)|((?:[rRbBuUfF]{1,2})?(?:"""[\s\S]*?(?:"""|$)|'''[\s\S]*?(?:'''|$)|"(?:\\.|[^"\\\n])*"?|'(?:\\.|[^'\\\n])*'?))|(\b\d[\d_]*\.?\d*(?:[eE][+-]?\d+)?j?\b|\.\d+(?:[eE][+-]?\d+)?)|([A-Za-z_\u00C0-\u024F][\w\u00C0-\u024F]*)|([\s\S])/g;
+function highlight(src) {
+  let out = "", prev = "", m;
+  TOKEN_RE.lastIndex = 0;
+  while ((m = TOKEN_RE.exec(src))) {
+    const [tok, com, str, num, word] = m;
+    if (com) out += `<span class="tk-com">${esc(tok)}</span>`;
+    else if (str) out += `<span class="tk-str">${esc(tok)}</span>`;
+    else if (num) out += `<span class="tk-num">${esc(tok)}</span>`;
+    else if (word) {
+      let cls = "";
+      if (KW.has(word)) cls = "tk-kw";
+      else if (prev === "def" || prev === "class") cls = "tk-fn";
+      else if (word === "self") cls = "tk-self";
+      else if (BI.has(word)) cls = "tk-bi";
+      out += cls ? `<span class="${cls}">${esc(word)}</span>` : esc(word);
+    } else out += esc(tok);
+    if (word) prev = word; else if (!/^\s$/.test(tok)) prev = "";
+  }
+  return out;
+}
+
+/* ---- Mini-Markdown (Aufgaben & Tutor) */
+function inlineMd(s) {
+  // s ist bereits escaped
+  return s
+    .replace(/`([^`\n]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
+    .replace(/(^|[^*])\*([^*\n]+)\*/g, "$1<em>$2</em>")
+    .replace(/\[\[\s*([0-9AB]+(?:\.[0-9]+)?[a-z]?)\s*\]\]/g, (all, id) => SEC[id] ? refChip(id) : all);
+}
+function md(text) {
+  const parts = String(text).split(/```[a-zA-Z]*\n?/);
+  let html = "";
+  parts.forEach((part, i) => {
+    if (i % 2 === 1) { html += `<pre><code>${highlight(part.replace(/\n$/, ""))}</code></pre>`; return; }
+    const lines = esc(part).split("\n");
+    let list = null, para = [];
+    const flush = () => { if (para.length) { html += `<p>${inlineMd(para.join("<br>"))}</p>`; para = []; } };
+    const closeList = () => { if (list) { html += `</${list}>`; list = null; } };
+    for (const raw of lines) {
+      const line = raw.trimEnd();
+      const ul = /^\s*[-*]\s+(.*)$/.exec(line), ol = /^\s*\d+\.\s+(.*)$/.exec(line);
+      if (ul || ol) {
+        flush();
+        const type = ul ? "ul" : "ol";
+        if (list !== type) { closeList(); html += `<${type}>`; list = type; }
+        html += `<li>${inlineMd((ul || ol)[1])}</li>`;
+      } else if (line.trim() === "") { flush(); closeList(); }
+      else if (/^#{1,4}\s/.test(line)) { flush(); closeList(); html += `<p><strong>${inlineMd(line.replace(/^#+\s/, ""))}</strong></p>`; }
+      else { closeList(); para.push(line); }
+    }
+    flush(); closeList();
+  });
+  return html;
+}
+
+/* ====================================================================== Python-Laufzeit */
+const Engine = {
+  worker: null, local: null, ready: null, seq: 0, pending: new Map(), failed: false, version: "",
+  status(state, text) {
+    const el = $("py-status");
+    el.firstElementChild.className = "dot" + (state === "ready" ? " ready" : state === "error" ? " err" : "");
+    el.lastElementChild.textContent = text;
+  },
+  start() {
+    this.status("loading", t("pyLoading"));
+    this.ready = this._startWorker().catch(() => this._startLocal()).then(info => {
+      this.version = info.version; this.status("ready", "Python " + info.version + " · " + t("pyReady"));
+      liveCheck();
+      return true;
+    }).catch(err => {
+      this.failed = true; this.status("error", t("pyError"));
+      writeConsole([{ cls: "stderr", text: t("engineFail") + "\n" + err }]);
+      return false;
+    });
+    return this.ready;
+  },
+  _startWorker() {
+    return new Promise((resolve, reject) => {
+      let w;
+      try { w = new Worker("worker.js"); } catch (e) { reject(e); return; }
+      this.worker = w;
+      w.onmessage = e => this._onMessage(e.data);
+      w.onerror = e => { e.preventDefault && e.preventDefault(); if (!this._booted) { w.terminate(); this.worker = null; reject(new Error("worker error")); } };
+      this._send({ type: "init" }, 120000).then(r => { this._booted = true; resolve(r); }, err => { try { w.terminate(); } catch (e) {} this.worker = null; reject(err); });
+    });
+  },
+  async _startLocal() {
+    await new Promise((res, rej) => { const s = document.createElement("script"); s.src = "worker.js"; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
+    this.local = window.CTLocalEngine;
+    if (!this.local) throw new Error("no local engine");
+    return this._send({ type: "init" }, 120000);
+  },
+  _onMessage(msg) {
+    const p = this.pending.get(msg.id);
+    if (!p) return;
+    if (msg.status) { if (msg.status === "packages") this.status("loading", t("pyPackages")); return; }
+    clearTimeout(p.timer);
+    this.pending.delete(msg.id);
+    if (this.version) this.status("ready", "Python " + this.version + " · " + t("pyReady"));
+    msg.ok ? p.resolve(msg.result) : p.reject(new Error(msg.error));
+  },
+  _send(msg, timeout) {
+    const id = ++this.seq;
+    msg.id = id;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(Object.assign(new Error("timeout"), { timeout: true }));
+        if (this.worker && this._booted) this._restart();
+      }, timeout);
+      this.pending.set(id, { resolve, reject, timer });
+      if (this.worker) this.worker.postMessage(msg);
+      else if (this.local) this.local.handle(msg, r => this._onMessage(r));
+      else { clearTimeout(timer); this.pending.delete(id); reject(new Error("no engine")); }
+    });
+  },
+  _restart() {
+    try { this.worker.terminate(); } catch (e) {}
+    this.worker = null; this._booted = false;
+    for (const p of this.pending.values()) { clearTimeout(p.timer); p.reject(new Error("restart")); }
+    this.pending.clear();
+    this.start();
+  },
+  async call(type, payload) {
+    const ok = await this.ready;
+    if (!ok) throw new Error("engine unavailable");
+    const heavy = /\b(numpy|pandas)\b/.test((payload.code || "") + (payload.tests || ""));
+    return this._send(Object.assign({ type }, payload), heavy ? 120000 : 25000);
+  },
+};
+
+/* ====================================================================== Editor */
+const ta = $("ed-ta"), hl = $("ed-hl"), gutter = $("ed-gutter");
+let errorLine = null;
+function renderEditor() {
+  const v = ta.value;
+  hl.innerHTML = highlight(v) + "\n";
+  const n = v.split("\n").length;
+  let g = "";
+  for (let i = 1; i <= n; i++) g += (i === errorLine ? `<span class="err">${i}</span>` : i) + "\n";
+  gutter.innerHTML = g;
+  const lines = Math.max(n, 12);
+  ta.style.height = (lines * 21 + 24 + 14) + "px";
+  hl.scrollLeft = ta.scrollLeft;
+  let mark = document.querySelector(".errline");
+  if (errorLine && errorLine <= n) {
+    if (!mark) { mark = document.createElement("div"); mark.className = "errline"; ta.parentNode.insertBefore(mark, hl); }
+    mark.style.top = (12 + (errorLine - 1) * 21) + "px";
+  } else if (mark) mark.remove();
+}
+ta.addEventListener("scroll", () => { hl.scrollLeft = ta.scrollLeft; });
+ta.addEventListener("input", () => {
+  errorLine = null;
+  renderEditor();
+  const ex = current();
+  if (ex) {
+    if (examRunning()) { S.exam.codes[ex.id] = ta.value; renderExamRun(); }
+    else S.drafts[ex.id] = ta.value;
+    saveSoon();
+  }
+  liveCheckSoon();
+});
+function replaceSel(text, selStart, selEnd) {
+  ta.focus();
+  ta.setSelectionRange(selStart, selEnd);
+  if (!document.execCommand || !document.execCommand("insertText", false, text)) {
+    ta.setRangeText(text, selStart, selEnd, "end");
+    ta.dispatchEvent(new Event("input"));
+  }
+}
+ta.addEventListener("keydown", e => {
+  const { selectionStart: a, selectionEnd: b, value: v } = ta;
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); e.shiftKey ? doCheck() : doRun(); return; }
+  if (e.key === "Tab" && !e.altKey && !e.ctrlKey && !e.metaKey) {
+    e.preventDefault();
+    const ls = v.lastIndexOf("\n", a - 1) + 1;
+    const block = v.slice(ls, b);
+    if (a === b && !e.shiftKey) { replaceSel("    ", a, b); return; }
+    const lines = block.split("\n");
+    const out = lines.map(l => e.shiftKey ? l.replace(/^ {1,4}/, "") : "    " + l).join("\n");
+    replaceSel(out, ls, b);
+    ta.setSelectionRange(ls, ls + out.length);
+    return;
+  }
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    const ls = v.lastIndexOf("\n", a - 1) + 1;
+    const line = v.slice(ls, a);
+    let ind = (/^\s*/.exec(line) || [""])[0];
+    if (/:\s*(#.*)?$/.test(line)) ind += "    ";
+    else if (/^\s*(return|break|continue|pass|raise)\b/.test(line)) ind = ind.slice(0, Math.max(0, ind.length - 4));
+    replaceSel("\n" + ind, a, b);
+    return;
+  }
+  if (e.key === "Backspace" && a === b && a > 0) {
+    const ls = v.lastIndexOf("\n", a - 1) + 1;
+    const before = v.slice(ls, a);
+    if (before.length && /^ +$/.test(before) && before.length % 4 === 0) { e.preventDefault(); replaceSel("", a - 4, a); }
+  }
+});
+let saveTimer;
+const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 400); };
+
+/* ====================================================================== Konsole */
+function writeConsole(parts) {
+  const c = $("console");
+  c.innerHTML = parts.map(p => `<span class="${p.cls || ""}">${esc(p.text)}</span>`).join("");
+}
+$("clear-out").onclick = () => { writeConsole([{ cls: "muted", text: t("outHint") }]); };
+
+/* ====================================================================== Aufgabenwahl */
+function current() { return examRunning() ? byId(S.exam.ids[S.exam.idx]) : byId(S.currentId); }
+function chapterExercises(ch) { return allExercises().filter(e => e.ch === ch); }
+
+function targetLevel(ch) { return S.mode === "auto" ? lvlState(ch).level : Number(S.mode); }
+function pickNext(excludeId, preferCh) {
+  const chs = CH_ORDER.filter(c => S.selected.has(c));
+  if (!chs.length) return null;
+  // Kapitel mit dem geringsten Fortschritt bevorzugen, bei Gleichstand zufällig
+  const score = c => { const ex = chapterExercises(c); return ex.length ? ex.filter(e => prog(e.id).solved).length / ex.length : 1; };
+  const order = chs.map(c => ({ c, s: (c === preferCh ? -1 : 0) + score(c) + Math.random() * 0.25 })).sort((x, y) => x.s - y.s).map(x => x.c);
+  const cand = [];
+  order.forEach((c, rank) => {
+    const want = targetLevel(c);
+    chapterExercises(c).filter(e => !prog(e.id).solved && e.id !== excludeId)
+      .forEach(e => cand.push({ e, d: Math.abs(e.lvl - want), rank }));
+  });
+  if (!cand.length) return null;
+  const bestD = Math.min(...cand.map(x => x.d));
+  const close = cand.filter(x => x.d === bestD);
+  const bestRank = Math.min(...close.map(x => x.rank));
+  const pool = close.filter(x => x.rank === bestRank).map(x => x.e);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function openExercise(id) {
+  const ex = byId(id);
+  if (!ex) return;
+  S.currentId = id;
+  S.lastResult = null; S.lastError = null; S.lastOut = "";
+  errorLine = null;
+  ta.value = S.drafts[id] ?? L(ex.starter);
+  $("stdin").value = ex.stdin || "";
+  writeConsole([{ cls: "muted", text: t("outHint") }]);
+  $("result-panel").hidden = true;
+  Tutor.reset();
+  save();
+  renderAll();
+}
+
+/* ====================================================================== Rendering */
+function renderStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("[data-t]").forEach(el => { el.textContent = t(el.dataset.t); });
+  $("subtitle").textContent = t("subtitle") + " · v" + VERSION;
+  $("stdin").placeholder = t("stdinPh");
+  $("chat-input").placeholder = t("chatPh");
+  $("lang-de").setAttribute("aria-pressed", LANG === "de");
+  $("lang-en").setAttribute("aria-pressed", LANG === "en");
+  $("next-btn").textContent = t("next");
+  if (Engine.version) Engine.status("ready", "Python " + Engine.version + " · " + t("pyReady"));
+  else if (Engine.failed) Engine.status("error", t("pyError"));
+  else Engine.status("loading", t("pyLoading"));
+}
+
+function renderChapters() {
+  const ul = $("chapters");
+  ul.innerHTML = visibleChapters().map(c => {
+    const ex = chapterExercises(c.id);
+    const solved = ex.filter(e => prog(e.id).solved).length;
+    const on = S.selected.has(c.id);
+    const open = on && S.view !== "exam" && (S.expanded.has(c.id) || (current() && current().ch === c.id));
+    const list = open ? `<ul class="ex-list">${ex.map(e => {
+      const p = prog(e.id);
+      const st = p.solved ? "solved" : p.peeked ? "peek" : p.attempts ? "tried" : "";
+      return `<li><button type="button" class="${e.lvl === targetLevel(e.ch) ? "" : "off-level"}" data-ex="${esc(e.id)}" aria-current="${e.id === S.currentId}"><span class="ex-state ${st}"></span><span>${esc(L(e.title))}${e.generated ? `<span class="ex-ai">AI</span>` : ""}</span>${pips(e.lvl)}</button></li>`;
+    }).join("")}</ul>` : "";
+    return `<li class="chap ${on ? "" : "off"}">
+      <label class="chap-row">
+        <input type="checkbox" data-ch="${c.id}" ${on ? "checked" : ""}>
+        <span class="chap-num">${c.id}</span>
+        <span class="chap-title">${esc(L(c))}${c.id === "9" && offKeys().length ? `<span class="chap-sub">${esc(t("withoutTopics", { t: offKeys().join(", ") }))}</span>` : ""}</span>
+        <span class="chap-count">${solved}/${ex.length}</span>
+        <span class="chap-bar"><i style="width:${ex.length ? (100 * solved / ex.length) : 0}%"></i></span>
+      </label>${list}</li>`;
+  }).join("");
+  const total = allExercises().length, done = allExercises().filter(e => prog(e.id).solved).length;
+  $("solved-count").textContent = `${done} / ${total}`;
+  $("toggle-all").textContent = S.selected.size === visibleChapters().length ? t("none") : t("all");
+}
+$("chapters").addEventListener("change", e => {
+  const ch = e.target.dataset.ch;
+  if (!ch) return;
+  e.target.checked ? (S.selected.add(ch), S.expanded.add(ch)) : S.selected.delete(ch);
+  save();
+  if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); n ? openExercise(n.id) : renderAll(); }
+  else renderAll();
+});
+$("chapters").addEventListener("click", e => {
+  const b = e.target.closest("[data-ex]");
+  if (b) openExercise(b.dataset.ex);
+});
+$("toggle-all").onclick = () => {
+  if (S.selected.size === visibleChapters().length) S.selected.clear(); else visibleChapters().forEach(c => S.selected.add(c.id));
+  save();
+  if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); n ? openExercise(n.id) : renderAll(); } else renderAll();
+};
+
+function renderLevel() {
+  document.querySelectorAll("#mode-seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.mode) === String(S.mode)));
+  const ex = current();
+  const names = I18N.levelNames[LANG];
+  if (S.mode === "auto") {
+    const ch = ex ? ex.ch : CH_ORDER.find(c => S.selected.has(c)) || "4";
+    const l = lvlState(ch).level;
+    $("level-note").innerHTML = t("autoNote", { l, n: names[l], ch });
+  } else {
+    $("level-note").textContent = t("fixedNote", { l: S.mode, n: names[Number(S.mode)] });
+  }
+  $("strict").checked = S.strict;
+}
+$("mode-seg").addEventListener("click", e => {
+  const b = e.target.closest("[data-mode]");
+  if (!b) return;
+  S.mode = b.dataset.mode === "auto" ? "auto" : Number(b.dataset.mode);
+  save();
+  const ex = current();
+  if (!ex || ex.lvl !== targetLevel(ex.ch)) {
+    const n = pickNext(null, ex ? ex.ch : null);
+    if (n && (!ex || n.id !== ex.id)) { openExercise(n.id); return; }
+  }
+  renderLevel(); renderChapters();
+});
+$("strict").onchange = e => { S.strict = e.target.checked; save(); if (S.lastResult) renderResult(S.lastResult); };
+
+function renderTask() {
+  const ex = current();
+  const panel = $("task-panel");
+  if (!ex) {
+    $("task-title").textContent = "";
+    $("task-tag").innerHTML = "";
+    $("task-body").innerHTML = `<p class="empty">${esc(S.selected.size ? t("allDone") : t("noChapters"))}</p>`;
+    $("task-refs").innerHTML = "";
+    panel.querySelector(".editor-wrap").hidden = true;
+    return;
+  }
+  panel.querySelector(".editor-wrap").hidden = false;
+  $("task-title").textContent = L(ex.title);
+  const names = I18N.levelNames[LANG];
+  const examPrefix = examRunning() ? `${esc(t("examTaskOf", { i: S.exam.idx + 1, n: S.exam.ids.length }))} · ${PTS[ex.lvl]} ${esc(t("points"))} · ` : "";
+  $("task-tag").innerHTML = `${examPrefix}${LANG === "de" ? "Kapitel" : "Chapter"} ${esc(ex.ch)} · ${pips(ex.lvl)} ${esc(names[ex.lvl])}${ex.generated ? ` <span class="badge-ai">${esc(t("aiMade"))}</span>` : ""}`;
+  $("task-body").innerHTML = md(L(ex.task));
+  $("task-refs").innerHTML = (!examRunning() && (ex.refs || []).length) ? `<span class="eyebrow">${esc(t("scriptRefs"))}</span>` + ex.refs.map(refChip).join("") : "";
+  renderEditor();
+}
+
+function renderAll() {
+  renderStatic(); renderChapters(); renderLevel(); renderTask(); Tutor.renderChrome();
+  if (S.lastResult && S.view === "practice") renderResult(S.lastResult);
+  renderExam();
+  Tutor.renderChat();
+}
+
+/* ====================================================================== Ausführen & Prüfen */
+function parseErrorLine(tb) {
+  const m = [...String(tb || "").matchAll(/File "<dein Code>", line (\d+)/g)];
+  return m.length ? Number(m[m.length - 1][1]) : null;
+}
+
+async function doRun() {
+  const ex = current();
+  if (!ex || Engine.failed) return;
+  if (S.view === "exam" && (!examRunning() || !S.exam.allowRun)) return;
+  $("run-btn").disabled = true;
+  writeConsole([{ cls: "muted", text: t("running") }]);
+  try {
+    const r = await Engine.call("run", { code: ta.value, stdin: $("stdin").value, lang: LANG, files: ex.files || null });
+    if (current() !== ex) return;
+    S.lastOut = r.out || "";
+    S.lastError = r.error || null;
+    const parts = [];
+    if (r.out) parts.push({ text: r.out });
+    if (r.error) parts.push({ cls: "stderr", text: (r.out && !r.out.endsWith("\n") ? "\n" : "") + r.error });
+    if (!parts.length) parts.push({ cls: "muted", text: t("noOutput") });
+    writeConsole(parts);
+    errorLine = r.error ? parseErrorLine(r.error) : null;
+    renderEditor();
+  } catch (e) {
+    writeConsole([{ cls: "stderr", text: e.timeout ? t("timeout") : String(e.message || e) }]);
+  } finally { $("run-btn").disabled = false; }
+}
+
+async function doCheck() {
+  const ex = current();
+  if (!ex || Engine.failed || S.view === "exam") return;
+  $("check-btn").disabled = true;
+  const p = prog(ex.id);
+  try {
+    const r = await Engine.call("check", { off: offKeys(), code: ta.value, tests: ex.tests, chapter: ex.ch, require: ex.require || [], forbid: ex.forbid || [], lang: LANG });
+    p.attempts += 1;
+    if (current() !== ex) { save(); renderChapters(); return; }
+    S.lastResult = r;
+    S.lastError = r.error || null;
+    errorLine = r.error ? parseErrorLine(r.error) : null;
+    renderEditor();
+    if (r.out) { S.lastOut = r.out; }
+    const solved = isSolved(r);
+    if (solved && !p.solved) {
+      p.solved = true;
+      p.clean = p.attempts <= 2 && p.hints <= 1 && !p.peeked;
+      adapt(ex, p.clean ? "clean" : "solved");
+    } else if (!solved && p.attempts >= 4 && p.attempts % 2 === 0) {
+      adapt(ex, "struggle");
+    }
+    save();
+    renderResult(r);
+    renderChapters();
+  } catch (e) {
+    S.lastResult = null;
+    const panel = $("result-panel");
+    panel.hidden = false;
+    panel.innerHTML = `<div class="verdict bad"><strong>${esc(e.timeout ? t("timeout") : String(e.message || e))}</strong></div>`;
+  } finally { $("check-btn").disabled = false; Tutor.renderChrome(); }
+}
+
+function constructBlocking(rep) {
+  if (!rep) return false;
+  if (rep.missing.length || rep.forbidden.length) return true;
+  return S.strict && rep.items.length > 0;
+}
+function isSolved(r) {
+  return !r.error && r.checks.length > 0 && r.checks.every(c => c.ok) && !constructBlocking(r.constructs);
+}
+
+const noteText = it => it.status === "later" ? t("constructLater", { ch: it.chapter }) : it.status === "off" ? t("constructOff") : t("constructAbsent");
+let adaptMsg = "";
+function adapt(ex, kind) {
+  const st = lvlState(ex.ch);
+  adaptMsg = "";
+  if (kind === "clean") {
+    st.streak += 1; st.struggle = 0;
+    if (st.streak >= 2 && st.level < 3) { st.level += 1; st.streak = 0; adaptMsg = t("levelUp", { ch: ex.ch, l: st.level }); }
+  } else if (kind === "solved") {
+    st.streak = 0;
+  } else if (kind === "struggle" || kind === "peek") {
+    st.streak = 0; st.struggle += 1;
+    if (st.struggle >= (kind === "peek" ? 1 : 2) && st.level > 1) { st.level -= 1; st.struggle = 0; adaptMsg = t("levelDown", { ch: ex.ch, l: st.level }); }
+  }
+  save(); renderLevel();
+}
+
+function renderResult(r) {
+  const ex = current();
+  const panel = $("result-panel");
+  panel.hidden = false;
+  const p = prog(ex.id);
+  const passed = r.checks.filter(c => c.ok).length;
+  const allOk = !r.error && r.checks.length && passed === r.checks.length;
+  const blocking = constructBlocking(r.constructs);
+  let cls, head;
+  if (r.kind === "syntax") { cls = "bad"; head = t("syntaxError"); }
+  else if (r.error) { cls = "bad"; head = t("runtimeError"); }
+  else if (allOk && blocking) { cls = "warn"; head = t("passedButConstructs"); }
+  else if (allOk) { cls = "ok"; head = t("allPassed"); }
+  else { cls = "bad"; head = t("someFailed"); }
+  let html = `<div class="verdict ${cls}"><div><strong>${esc(head)}</strong>${allOk && !blocking ? `<p>${esc(adaptMsg || t("solvedMsg"))}</p>` : ""}</div>
+    ${r.checks.length ? `<span class="meter">${passed}/${r.checks.length}</span>` : ""}</div>`;
+  if (r.error) html += `<pre class="console stderr" style="margin:12px 16px;border:1px solid var(--line);border-radius:4px">${esc(r.error)}</pre>`;
+  if (r.checks.length) html += `<ul class="checks">${r.checks.map(c => `<li class="${c.ok ? "ok" : "no"}">${esc(c[LANG] || c.de)}</li>`).join("")}</ul>`;
+  const rep = r.constructs || { items: [], missing: [], forbidden: [] };
+  const notes = [];
+  rep.missing.forEach(m => notes.push(`<div class="note missing">${esc(t("constructMissing"))} <strong>${esc(m[LANG])}</strong>${m.section ? refChip(m.section) : ""}</div>`));
+  rep.forbidden.forEach(m => notes.push(`<div class="note forbidden">${esc(t("constructForbidden"))} <strong>${esc(m[LANG])}</strong> (${esc(t("line"))} ${m.line})</div>`));
+  rep.items.filter(it => !rep.forbidden.some(f => f.key === it.key)).forEach(it => notes.push(`<div class="note ${it.status}"><code>${esc(it[LANG])}</code> (${esc(t("line"))} ${it.line}) ${esc(noteText(it))}${it.section && it.status !== "off" ? refChip(it.section) : ""}</div>`));
+  if (notes.length) html += `<div class="notes">${notes.join("")}</div>`;
+  if (allOk && !blocking) html += `<div style="padding:0 16px 16px"><button type="button" class="btn dark" id="res-next">${esc(t("next"))}</button></div>`;
+  // Musterlösung
+  const unlocked = p.solved || p.attempts >= 2 || Tutor.hintLevel() >= 3;
+  if (ex.solution) {
+    html += unlocked
+      ? `<details class="solution" id="sol-details"><summary>${esc(t("showSolution"))}</summary>${p.solved ? "" : `<p style="margin:0;padding:0 12px 8px;color:var(--muted);font-size:13px">${esc(t("solutionNote"))}</p>`}<pre class="codeblock">${highlight(ex.solution)}</pre></details>`
+      : `<p style="margin:0;padding:0 16px 14px;color:var(--muted);font-size:13px">${esc(t("solutionLocked"))}</p>`;
+  }
+  panel.innerHTML = html;
+  const nb = $("res-next");
+  if (nb) nb.onclick = goNext;
+  const sd = $("sol-details");
+  if (sd) sd.addEventListener("toggle", () => {
+    if (sd.open && !p.solved && !p.peeked) { p.peeked = true; adapt(ex, "peek"); save(); renderChapters(); }
+  });
+}
+
+function goNext() {
+  const n = pickNext(S.currentId);
+  if (n) openExercise(n.id);
+  else { S.currentId = null; save(); renderAll(); }
+}
+$("next-btn").onclick = goNext;
+$("run-btn").onclick = doRun;
+$("check-btn").onclick = doCheck;
+$("reset-btn").onclick = () => {
+  const ex = current(); if (!ex) return;
+  delete S.drafts[ex.id]; save();
+  ta.value = L(ex.starter); errorLine = null; renderEditor(); liveCheckSoon();
+};
+
+/* ---- Live-Hinweise zu Konstrukten (ohne Tests) */
+let liveTimer;
+const liveCheckSoon = () => { clearTimeout(liveTimer); liveTimer = setTimeout(liveCheck, 1200); };
+async function liveCheck() {
+  const ex = current();
+  if (!ex || !Engine.version || S.lastResult || S.view === "exam") return;
+  try {
+    const rep = await Engine.call("constructs", { off: offKeys(), code: ta.value, chapter: ex.ch, lang: LANG });
+    if (S.lastResult || !current() || current().id !== ex.id) return;
+    const panel = $("result-panel");
+    if (!rep.items.length) { panel.hidden = true; return; }
+    panel.hidden = false;
+    panel.innerHTML = `<div class="notes" style="padding-top:14px">${rep.items.map(it => `<div class="note ${it.status}"><code>${esc(it[LANG])}</code> (${esc(t("line"))} ${it.line}) ${esc(noteText(it))}${it.section && it.status !== "off" ? refChip(it.section) : ""}</div>`).join("")}</div>`;
+  } catch (e) {}
+}
+
+/* ====================================================================== KI-Tutor */
+const Tutor = {
+  sample: undefined, turns: [], hints: {}, ctl: null, busy: false, disabled: false,
+  async init() {
+    if (!STANDALONE) {
+      try { this.sample = await window.claude?.use?.("sample"); } catch (e) { this.sample = null; }
+    }
+    if (!this.sample) this.sample = null;
+    document.documentElement.classList.toggle("no-tutor", this.mode() === "off");
+    this.renderChrome(); this.renderChat();
+  },
+  // "inline": Claude direkt in der Seite · "link": Anfrage wird in claude.ai (eigenes Konto) geöffnet · "off"
+  mode() {
+    if (this.sample && !this.disabled) return "inline";
+    if (this.sample === undefined && !STANDALONE) return "pending";
+    return CONFIG.tutor.claude_link === false ? "off" : "link";
+  },
+  hintLevel() { const ex = current(); return ex ? (this.hints[ex.id] || 0) : 0; },
+  reset() {
+    this.stop();
+    this.turns = [];
+    this.renderChat();
+  },
+  stop() { if (this.ctl) { this.ctl.abort(); this.ctl = null; } },
+  available() { return this.sample && !this.disabled; },
+  renderChrome() {
+    const inExam = S.view === "exam";
+    const mode = this.mode();
+    $("tutor").classList.toggle("link-mode", mode === "link");
+    ["tutor-actions", "chat-form"].forEach(id => { $(id).hidden = inExam; });
+    document.querySelector(".gen").hidden = inExam || mode !== "inline";
+    const on = (mode === "inline" || mode === "link") && !inExam;
+    const ex = current();
+    ["ai-feedback", "ai-hint", "ai-error"].forEach(id => { $(id).disabled = !on || this.busy || !ex; });
+    $("chat-form").querySelector("button").disabled = !on || this.busy || !ex;
+    $("chat-input").disabled = !on || !ex;
+    $("gen-btn").disabled = !on || this.busy || Gen.busy;
+    $("stop-btn").hidden = !this.busy;
+    const h = this.hintLevel();
+    $("hintmeter").innerHTML = [0, 1, 2].map(i => `<i class="${i < h ? "on" : ""}"></i>`).join("");
+  },
+  renderChat(streamText) {
+    const chat = $("chat");
+    if (S.view === "exam") { chat.innerHTML = `<div class="ai-off">${esc(examRunning() ? t("tutorExamOff") : t("tutorExamDone"))}</div>`; return; }
+    const mode = this.mode();
+    if (mode === "pending") { chat.innerHTML = ""; return; }
+    if (mode === "off") { chat.innerHTML = `<div class="ai-off">${esc(this.disabled ? t("aiDenied") : t("aiUnavailable"))}</div>`; return; }
+    if (mode === "link") {
+      let h = `<div class="link-intro">${md(t("linkIntro"))}</div>`;
+      this.turns.forEach((turn, i) => {
+        if (turn.role === "link") h += `<div class="msg user">${esc(turn.shown)} ↗</div><div class="msg sys">${esc(turn.long ? t("linkOpenedLong") : t("linkOpened"))} <a href="${esc(turn.href)}" target="_blank" rel="noopener">${esc(t("openAgain"))}</a> · <button type="button" class="btn ghost" data-copy="${i}" style="padding:1px 6px;font-size:12px">${esc(t("copyPrompt"))}</button></div>`;
+        else if (turn.role === "sys") h += `<div class="msg sys">${esc(turn.content)}</div>`;
+      });
+      chat.innerHTML = h;
+      chat.scrollTop = chat.scrollHeight;
+      return;
+    }
+    let html = `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${md(t("aiWelcome"))}</div></div>`;
+    for (const turn of this.turns) {
+      if (turn.role === "user") html += `<div class="msg user">${esc(turn.shown)}</div>`;
+      else if (turn.role === "assistant") html += `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${md(turn.content)}</div></div>`;
+      else html += `<div class="msg sys">${esc(turn.content)}</div>`;
+    }
+    if (streamText !== undefined) html += `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${streamText ? md(streamText) : `<span class="thinking">${esc(t("aiThinking"))}</span>`}</div></div>`;
+    chat.innerHTML = html;
+    chat.scrollTop = chat.scrollHeight;
+  },
+  async ask(kind, userText) {
+    const ex = current();
+    const mode = this.mode();
+    if (!ex || this.busy || S.view === "exam" || (mode !== "inline" && mode !== "link")) return;
+    let shown, request;
+    if (kind === "hint") {
+      const lvl = Math.min(3, (this.hints[ex.id] || 0) + 1);
+      this.hints[ex.id] = lvl;
+      prog(ex.id).hints = lvl; save();
+      shown = `${t("aiHint")} ${lvl}/3`;
+      request = hintRequest(lvl);
+    } else if (kind === "feedback") {
+      shown = t("aiFeedback");
+      request = LANG === "de"
+        ? "Gib mir Feedback zu meinem aktuellen Code: Was ist schon richtig? Was fehlt oder ist falsch (beziehe dich auf die fehlgeschlagenen Tests)? Ein Hinweis zum Stil (Variablennamen, Lesbarkeit) nach den Konventionen im Skript. Schließe mit genau einem konkreten nächsten Schritt. Keine vollständige Lösung."
+        : "Give me feedback on my current code: What is already right? What is missing or wrong (refer to the failed tests)? One remark on style (variable names, readability) following the conventions in the notes. End with exactly one concrete next step. No complete solution.";
+    } else if (kind === "error") {
+      if (!S.lastError) { this.turns.push({ role: "sys", content: t("noError") }); this.renderChat(); return; }
+      shown = t("aiError");
+      request = LANG === "de"
+        ? "Erkläre mir die Fehlermeldung in einfachen Worten: Was bedeutet der Fehlertyp, in welcher Zeile entsteht er und warum? Wie lese ich so einen Traceback (siehe Skript)? Wie kann ich ihn beheben – als Hinweis, nicht als fertige Lösung."
+        : "Explain the error message in simple words: What does the error type mean, in which line does it occur and why? How do I read a traceback like this (see the notes)? How can I fix it – as a hint, not as a finished solution.";
+    } else {
+      shown = userText;
+      request = userText;
+    }
+    if (mode === "link") { this.openInClaude(linkPrompt(ex, request), shown); return; }
+    const content = contextBlock(ex) + "\n\n" + (LANG === "de" ? "ANFRAGE DES STUDIERENDEN:\n" : "STUDENT'S REQUEST:\n") + request;
+    this.turns.push({ role: "user", content, shown });
+    await this._send();
+  },
+  openInClaude(prompt, shown) {
+    // läuft synchron im Klick-Handler, damit Zwischenablage und neuer Tab erlaubt sind
+    copyText(prompt);
+    const enc = encodeURIComponent(prompt);
+    const long = enc.length > 14000;
+    const href = long ? "https://claude.ai/new" : "https://claude.ai/new?q=" + enc;
+    const a = document.createElement("a");
+    a.href = href; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
+    this.turns.push({ role: "link", shown, long, prompt, href });
+    this.renderChat();
+  },
+  async _send() {
+    this.busy = true; this.renderChrome();
+    this.ctl = new AbortController();
+    this.renderChat("");
+    const msgs = [{ role: "user", content: tutorRules() }];
+    // nur die letzten Runden mitschicken
+    const hist = this.turns.filter(x => x.role !== "sys").slice(-8);
+    for (const x of hist) msgs.push({ role: x.role, content: x.content });
+    try {
+      const { text } = await this.sample(msgs, {
+        signal: this.ctl.signal, cache: false,
+        onText: ({ text }) => this.renderChat(text),
+      });
+      this.turns.push({ role: "assistant", content: text });
+    } catch (e) {
+      const code = e && e.code;
+      if (e && e.text) this.turns.push({ role: "assistant", content: e.text });
+      if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed") this.disabled = true;
+      else if (code === "rate_limited") this.turns.push({ role: "sys", content: t("aiRate") });
+      else if (code !== "cancelled") this.turns.push({ role: "sys", content: t("aiFail") });
+      // fehlgeschlagene Nutzerzeile entfernen, damit die Liste mit user endet
+      if (!(e && e.text)) { const last = this.turns.map(x => x.role).lastIndexOf("user"); if (last >= 0) this.turns[last].role = "sys-user"; }
+    } finally {
+      this.busy = false; this.ctl = null;
+      this.turns = this.turns.map(x => x.role === "sys-user" ? { role: "sys", content: "↳ " + x.shown } : x);
+      this.renderChat(); this.renderChrome();
+    }
+  },
+};
+$("chat").addEventListener("click", e => {
+  const b = e.target.closest("[data-copy]");
+  if (!b) return;
+  const turn = Tutor.turns[Number(b.dataset.copy)];
+  if (!turn) return;
+  b.textContent = copyText(turn.prompt) ? t("copied") : t("copyFailed");
+});
+// Kopiert synchron (funktioniert auch, wenn gleich danach ein neuer Tab den Fokus übernimmt)
+function copyText(text) {
+  let ok = false;
+  const ta2 = document.createElement("textarea");
+  ta2.value = text; ta2.setAttribute("readonly", ""); ta2.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0";
+  const prev = document.activeElement;
+  document.body.appendChild(ta2); ta2.select();
+  try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+  ta2.remove();
+  if (prev && prev.focus) prev.focus({ preventScroll: true });
+  if (!ok) { try { navigator.clipboard?.writeText(text)?.catch?.(() => {}); ok = !!navigator.clipboard; } catch (e) {} }
+  return ok;
+}
+$("ai-feedback").onclick = () => Tutor.ask("feedback");
+$("ai-hint").onclick = () => Tutor.ask("hint");
+$("ai-error").onclick = () => Tutor.ask("error");
+$("stop-btn").onclick = () => { Tutor.stop(); Gen.stop(); };
+$("chat-form").addEventListener("submit", e => {
+  e.preventDefault();
+  const v = $("chat-input").value.trim();
+  if (!v) return;
+  $("chat-input").value = "";
+  Tutor.ask("free", v);
+});
+$("chat-input").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("chat-form").requestSubmit(); }
+});
+
+function allowedConstructs(ch) {
+  const idx = chIdx(ch);
+  const allowed = [], later = [], absent = [];
+  for (const [key, [c, sec, de, en]] of Object.entries(CONSTRUCTS)) {
+    const label = LANG === "de" ? de : en;
+    if (offKeys().includes(key)) absent.push(label + (LANG === "de" ? " (in diesem Semester nicht behandelt)" : " (not covered this semester)"));
+    else if (c === null) absent.push(label);
+    else if (chIdx(c) <= idx) allowed.push(`${label} (Kap. ${c})`);
+    else later.push(`${label} (Kap. ${c})`);
+  }
+  return { allowed, later, absent };
+}
+function sectionIndex(ch) {
+  const idx = chIdx(ch);
+  return Object.values(SEC).filter(s => (chIdx(s.ch) <= idx || s.id === "B.2") && sectionOn(s.id) && chapterOn(s.ch)).map(s => `[[${s.id}]] ${s.num} ${s.de}`).join("\n");
+}
+function tutorRules() {
+  const ex = current();
+  const { allowed, later, absent } = allowedConstructs(ex.ch);
+  const de = LANG === "de";
+  return [
+    de ? "Du bist der KI-Tutor im CodingTrainer zur Vorlesung „Programmierung für Ingenieurinnen und Ingenieure“ (Prof. Dr. Maik Weber, Hochschule Trier). Die Studierenden sind Ingenieurwesen-Studierende im 1./2. Semester; Sprache des Kurses: Python 3.13."
+       : "You are the AI tutor in the CodingTrainer for the course “Programmierung für Ingenieurinnen und Ingenieure” (Prof. Dr. Maik Weber, Trier University of Applied Sciences). Students are 1st/2nd-semester engineering students; the course uses Python 3.13.",
+    de ? "REGELN:" : "RULES:",
+    de ? "1. Antworte auf Deutsch, freundlich, direkt und knapp (meist unter 150 Wörtern). Sieze die Studierenden." : "1. Answer in English, friendly, direct and concise (usually under 150 words).",
+    de ? "2. Verrate keine vollständige Lösung und schreibe die Aufgabe nicht für die Studierenden fertig. Codebeispiele höchstens 5 Zeilen, und nur zur Illustration eines Konzepts an einem anderen Beispiel oder als Gerüst mit Lücken (___)."
+       : "2. Never reveal a complete solution or finish the exercise for the student. Code examples at most 5 lines, only illustrating a concept on a different example or as a skeleton with gaps (___).",
+    de ? `3. Verwende und empfiehl ausschließlich Python-Konstrukte, die bis Kapitel ${ex.ch} im Skript vorkommen. Erlaubt: ${allowed.join(", ")}. Erst später im Skript: ${later.join(", ") || "–"}. Gar nicht im Skript (nie empfehlen; falls der Code sie nutzt, freundlich darauf hinweisen): ${absent.join(", ")}, sowie String-Methoden wie upper/lower/join/find und Module wie collections, itertools, re.`
+       : `3. Only use and recommend Python constructs that appear in the lecture notes up to chapter ${ex.ch}. Allowed: ${allowed.join(", ")}. Only later in the notes: ${later.join(", ") || "–"}. Not in the notes at all (never recommend; if the code uses them, point it out kindly): ${absent.join(", ")}, as well as string methods such as upper/lower/join/find and modules such as collections, itertools, re.`,
+    de ? "4. Verweise auf passende Stellen im Skript, indem du die Abschnitts-ID in doppelten eckigen Klammern schreibst, z.B. [[6.2b]]. Nutze nur IDs aus diesem Verzeichnis, mindestens einen Verweis pro Antwort:" : "4. Point to matching places in the lecture notes by writing the section ID in double square brackets, e.g. [[6.2b]]. Only use IDs from this index, at least one reference per answer (the notes are in German):",
+    sectionIndex(ex.ch),
+    de ? "5. Format: einfaches Markdown (**fett**, `code`, kurze Listen, ```python Codeblöcke```). Keine Überschriften." : "5. Format: simple Markdown (**bold**, `code`, short lists, ```python code blocks```). No headings.",
+    de ? "6. Beziehe dich auf die Testergebnisse und Konstrukt-Hinweise im Kontext. Gibt es Tests, die fehlschlagen, erkläre, was sie erwarten." : "6. Refer to the test results and construct notes in the context. If tests fail, explain what they expect.",
+  ].join("\n");
+}
+function linkPrompt(ex, request) {
+  const de = LANG === "de";
+  const later = CHAPTERS.filter(c => chIdx(c.id) > chIdx(ex.ch) && chapterOn(c.id)).map(c => L(c));
+  const off = offKeys();
+  const ids = [...new Set((ex.refs || []).concat(Object.values(SEC).filter(s => s.ch === ex.ch).map(s => s.id)))].filter(id => SEC[id] && sectionOn(id)).slice(0, 10);
+  const secLines = ids.map(id => `- ${SEC[id].num} ${SEC[id].de}: ${SEC[id].url}`).join("\n");
+  const rules = de
+    ? `Du bist mein Tutor für die Vorlesung „Programmierung für Ingenieurinnen und Ingenieure“ (Prof. Dr. Maik Weber, Hochschule Trier, Python 3.13). Ich übe mit dem CodingTrainer zum Skript. Regeln für deine Antwort:
+1. Antworte auf Deutsch, freundlich und knapp (höchstens etwa 150 Wörter) und sieze mich.
+2. Verrate keine vollständige Lösung. Code höchstens 5 Zeilen, nur als Gerüst mit Lücken (___) oder an einem anderen Beispiel.
+3. Nutze und empfiehl nur Python-Konstrukte, die im Skript bis Kapitel ${ex.ch} vorkommen.${later.length ? " Noch nicht behandelt, also nicht verwenden: " + later.join(", ") + "." : ""} Nie: lambda, match/case, :=, yield, Decorators, String-Methoden wie join/upper/lower/find, Module wie collections, itertools oder re.${off.length ? " In diesem Semester nicht behandelt: " + off.join(", ") + "." : ""}
+4. Verweise mit Markdown-Links auf passende Abschnitte des Skripts (mindestens einen), nur aus dieser Liste:
+${secLines}
+5. Beziehe dich auf meine Testergebnisse. Bitte ich später doch um die komplette Lösung, verweise freundlich auf die Musterlösung im CodingTrainer.`
+    : `You are my tutor for the course “Programmierung für Ingenieurinnen und Ingenieure” (Prof. Dr. Maik Weber, Trier University of Applied Sciences, Python 3.13). I'm practising with the CodingTrainer for the lecture notes. Rules for your answer:
+1. Answer in English, friendly and concise (at most about 150 words).
+2. Never reveal a complete solution. Code at most 5 lines, only as a skeleton with gaps (___) or on a different example.
+3. Only use and recommend Python constructs that appear in the lecture notes up to chapter ${ex.ch}.${later.length ? " Not covered yet, so don't use: " + later.join(", ") + "." : ""} Never: lambda, match/case, :=, yield, decorators, string methods such as join/upper/lower/find, modules such as collections, itertools or re.${off.length ? " Not covered this semester: " + off.join(", ") + "." : ""}
+4. Link to matching sections of the (German) lecture notes with Markdown links (at least one), only from this list:
+${secLines}
+5. Refer to my test results. If I later ask for the complete solution, kindly point me to the reference solution in the CodingTrainer.`;
+  return [rules, contextBlock(ex, true), (de ? "MEINE ANFRAGE:\n" : "MY REQUEST:\n") + request].join("\n\n");
+}
+function contextBlock(ex, forLink) {
+  const de = LANG === "de";
+  const code = ta.value.split("\n").map((l, i) => String(i + 1).padStart(3) + "| " + l).join("\n");
+  const r = S.lastResult;
+  let tests = de ? "noch nicht geprüft" : "not checked yet";
+  if (r) {
+    tests = r.checks.map(c => (c.ok ? "✓ " : "✗ ") + (c[LANG] || c.de)).join("\n") || "–";
+    const rep = r.constructs || { items: [], missing: [], forbidden: [] };
+    const notes = rep.items.map(i => `${i[LANG]} (${de ? "Zeile" : "line"} ${i.line}): ${i.status === "later" ? (de ? "erst Kapitel " : "only chapter ") + i.chapter : i.status === "off" ? (de ? "in diesem Semester nicht behandelt" : "not covered this semester") : (de ? "nicht im Skript" : "not in the notes")}`)
+      .concat(rep.missing.map(m => (de ? "verlangt, fehlt: " : "required, missing: ") + m[LANG]))
+      .concat(rep.forbidden.map(m => (de ? "hier verboten: " : "forbidden here: ") + m[LANG]));
+    if (notes.length) tests += "\n" + (de ? "Konstrukt-Hinweise: " : "Construct notes: ") + notes.join("; ");
+  }
+  return [
+    (de ? "AUFGABE" : "EXERCISE") + ` (${de ? "Kapitel" : "chapter"} ${ex.ch}, ${de ? "Stufe" : "level"} ${ex.lvl}/3): ${L(ex.title)}`,
+    L(ex.task),
+    forLink ? "" : (de ? "Verweise der Aufgabe: " : "Exercise references: ") + (ex.refs || []).map(x => `[[${x}]]`).join(" "),
+    (de ? "AKTUELLER CODE DES STUDIERENDEN:" : "STUDENT'S CURRENT CODE:") + "\n```python\n" + code + "\n```",
+    (de ? "LETZTES TESTERGEBNIS:\n" : "LATEST TEST RESULT:\n") + tests,
+    S.lastError ? (de ? "LETZTE FEHLERMELDUNG:\n" : "LATEST ERROR MESSAGE:\n") + S.lastError : "",
+    S.lastOut ? (de ? "LETZTE AUSGABE (gekürzt):\n" : "LATEST OUTPUT (truncated):\n") + S.lastOut.slice(0, forLink ? 500 : 1200) : "",
+    (de ? "Bisher verwendete Tipps: " : "Hints used so far: ") + Tutor.hintLevel() + "/3",
+  ].filter(Boolean).join("\n\n");
+}
+function hintRequest(level) {
+  const de = LANG === "de";
+  if (level === 1) return de
+    ? "Gib mir einen ersten, kleinen Tipp (Stufe 1 von 3): Welches Konzept aus dem Skript brauche ich hier, und wo steht es? Stelle mir eine Leitfrage. Kein Code."
+    : "Give me a first, small hint (level 1 of 3): Which concept from the notes do I need here, and where is it? Ask me a guiding question. No code.";
+  if (level === 2) return de
+    ? "Gib mir einen konkreteren Tipp (Stufe 2 von 3): Beschreibe die Lösungsschritte in Worten oder als Pseudocode (3–5 Schritte) und welche Konstrukte ich dafür nutze. Noch kein lauffähiger Code."
+    : "Give me a more concrete hint (level 2 of 3): Describe the solution steps in words or as pseudocode (3–5 steps) and which constructs to use. No runnable code yet.";
+  return de
+    ? "Gib mir den stärksten Tipp (Stufe 3 von 3): ein Code-Gerüst für den schwierigsten Teil mit Lücken (___), die ich selbst füllen muss. Gehe dabei von meinem aktuellen Code aus."
+    : "Give me the strongest hint (level 3 of 3): a code skeleton for the hardest part with gaps (___) that I have to fill in myself. Start from my current code.";
+}
+
+/* ====================================================================== Aufgaben erzeugen (Claude) */
+const Gen = {
+  busy: false, ctl: null,
+  stop() { if (this.ctl) { this.ctl.abort(); this.ctl = null; } },
+  async run() {
+    if (!Tutor.available() || this.busy) return;
+    const chs = CH_ORDER.filter(c => S.selected.has(c));
+    if (!chs.length) { Tutor.turns.push({ role: "sys", content: t("genNoChapter") }); Tutor.renderChat(); return; }
+    const ch = (current() && S.selected.has(current().ch)) ? current().ch : chs[Math.floor(Math.random() * chs.length)];
+    const level = S.mode === "auto" ? lvlState(ch).level : Number(S.mode);
+    this.busy = true; Tutor.busy = true; Tutor.renderChrome();
+    Tutor.turns.push({ role: "sys", content: t("genWorking") }); Tutor.renderChat();
+    this.ctl = new AbortController();
+    try {
+      const data = await Tutor.sample.json(genPrompt(ch, level), { signal: this.ctl.signal, cache: false, modelTier: "default" });
+      const ex = normalizeGenerated(data, ch, level);
+      const ok = ex && await validateGenerated(ex);
+      if (!ok) { Tutor.turns.push({ role: "sys", content: t("genFailed") }); }
+      else {
+        S.generated.push(ex); S.expanded.add(ch); save();
+        Tutor.turns.push({ role: "sys", content: t("genOk") });
+        this.busy = false; Tutor.busy = false;
+        openExercise(ex.id);
+        return;
+      }
+    } catch (e) {
+      const code = e && e.code;
+      if (code === "not_granted" || code === "sampling_disabled") Tutor.disabled = true;
+      else if (code === "rate_limited") Tutor.turns.push({ role: "sys", content: t("aiRate") });
+      else if (code !== "cancelled") Tutor.turns.push({ role: "sys", content: t("genFailed") });
+    } finally {
+      this.busy = false; Tutor.busy = false; this.ctl = null;
+      Tutor.renderChat(); Tutor.renderChrome(); renderChapters();
+    }
+  },
+};
+$("gen-btn").onclick = () => Gen.run();
+
+function genPrompt(ch, level) {
+  const { allowed, later, absent } = allowedConstructsFor(ch);
+  const examples = BANK.filter(exerciseOn).filter(e => e.ch === ch).sort((a, b) => Math.abs(a.lvl - level) - Math.abs(b.lvl - level)).slice(0, 2)
+    .map(e => JSON.stringify({ title: e.title, task: e.task, starter: e.starter, solution: e.solution, tests: e.tests, refs: e.refs, require: e.require, stdin: e.stdin }));
+  const existing = allExercises().filter(e => e.ch === ch).map(e => e.title.de).join("; ");
+  const secs = Object.values(SEC).filter(s => chIdx(s.ch) <= chIdx(ch)).map(s => `${s.id}: ${s.num} ${s.de}`).join("\n");
+  const lvlText = ["", "Stufe 1 (Einstieg): ein Konzept direkt anwenden, wenige Zeilen.", "Stufe 2 (Anwendung): zwei bis drei Konzepte kombinieren, kleine Ingenieuraufgabe.", "Stufe 3 (Transfer): mehrschrittiges Problem, Randfälle beachten."][level];
+  return `Erzeuge EINE neue Python-Programmieraufgabe für den CodingTrainer zur Vorlesung „Programmierung für Ingenieurinnen und Ingenieure“ (Hochschule Trier, Skript von Prof. Dr. Maik Weber).
+
+Kapitel ${ch}: ${CHAPTERS.find(c => c.id === ch).de}. ${lvlText}
+Kontext: Ingenieurwesen (Elektrotechnik, Maschinenbau, Messtechnik, Mechanik …) mit realistischen Größen und Einheiten.
+
+HARTE REGELN
+- Die Musterlösung darf NUR diese Konstrukte verwenden: ${allowed.join(", ")}.
+- Verboten, weil erst später im Skript: ${later.join(", ") || "–"}.
+- Verboten, weil gar nicht im Skript: ${absent.join(", ")}; außerdem String-Methoden außer replace/isdigit/strip/split/startswith und Module außer math, random, copy, numpy, pandas, csv, pathlib, abc.
+- Kapitel 4: keine if/Schleifen/Funktionen; vorgegebene Variablen im Starter-Code, die Tests ersetzen sie per run(sub={...}).
+- Keine Aufgabe, die einer dieser vorhandenen ähnelt: ${existing}.
+- Aufgabentext auf Deutsch UND Englisch, präzise: Variablen-/Funktionsnamen, Ausgabeformat und Randfälle genau angeben.
+
+TEST-API (Python-Code in "tests", läuft nach dem Studierenden-Code):
+- ns, out = run(inputs=None, sub=None, files=None) führt den Studierenden-Code aus; inputs = Liste von Strings für input(); sub = {"variablenname": neuer_wert} ersetzt eine Zuweisung auf oberster Ebene; files = {"data/x.txt": "inhalt"} legt Dateien an. ns = Namensraum (dict), out = Ausgabe (str).
+- need(ns, "a", "b") holt Variablen (Fehlermeldung, falls sie fehlen); call(ns, "funktion", *args, **kwargs) ruft eine Funktion/Klasse des Studierenden auf; method(obj, "name", *args) ruft eine Methode auf; safe(lambda: a + b) wertet Ausdrücke mit Studierenden-Objekten aus; raises(ValueError, lambda: ns["f"](-1)) prüft Exceptions.
+- check(bedingung, "Meldung deutsch", "message english") – jede Meldung beschreibt die Erwartung konkret (z.B. "Für 12 V und 4 Ω ist I = 3.0 A").
+- approx(a, b, tol=1e-6), has(out, "wort"), has_num(out, 3.14), nums(out), read_file("pfad").
+- Teste mehrere Eingaben/Fälle (mind. 3 check-Aufrufe), damit hart codierte Werte durchfallen. Der Starter-Code muss die Tests NICHT bestehen.
+
+ABSCHNITTE DES SKRIPTS (IDs für "refs", 1–3 passende):
+${secs}
+
+AUSGABE: nur ein JSON-Objekt mit genau diesen Feldern:
+{"title":{"de":"…","en":"…"},"task":{"de":"…","en":"…"},"starter":{"de":"…","en":"…"},"solution":"…","tests":"…","refs":["…"],"require":[],"stdin":""}
+- task: Markdown erlaubt (\`code\`, Listen).
+- require: optional Schlüssel aus ${JSON.stringify(Object.keys(CONSTRUCTS).filter(k => CONSTRUCTS[k][0] && chIdx(CONSTRUCTS[k][0]) <= chIdx(ch)))}, die die Lösung zwingend nutzen soll.
+- stdin: Beispiel-Eingaben (eine pro Zeile) für Aufgaben mit input(), sonst "".
+
+BEISPIELE AUS DER AUFGABENBANK (Format-Vorlage, nicht kopieren):
+${examples.join("\n")}`;
+}
+function allowedConstructsFor(ch) {
+  const idx = chIdx(ch);
+  const allowed = [], later = [], absent = [];
+  for (const [key, [c, sec, de]] of Object.entries(CONSTRUCTS)) {
+    if (c === null || offKeys().includes(key)) absent.push(de);
+    else if (chIdx(c) <= idx) allowed.push(de);
+    else later.push(de);
+  }
+  return { allowed, later, absent };
+}
+function normalizeGenerated(d, ch, level) {
+  if (!d || typeof d !== "object") return null;
+  const two = v => (v && typeof v === "object" && typeof v.de === "string") ? { de: v.de, en: typeof v.en === "string" ? v.en : v.de } : (typeof v === "string" ? { de: v, en: v } : null);
+  const ex = {
+    id: "gen-" + ch + "-" + Date.now().toString(36), ch, lvl: level, generated: true,
+    title: two(d.title), task: two(d.task), starter: two(d.starter) || { de: "", en: "" },
+    solution: typeof d.solution === "string" ? d.solution : null, tests: typeof d.tests === "string" ? d.tests : null,
+    refs: Array.isArray(d.refs) ? d.refs.filter(x => SEC[x]).slice(0, 3) : [],
+    require: Array.isArray(d.require) ? d.require.filter(k => CONSTRUCTS[k] && CONSTRUCTS[k][0] && chIdx(CONSTRUCTS[k][0]) <= chIdx(ch)) : [],
+    forbid: [], stdin: typeof d.stdin === "string" ? d.stdin : "",
+  };
+  if (!ex.title || !ex.task || !ex.solution || !ex.tests) return null;
+  return ex;
+}
+async function validateGenerated(ex) {
+  try {
+    const a = await Engine.call("check", { off: offKeys(), code: ex.solution, tests: ex.tests, chapter: ex.ch, require: ex.require, forbid: [], lang: "de" });
+    if (a.error || a.checks.length < 3 || !a.checks.every(c => c.ok)) return false;
+    const rep = a.constructs;
+    if (rep.items.length || rep.missing.length || rep.forbidden.length) return false;
+    const b = await Engine.call("check", { off: offKeys(), code: ex.starter.de, tests: ex.tests, chapter: ex.ch, require: ex.require, forbid: [], lang: "de" });
+    if (!b.error && b.checks.length && b.checks.every(c => c.ok) && !b.constructs.missing.length) return false;
+    return true;
+  } catch (e) { return false; }
+}
+
+
+/* ====================================================================== Klausurtraining */
+const PTS = { 1: 10, 2: 15, 3: 20 };
+let examConfirm = null;   // null | "submit" | "abort"
+let gradingInfo = null;   // {i, n}
+
+function loadEditor() {
+  const ex = current();
+  S.lastResult = null; S.lastError = null; S.lastOut = ""; errorLine = null;
+  if (ex) {
+    const saved = examRunning() ? S.exam.codes[ex.id] : S.drafts[ex.id];
+    ta.value = saved ?? L(ex.starter);
+    $("stdin").value = ex.stdin || "";
+  }
+  writeConsole([{ cls: "muted", text: t("outHint") }]);
+  $("result-panel").hidden = true;
+}
+
+function setView(v) {
+  if (S.view === v) return;
+  S.view = v; examConfirm = null;
+  if (v === "practice" && (!byId(S.currentId) || !S.selected.has(byId(S.currentId).ch))) {
+    const n = pickNext(); if (n) S.currentId = n.id;
+  }
+  save(); Tutor.stop(); loadEditor(); renderAll();
+  window.scrollTo({ top: 0 });
+}
+$("view-seg").addEventListener("click", e => { const b = e.target.closest("[data-view]"); if (b) setView(b.dataset.view); });
+
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function weightedPick(list, w) {
+  const total = list.reduce((s, e) => s + w(e), 0);
+  let r = Math.random() * total;
+  for (const e of list) { r -= w(e); if (r <= 0) return e; }
+  return list[list.length - 1];
+}
+function pickExam(cfg) {
+  const chs = shuffle(CH_ORDER.filter(c => S.selected.has(c)));
+  const weights = cfg.mix === "hard" ? { 1: 0, 2: 1, 3: 2 } : { 1: 1, 2: 2, 3: 2 };
+  let pool = allExercises().filter(e => S.selected.has(e.ch) && weights[e.lvl] > 0);
+  if (!pool.length) pool = allExercises().filter(e => S.selected.has(e.ch));
+  const w = e => weights[e.lvl] || 1;
+  const picked = [];
+  for (let k = 0; picked.length < cfg.count && k < cfg.count * 4; k++) {
+    const c = chs[k % chs.length];
+    let cand = pool.filter(e => e.ch === c && !picked.includes(e));
+    if (!cand.length) cand = pool.filter(e => !picked.includes(e));
+    if (!cand.length) break;
+    picked.push(weightedPick(cand, w));
+  }
+  picked.sort((a, b) => chIdx(a.ch) - chIdx(b.ch) || a.lvl - b.lvl);
+  return picked.map(e => e.id);
+}
+
+function startExam() {
+  if (!S.selected.size || !S.examAck) return;
+  const cfg = S.examCfg;
+  const ids = pickExam(cfg);
+  if (!ids.length) return;
+  S.exam = { ids, idx: 0, codes: {}, start: Date.now(), minutes: Number(cfg.minutes) || 0, allowRun: !!cfg.allowRun,
+             mix: cfg.mix, chapters: CH_ORDER.filter(c => S.selected.has(c)), submitted: false, results: null };
+  examConfirm = null;
+  save(); loadEditor(); renderAll();
+  window.scrollTo({ top: 0 });
+}
+function openExamTask(i) {
+  if (!examRunning()) return;
+  S.exam.idx = i; examConfirm = null;
+  save(); loadEditor(); renderAll();
+  if (window.matchMedia("(max-width: 860px)").matches) $("task-panel").scrollIntoView({ block: "start" });
+}
+
+function fmtClock(ms) {
+  const s = Math.max(0, Math.round(ms / 1000));
+  return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+}
+function tickExam() {
+  if (!S.exam || S.exam.submitted || gradingInfo) return;
+  const el = $("exam-clock");
+  if (S.exam.minutes > 0) {
+    const left = S.exam.start + S.exam.minutes * 60000 - Date.now();
+    if (el) { el.textContent = fmtClock(left); el.classList.toggle("low", left < 5 * 60000); }
+    if (left <= 0) submitExam(true);
+  } else if (el) {
+    el.textContent = fmtClock(Date.now() - S.exam.start);
+  }
+}
+
+function scoreTask(ex, r) {
+  const max = PTS[ex.lvl];
+  const total = r.checks.length, passed = r.checks.filter(c => c.ok).length;
+  let pts = total ? max * passed / total : 0;
+  const penalty = pts > 0 && constructBlocking(r.constructs);
+  if (penalty) pts /= 2;
+  return { pts: Math.round(pts * 2) / 2, max, passed, total, penalty };
+}
+
+async function submitExam(auto) {
+  if (!S.exam || S.exam.submitted || gradingInfo) return;
+  const exam = S.exam;
+  examConfirm = null;
+  gradingInfo = { i: 0, n: exam.ids.length };
+  renderExamRun();
+  const results = {};
+  try {
+    for (let k = 0; k < exam.ids.length; k++) {
+      gradingInfo.i = k + 1; renderExamRun();
+      const ex = byId(exam.ids[k]);
+      const code = exam.codes[ex.id] ?? L(ex.starter);
+      const r = await Engine.call("check", { off: offKeys(), code, tests: ex.tests, chapter: ex.ch, require: ex.require || [], forbid: ex.forbid || [], lang: LANG });
+      const edited = exam.codes[ex.id] !== undefined && exam.codes[ex.id].trim() !== L(ex.starter).trim();
+      const sc = scoreTask(ex, r);
+      if (!edited) { sc.pts = 0; sc.penalty = false; }   // unveränderter Startcode gibt keine Punkte
+      results[ex.id] = Object.assign(sc, { r, code, edited });
+    }
+  } catch (e) {
+    gradingInfo = null;
+    renderExamRun();
+    const box = $("exam-run").querySelector(".panel-b");
+    if (box) box.insertAdjacentHTML("afterbegin", `<div class="note absent">${esc(t("examGradeFail"))}</div>`);
+    return;
+  }
+  gradingInfo = null;
+  exam.results = results; exam.submitted = true; exam.end = Date.now(); exam.auto = !!auto;
+  const got = Object.values(results).reduce((s, x) => s + x.pts, 0), max = Object.values(results).reduce((s, x) => s + x.max, 0);
+  S.examHistory.unshift({ when: exam.end, pct: Math.round(100 * got / max), got, max, chapters: exam.chapters, n: exam.ids.length });
+  S.examHistory = S.examHistory.slice(0, 8);
+  save(); renderAll();
+  window.scrollTo({ top: 0 });
+}
+function discardExam() { S.exam = null; examConfirm = null; save(); loadEditor(); renderAll(); }
+
+function segSet(id, value) { document.querySelectorAll(`#${id} button`).forEach(b => b.setAttribute("aria-pressed", String(b.dataset.v) === String(value))); }
+["cfg-count", "cfg-minutes", "cfg-mix"].forEach(id => {
+  $(id).addEventListener("click", e => {
+    const b = e.target.closest("[data-v]"); if (!b) return;
+    const key = { "cfg-count": "count", "cfg-minutes": "minutes", "cfg-mix": "mix" }[id];
+    S.examCfg[key] = key === "mix" ? b.dataset.v : Number(b.dataset.v);
+    save(); renderExam();
+  });
+});
+$("cfg-run").onchange = e => { S.examCfg.allowRun = e.target.checked; save(); };
+$("cfg-ack").onchange = e => { S.examAck = e.target.checked; save(); renderExam(); };
+$("exam-start").onclick = startExam;
+
+function renderExam() {
+  const inExam = S.view === "exam", running = examRunning(), done = examDone();
+  document.querySelectorAll("#view-seg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.view === S.view)));
+  $("diff-panel").hidden = inExam;
+  $("chap-panel").hidden = running || done;
+  $("exam-setup").hidden = !inExam || running || done;
+  $("exam-run").hidden = !(running || done);
+  $("exam-intro").hidden = !inExam || running || done;
+  $("exam-result").hidden = !done;
+  $("task-panel").hidden = inExam && !running;
+  if (inExam) $("result-panel").hidden = true;
+  // Werkzeugleiste
+  $("check-btn").hidden = inExam;
+  const runOk = !inExam || (running && S.exam.allowRun);
+  $("run-btn").hidden = !runOk;
+  document.querySelector(".io").hidden = !runOk;
+  if (!inExam) return;
+  // Einstellungen
+  segSet("cfg-count", S.examCfg.count); segSet("cfg-minutes", S.examCfg.minutes); segSet("cfg-mix", S.examCfg.mix);
+  $("cfg-run").checked = !!S.examCfg.allowRun;
+  $("cfg-ack").checked = !!S.examAck;
+  $("exam-start").disabled = !S.selected.size || !S.examAck;
+  $("exam-start").textContent = !S.selected.size ? t("examStartNo") : !S.examAck ? t("examStartAck") : t("examStart");
+  $("history-wrap").innerHTML = S.examHistory.length ? `<span class="eyebrow">${esc(t("examHistory"))}</span><ul class="history">${S.examHistory.slice(0, 5).map(h => {
+    const d = new Date(h.when);
+    const when = d.toLocaleDateString(LANG === "de" ? "de-DE" : "en-GB", { day: "2-digit", month: "2-digit" });
+    return `<li><span class="when">${esc(when)}</span><span class="chs">${esc((LANG === "de" ? "Kap. " : "Ch. ") + h.chapters.join(", "))}</span><span class="pct">${h.pct} %</span></li>`;
+  }).join("")}</ul>` : "";
+  renderExamIntro();
+  renderExamRun();
+  if (done) renderExamResult();
+}
+
+function renderExamIntro() {
+  if ($("exam-intro").hidden) return;
+  const de = LANG === "de";
+  const chs = CH_ORDER.filter(c => S.selected.has(c));
+  $("exam-intro").innerHTML = `<div class="intro">
+    <h2>${esc(t("examIntroTitle"))}</h2>
+    <div class="disclaimer" role="note"><h3>${esc(t("disclaimerTitle"))}</h3><ul>${I18N.disclaimerItems[LANG].map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+    ${de ? `<p>Hier üben Sie unter Klausurbedingungen: Sie wählen links die Kapitel, die in der Klausur drankommen, und erhalten eine zufällige Auswahl an Aufgaben aus diesen Kapiteln.</p>
+    <ul>
+      <li>Kein KI-Tutor, keine Tipps, keine Tests und keine Musterlösungen bis zur Abgabe.</li>
+      <li>Mit Zeitlimit wird die Klausur bei Ablauf der Zeit automatisch abgegeben.</li>
+      <li>Ohne „Code ausführen“ schreiben Sie den Code wie in einer Papierklausur, ohne ihn testen zu können.</li>
+      <li>Nach der Abgabe werden alle Aufgaben automatisch getestet. Teilpunkte gibt es anteilig für bestandene Tests. Nutzt eine Lösung Konstrukte außerhalb des Skripts, gibt es die halbe Punktzahl.</li>
+    </ul>` : `<p>Practise under exam conditions: select the chapters covered by the exam on the left and get a random selection of exercises from them.</p>
+    <ul>
+      <li>No AI tutor, no hints, no tests and no reference solutions until you submit.</li>
+      <li>With a time limit, the exam is submitted automatically when time runs out.</li>
+      <li>Without “Running code allowed”, you write code as in a paper exam, without being able to test it.</li>
+      <li>After submitting, every exercise is tested automatically. Partial points are given proportionally to the passed tests. If a solution uses constructs outside the notes, it gets half points.</li>
+    </ul>`}
+    <table class="points-table"><tr><th>${esc(t("levelLabel"))}</th><th>${esc(t("points"))}</th></tr>
+      ${[1, 2, 3].map(l => `<tr><td>${pips(l)} ${esc(I18N.levelNames[LANG][l])}</td><td>${PTS[l]}</td></tr>`).join("")}</table>
+    <p>${esc(chs.length ? (de ? "Gewählt: Kapitel " : "Selected: chapters ") + chs.join(", ") : t("noChapters"))}</p>
+  </div>`;
+}
+
+function renderExamRun() {
+  const box = $("exam-run");
+  if (box.hidden || !S.exam) return;
+  const exam = S.exam, done = !!exam.submitted;
+  const names = I18N.levelNames[LANG];
+  let head;
+  if (gradingInfo) head = `<div class="exam-timer" style="font-size:22px">${esc(t("examGrading", gradingInfo))}</div>`;
+  else if (done) {
+    const got = exam.ids.reduce((s, id) => s + exam.results[id].pts, 0), max = exam.ids.reduce((s, id) => s + exam.results[id].max, 0);
+    head = `<div class="exam-timer">${Math.round(100 * got / max)} %</div><div class="exam-sub">${esc(t("examScore", { p: fmtPts(got), m: max }))}</div>`;
+  } else if (exam.minutes > 0) head = `<div class="exam-timer" id="exam-clock">--:--</div><div class="exam-sub">${esc(t("examLeft"))} · ${exam.minutes} min</div>`;
+  else head = `<div class="exam-timer" id="exam-clock">00:00</div><div class="exam-sub">${esc(t("examNoLimit"))}</div>`;
+  const nav = exam.ids.map((id, i) => {
+    const ex = byId(id);
+    let st;
+    if (done) {
+      const r = exam.results[id];
+      st = `<span class="state ${r.pts >= r.max ? "full" : r.pts > 0 ? "part" : "zero"}">${fmtPts(r.pts)}/${r.max}</span>`;
+    } else {
+      const edited = exam.codes[id] !== undefined && exam.codes[id] !== L(ex.starter);
+      st = `<span class="state ${edited ? "edited" : ""}">${esc(edited ? t("examEdited") : t("examOpen"))}</span>`;
+    }
+    return `<li><button type="button" data-exam-i="${i}" aria-current="${!done && i === exam.idx}"><span class="num">${i + 1}</span><span>${esc(L(ex.title))}<span class="meta">${LANG === "de" ? "Kap." : "Ch."} ${esc(ex.ch)} · ${esc(names[ex.lvl])} · ${PTS[ex.lvl]} ${esc(t("points"))}</span></span>${st}</button></li>`;
+  }).join("");
+  let actions;
+  if (gradingInfo) actions = "";
+  else if (done) actions = `<div class="row" style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" id="exam-new">${esc(t("examNew"))}</button><button type="button" class="btn" id="exam-back">${esc(t("examToPractice"))}</button></div>`;
+  else if (examConfirm === "submit") actions = `<div class="confirm"><span>${esc(t("examSubmitQ"))}</span><div class="row"><button type="button" class="btn danger" id="exam-submit-yes">${esc(t("examSubmitYes"))}</button><button type="button" class="btn" id="exam-cancel">${esc(t("examContinue"))}</button></div></div>`;
+  else if (examConfirm === "abort") actions = `<div class="confirm"><span>${esc(t("examAbortQ"))}</span><div class="row"><button type="button" class="btn danger" id="exam-abort-yes">${esc(t("examAbortYes"))}</button><button type="button" class="btn" id="exam-cancel">${esc(t("examContinue"))}</button></div></div>`;
+  else actions = `<button type="button" class="btn primary" id="exam-submit" style="justify-content:center">${esc(t("examSubmit"))}</button><button type="button" class="btn ghost" id="exam-abort" style="justify-content:center">${esc(t("examAbort"))}</button>`;
+  box.innerHTML = `<div class="panel-h"><h2>${esc(done ? t("examReview") : t("examRunning"))}</h2></div>
+    <div class="panel-b" style="display:grid;gap:4px">${head}</div>
+    <ul class="exam-nav">${nav}</ul>
+    <div class="panel-b" style="display:grid;gap:8px;border-top:1px solid var(--line)">${actions}</div>`;
+  tickExam();
+}
+function fmtPts(p) { return Number.isInteger(p) ? String(p) : p.toFixed(1).replace(".", LANG === "de" ? "," : "."); }
+
+$("exam-run").addEventListener("click", e => {
+  const nb = e.target.closest("[data-exam-i]");
+  if (nb) {
+    const i = Number(nb.dataset.examI);
+    if (examRunning()) openExamTask(i);
+    else if (examDone()) { const d = document.getElementById("res-" + i); if (d) { d.open = true; d.scrollIntoView({ block: "start", behavior: "smooth" }); } }
+    return;
+  }
+  const id = e.target.closest("button")?.id;
+  if (id === "exam-submit") { examConfirm = "submit"; renderExamRun(); }
+  else if (id === "exam-abort") { examConfirm = "abort"; renderExamRun(); }
+  else if (id === "exam-cancel") { examConfirm = null; renderExamRun(); }
+  else if (id === "exam-submit-yes") submitExam(false);
+  else if (id === "exam-abort-yes") discardExam();
+  else if (id === "exam-new") discardExam();
+  else if (id === "exam-back") { setView("practice"); }
+});
+
+function renderExamResult() {
+  const exam = S.exam, names = I18N.levelNames[LANG];
+  const got = exam.ids.reduce((s, id) => s + exam.results[id].pts, 0), max = exam.ids.reduce((s, id) => s + exam.results[id].max, 0);
+  const pct = Math.round(100 * got / max);
+  let minutes = Math.max(1, Math.round((exam.end - exam.start) / 60000));
+  if (exam.minutes) minutes = Math.min(minutes, exam.minutes);
+  const repeat = [];
+  let html = `<div class="score-head">
+    <span class="eyebrow">${esc(t("examReview"))}</span>
+    <div class="big">${esc(fmtPts(got))} <small>/ ${max} ${esc(t("points"))} · ${pct} %</small></div>
+    <div class="bar"><i style="width:${pct}%"></i></div>
+    <p>${esc(t("examTimeUsed", { m: minutes }))}${exam.minutes ? " / " + exam.minutes + " min" : ""}${exam.auto ? " · " + esc(t("examAuto")) : ""}</p>
+    <p>${esc(t("resultNotice"))}</p>
+  </div>`;
+  exam.ids.forEach((id, i) => {
+    const ex = byId(id), res = exam.results[id], r = res.r;
+    if (res.pts < res.max) (ex.refs || []).forEach(x => { if (!repeat.includes(x)) repeat.push(x); });
+    const cls = res.pts >= res.max ? "full" : res.pts > 0 ? "part" : "zero";
+    const rep = r.constructs || { items: [], missing: [], forbidden: [] };
+    const notes = [];
+    if (res.penalty) notes.push(`<div class="note absent">${esc(t("examPenalty"))}</div>`);
+    rep.missing.forEach(m => notes.push(`<div class="note missing">${esc(t("constructMissing"))} <strong>${esc(m[LANG])}</strong>${m.section ? refChip(m.section) : ""}</div>`));
+    rep.forbidden.forEach(m => notes.push(`<div class="note forbidden">${esc(t("constructForbidden"))} <strong>${esc(m[LANG])}</strong> (${esc(t("line"))} ${m.line})</div>`));
+    rep.items.filter(it => !rep.forbidden.some(f => f.key === it.key)).forEach(it => notes.push(`<div class="note ${it.status}"><code>${esc(it[LANG])}</code> (${esc(t("line"))} ${it.line}) ${esc(noteText(it))}${it.section && it.status !== "off" ? refChip(it.section) : ""}</div>`));
+    html += `<details class="task-res" id="res-${i}" ${res.pts < res.max ? "open" : ""}>
+      <summary><span class="num">${i + 1}</span><span><strong>${esc(L(ex.title))}</strong><span class="meta" style="display:block;font-size:12px;color:var(--muted)">${LANG === "de" ? "Kapitel" : "Chapter"} ${esc(ex.ch)} · ${esc(names[ex.lvl])}${res.edited ? "" : " · " + esc(t("examNotEdited"))}</span></span><span class="pts ${cls}">${esc(fmtPts(res.pts))}/${res.max}</span></summary>
+      <div class="body">
+        <div class="task-body" style="padding:0">${md(L(ex.task))}</div>
+        ${r.error ? `<pre class="console stderr" style="margin:0;border:1px solid var(--line);border-radius:4px">${esc(r.error)}</pre>` : ""}
+        ${r.checks.length ? `<ul class="checks">${r.checks.map(c => `<li class="${c.ok ? "ok" : "no"}">${esc(c[LANG] || c.de)}</li>`).join("")}</ul>` : ""}
+        ${notes.length ? `<div class="notes">${notes.join("")}</div>` : ""}
+        <details class="code"><summary>${esc(t("examYourCode"))}</summary><pre class="codeblock">${highlight(res.code)}</pre></details>
+        <details class="code"><summary>${esc(t("showSolution"))}</summary><pre class="codeblock">${highlight(ex.solution)}</pre></details>
+        ${(ex.refs || []).length ? `<div class="refs" style="padding:0"><span class="eyebrow">${esc(t("scriptRefs"))}</span>${ex.refs.map(refChip).join("")}</div>` : ""}
+      </div>
+    </details>`;
+  });
+  html += repeat.length
+    ? `<div class="review-refs"><span class="eyebrow">${esc(t("examRepeat"))}</span>${repeat.sort((a, b) => chIdx(SEC[a]?.ch) - chIdx(SEC[b]?.ch)).map(refChip).join("")}</div>`
+    : `<div class="review-refs"><strong>${esc(t("examAllFull"))}</strong></div>`;
+  $("exam-result").innerHTML = html;
+}
+
+/* ====================================================================== Info */
+function renderInfo() {
+  const de = LANG === "de";
+  $("info-body").innerHTML = de ? `
+    <p>Der CodingTrainer enthält ${allExercises().length} Aufgaben zu den Kapiteln 4–10 und den Anhängen A und B des Skripts (Version 4.0). Jede Aufgabe lässt sich nur mit dem lösen, was bis zu ihrem Kapitel im Skript steht.</p>
+    <ul>
+      <li><b>Prüfen</b> führt Ihren Code mehrfach mit unterschiedlichen Eingaben aus. Fest eingetippte Ergebnisse fallen dabei auf.</li>
+      <li><b>Konstrukt-Prüfung:</b> Verwenden Sie etwas, das erst in einem späteren Kapitel kommt oder gar nicht im Skript steht (z.B. <code>lambda</code>, <code>.join()</code>), weist der Trainer darauf hin. Mit „Nur Konstrukte aus dem Skript“ zählt die Aufgabe dann noch nicht als gelöst.</li>
+      <li><b>Automatische Stufe:</b> Zwei saubere Lösungen in Folge (höchstens zwei Prüfversuche, höchstens ein Tipp) heben die Stufe im Kapitel an; wer die Musterlösung ansieht oder lange hängt, bekommt leichtere Aufgaben.</li>
+      <li><b>Klausurtraining:</b> zufällige Aufgaben aus den gewählten Kapiteln, optional mit Zeitlimit und ohne Ausführen (wie auf Papier). Kein Tutor und keine Tests bis zur Abgabe, danach Punkte, Musterlösungen und die Skriptabschnitte zum Wiederholen.</li>
+      <li><b>KI-Tutor:</b> gibt Feedback und gestufte Tipps und verweist auf die passenden Abschnitte im Skript. Er nutzt das Claude-Konto der Person, die übt (ein kostenloses Konto genügt).</li>
+      <li>Python läuft vollständig im Browser (Pyodide, Python 3.13, inkl. NumPy und pandas). Ihr Fortschritt wird nur in diesem Browser gespeichert.</li>
+    </ul>
+    <p><a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">Zum Skript ↗</a></p>
+    <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · abgestimmt auf Skriptversion 4.0 · ${allExercises().length} Aufgaben${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · ohne " + esc(offKeys().join(", ")) : ""}</p>` : `
+    <p>The CodingTrainer contains ${allExercises().length} exercises for chapters 4–10 and appendices A and B of the lecture notes (version 4.0). Each exercise can be solved using only what the notes cover up to its chapter.</p>
+    <ul>
+      <li><b>Check</b> runs your code several times with different inputs, so hard-coded results are caught.</li>
+      <li><b>Construct check:</b> if you use something that only appears in a later chapter or not at all in the notes (e.g. <code>lambda</code>, <code>.join()</code>), the trainer points it out. With “Only accept constructs from the notes”, the exercise doesn't count as solved yet.</li>
+      <li><b>Adaptive level:</b> two clean solutions in a row (at most two checks, at most one hint) raise the level in that chapter; viewing the solution or getting stuck makes the next exercise easier.</li>
+      <li><b>Exam practice:</b> random exercises from the selected chapters, optionally with a time limit and without running code (like on paper). No tutor and no tests until you submit; afterwards you get points, reference solutions and the sections of the notes to review.</li>
+      <li><b>AI tutor:</b> gives feedback and graded hints and links to the matching sections of the notes. It uses the Claude account of the person practising (a free account is enough).</li>
+      <li>Python runs entirely in your browser (Pyodide, Python 3.13, incl. NumPy and pandas). Your progress is stored in this browser only.</li>
+    </ul>
+    <p><a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">Open the lecture notes ↗</a></p>
+    <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · matched to lecture notes version 4.0 · ${allExercises().length} exercises${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · without " + esc(offKeys().join(", ")) : ""}</p>`;
+}
+$("info-btn").onclick = () => { renderInfo(); $("info-dlg").showModal(); };
+$("info-close").onclick = () => $("info-dlg").close();
+
+/* ====================================================================== Start */
+function setLang(l) { LANG = S.lang = l; save(); Tutor.reset(); renderAll(); const ex = current(); const store_ = examRunning() ? S.exam.codes : S.drafts; if (ex && store_[ex.id] === undefined) { ta.value = L(ex.starter); renderEditor(); } }
+$("lang-de").onclick = () => setLang("de");
+$("lang-en").onclick = () => setLang("en");
+
+(async function boot() {
+  await loadConfig();
+  S.selected = new Set([...S.selected].filter(chapterOn));
+  if (!S.selected.size) visibleChapters().slice(0, 3).forEach(c => S.selected.add(c.id));
+  if (!current() || !S.selected.has(current().ch)) {
+    const n = pickNext();
+    if (n) S.currentId = n.id;
+  }
+  if (S.view === "exam" && S.exam && !S.exam.submitted && !S.exam.ids.every(id => byId(id))) S.exam = null;
+  loadEditor();
+  renderAll();
+  Engine.start();
+  Tutor.init();
+  setInterval(tickExam, 1000);
+  tickExam();
+})();
+</script>

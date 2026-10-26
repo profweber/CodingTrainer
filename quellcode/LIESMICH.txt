@@ -1,0 +1,30 @@
+CodingTrainer v1.0 – Quellcode
+==============================
+
+bank.py, bank_k4.py … bank_kAB.py,   Aufgabenbank (236 Aufgaben). bank.py lädt alle Dateien
+bank2_k4.py … bank2_kAB.py           und sortiert nach Kapitel und Stufe. Jede Aufgabe:
+                                     id, Kapitel, Stufe, Titel/Text/Startcode (DE/EN),
+                                     Musterlösung, Tests, Skriptverweise, verlangte/verbotene
+                                     Konstrukte, ggf. Beispieldateien und Beispieleingaben.
+exlib.py                             Funktion ex() zum Anlegen einer Aufgabe (prüft doppelte ids).
+harness.py                           Python-Seite: Ausführen, Tests, Konstrukt-Prüfung
+                                     (Tabelle C: welches Konstrukt in welchem Kapitel steht).
+template.html                        Oberfläche (Texte DE/EN, Klausurmodus, Version in VERSION).
+worker_template.js                   Startet Python (Pyodide) im Browser.
+verify.py                            Prüft alle Aufgaben: Musterlösung besteht, Startcode fällt
+                                     durch, nur erlaubte Konstrukte.
+vmod.py                              Prüft nur einzelne Aufgabendateien: python3 vmod.py bank2_k6
+lint.py                              Zusätzliche Plausibilitätsprüfungen (Verweise, Texte DE/EN,
+                                     Testvarianten, Modulfunktionen außerhalb des Skripts).
+                                     Hinweise zu übersetzten Ausgabetexten sind normal.
+build_website.py                     Schreibt index.html und worker.js in die Wurzel des
+                                     Repositorys (übergeordneter Ordner).
+
+Ablauf nach einer Änderung (Python 3.11 oder neuer, mit numpy und pandas):
+  cd quellcode
+  python3 verify.py
+  python3 build_website.py
+Danach index.html und worker.js im Repository aktualisieren (auf GitHub:
+"Add file" -> "Upload files" -> beide Dateien hineinziehen -> "Commit changes").
+
+Die Semester-Einstellung steht in ../config.json und braucht keinen Build.
