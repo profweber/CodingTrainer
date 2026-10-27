@@ -191,8 +191,8 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; le
 }
 .btn:hover { border-color: var(--ink); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
-#subtitle a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 2px; }
-#subtitle a:hover { color: var(--accent); text-decoration-color: currentColor; }
+#subtitle a { color: var(--accent); font-weight: 600; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); text-underline-offset: 2px; }
+#subtitle a:hover { text-decoration-color: currentColor; }
 .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
 .btn.primary:hover { filter: brightness(1.08); }
 .btn.dark { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
@@ -279,6 +279,21 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; le
 .ai-off { padding: 14px; font-size: 14px; color: var(--muted); }
 .gen { padding: 10px 14px; border-top: 1px solid var(--line); display: grid; gap: 6px; }
 .gen p { margin: 0; font-size: 13px; color: var(--muted); }
+.progress { border: 1px solid var(--accent); background: var(--accent-soft); border-radius: var(--r); padding: 10px 12px; font-size: 13.5px; display: grid; gap: 6px; }
+.progress .row { display: flex; align-items: center; gap: 8px; }
+.progress .row strong { font-weight: 600; }
+.progress .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; color: var(--muted); }
+.progress .steps li.now { color: var(--ink); font-weight: 600; }
+.progress .steps li.done { color: var(--ok); }
+.progress .steps li::before { content: "○ "; }
+.progress .steps li.now::before { content: "▸ "; color: var(--accent); }
+.progress .steps li.done::before { content: "✓ "; }
+.progress .hint { color: var(--muted); font-size: 12.5px; }
+.progress .btn { justify-self: start; font-size: 13px; padding: 4px 10px; }
+.spin { display: inline-block; flex: none; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; color: var(--accent); }
+.thinking .spin { width: 11px; height: 11px; margin-right: 6px; vertical-align: -1px; }
+.thinking .secs { font-style: normal; }
+.check-status.busy { color: var(--muted); background: var(--code-bg); }
 
 dialog { border: 1.5px solid var(--ink); border-radius: var(--r); background: var(--sheet); color: var(--ink); max-width: min(640px, calc(100vw - 32px)); padding: 0; }
 dialog::backdrop { background: rgba(10, 16, 20, .45); }
@@ -351,6 +366,8 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
 .link-intro p { margin: 0 0 .4em; } .link-intro p:last-child { margin: 0; }
 .link-mode .tutor-actions .btn::after, .link-mode .chat-form .btn::after { content: " ↗"; }
 .chap-sub { display: block; font-size: 11.5px; color: var(--muted); }
+.chap.pre { display: flex; align-items: center; gap: 8px; margin: 0 6px 4px 30px; padding: 2px 0 8px; border-bottom: 1px dashed var(--line); border-radius: 0; font-size: 12.5px; color: var(--muted); }
+.chap.pre .chap-num { width: 30px; height: 20px; flex: none; border: 1px dashed var(--muted); font-size: 11px; letter-spacing: -.02em; color: var(--muted); }
 
 /* ---------- Bedienhilfen (UX-Überarbeitung) */
 .skip { position: absolute; left: 16px; top: -48px; z-index: 100; background: var(--ink); color: var(--sheet); padding: 8px 14px; border-radius: var(--r); font-weight: 600; text-decoration: none; }
@@ -606,6 +623,7 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
     </form>
     <div class="gen">
       <button type="button" class="btn" id="gen-btn" data-t="genBtn"></button>
+      <div class="progress" id="gen-status" hidden></div>
       <p data-t="genNote"></p>
     </div>
   </aside>
@@ -809,6 +827,18 @@ const I18N = {
   aiWelcome: { de: "Ich kenne die Aufgabe, Ihren Code und das letzte Testergebnis. Ich verrate keine fertige Lösung, sondern helfe Ihnen, selbst draufzukommen – und zeige die passenden Stellen im Skript.", en: "I know the exercise, your code and the latest test result. I won't hand out a finished solution, but I'll help you get there yourself – and point you to the right places in the notes." },
   noError: { de: "Es gibt gerade keine Fehlermeldung. Führen Sie den Code aus oder prüfen Sie ihn zuerst.", en: "There is no error message right now. Run or check your code first." },
   genWorking: { de: "Claude entwirft eine Aufgabe und testet sie …", en: "Claude is drafting an exercise and testing it …" },
+  genStep1: { de: "Claude entwirft eine passende Aufgabe", en: "Claude is drafting a suitable exercise" },
+  genStep2: { de: "Musterlösung und Tests werden automatisch geprüft", en: "Reference solution and tests are checked automatically" },
+  genStep3: { de: "Aufgabe wird geöffnet", en: "Opening the exercise" },
+  genChars: { de: "{n} Zeichen geschrieben", en: "{n} characters written" },
+  genHint: { de: "Das dauert meist 30 Sekunden bis 2 Minuten. Sie können währenddessen weiterarbeiten.", en: "This usually takes 30 seconds to 2 minutes. You can keep working in the meantime." },
+  cancel: { de: "Abbrechen", en: "Cancel" },
+  genCancelled: { de: "Erzeugen abgebrochen.", en: "Generation cancelled." },
+  thinkHint: { de: "Antworten dauern meist 5 bis 60 Sekunden.", en: "Answers usually take 5 to 60 seconds." },
+  outLoading: { de: "Python wird geladen – beim ersten Besuch dauert das etwa 10 bis 30 Sekunden. Sie können die Aufgabe schon lesen und Code schreiben.", en: "Python is loading – on your first visit this takes about 10 to 30 seconds. You can already read the exercise and write code." },
+  waitPython: { de: "Warte auf Python (wird noch geladen) …", en: "Waiting for Python (still loading) …" },
+  pkgLoading: { de: "NumPy/pandas werden geladen – beim ersten Mal dauert das einige Sekunden …", en: "Loading NumPy/pandas – the first time this takes a few seconds …" },
+  checking: { de: "Tests laufen …", en: "Running tests …" },
   genFailed: { de: "Die erzeugte Aufgabe hat die automatische Prüfung nicht bestanden und wird nicht angezeigt. Versuchen Sie es noch einmal.", en: "The generated exercise failed the automatic check and is not shown. Please try again." },
   genOk: { de: "Neue Aufgabe erzeugt und geprüft.", en: "New exercise generated and verified." },
   genNoChapter: { de: "Wählen Sie mindestens ein Kapitel aus.", en: "Select at least one chapter." },
@@ -923,6 +953,8 @@ const I18N = {
   welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert. Weitere Erklärungen finden Sie jederzeit unter „Info“.", en: "Your progress is stored in this browser only. More explanations are available any time under “About”." },
   welcomeOk: { de: "Verstanden, los geht's", en: "Got it, let's start" },
   mbarExam: { de: "Aufgabe {i} von {n}", en: "Exercise {i} of {n}" },
+  preSub: { de: "ohne Programmieraufgaben", en: "no programming exercises" },
+  preSr: { de: "Kapitel 1 bis 3 des Skripts:", en: "Chapters 1 to 3 of the notes:" },
   backPractice: { de: "← Zurück zum Üben", en: "← Back to practice" },
   infoUse: { de: "Bedienung", en: "Using the trainer" },
   resultNotice: { de: "Kein Rückschluss auf die Klausur – siehe Hinweis im Klausurtraining.", en: "Not a prediction of your exam result – see the notice in exam practice." },
@@ -980,6 +1012,9 @@ const lvlState = ch => (S.levels[ch] ||= { level: 1, streak: 0, struggle: 0 });
 const $ = id => document.getElementById(id);
 const IS_MAC = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent || "");
 const reduceMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Zählt Sekunden hoch, solange etwas läuft; gibt eine Stopp-Funktion zurück
+function ticker(fn) { const t0 = Date.now(); fn(0); const id = setInterval(() => fn(Math.round((Date.now() - t0) / 1000)), 1000); return () => clearInterval(id); }
+const fmtSecs = s => s < 60 ? s + " s" : Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0") + " min";
 function announce(text) { const a = $("announce"); if (!a) return; a.textContent = ""; setTimeout(() => { a.textContent = text; }, 30); }
 function setCheckStatus(text, cls) { const b = $("check-status"); if (!b) return; b.textContent = text || ""; b.className = "check-status" + (cls ? " " + cls : ""); }
 function revealIfHidden(el) {
@@ -1092,6 +1127,7 @@ const Engine = {
     this.status("loading", t("pyLoading"));
     this.ready = this._startWorker().catch(() => this._startLocal()).then(info => {
       this.version = info.version; this.status("ready", "Python " + info.version + " · " + t("pyReady"));
+      const c = $("console"); if (c && c.textContent === t("outLoading")) writeConsole([{ cls: "muted", text: t("outHint") }]);
       liveCheck();
       return true;
     }).catch(err => {
@@ -1120,7 +1156,14 @@ const Engine = {
   _onMessage(msg) {
     const p = this.pending.get(msg.id);
     if (!p) return;
-    if (msg.status) { if (msg.status === "packages") this.status("loading", t("pyPackages")); return; }
+    if (msg.status) {
+      if (msg.status === "packages") {
+        this.status("loading", t("pyPackages"));
+        const c = $("console"); if (c && c.textContent === t("running")) writeConsole([{ cls: "muted", text: t("pkgLoading") }]);
+        if ($("check-status").classList.contains("busy")) setCheckStatus(t("pkgLoading"), "busy");
+      }
+      return;
+    }
     clearTimeout(p.timer);
     this.pending.delete(msg.id);
     if (this.version) this.status("ready", "Python " + this.version + " · " + t("pyReady"));
@@ -1238,7 +1281,8 @@ function writeConsole(parts) {
   const c = $("console");
   c.innerHTML = parts.map(p => `<span class="${p.cls || ""}">${esc(p.text)}</span>`).join("");
 }
-$("clear-out").onclick = () => { writeConsole([{ cls: "muted", text: t("outHint") }]); };
+const outPlaceholder = () => Engine.version || Engine.failed ? t("outHint") : t("outLoading");
+$("clear-out").onclick = () => { writeConsole([{ cls: "muted", text: outPlaceholder() }]); };
 
 /* ====================================================================== Aufgabenwahl */
 function current() { return examRunning() ? byId(S.exam.ids[S.exam.idx]) : byId(S.currentId); }
@@ -1273,7 +1317,7 @@ function openExercise(id) {
   errorLine = null;
   ta.value = S.drafts[id] ?? L(ex.starter);
   $("stdin").value = ex.stdin || "";
-  writeConsole([{ cls: "muted", text: t("outHint") }]);
+  writeConsole([{ cls: "muted", text: outPlaceholder() }]);
   $("result-panel").hidden = true;
   setCheckStatus("");
   S.expanded.add(ex.ch);
@@ -1315,7 +1359,9 @@ function renderStatic() {
 
 function renderChapters() {
   const ul = $("chapters");
-  ul.innerHTML = visibleChapters().map(c => {
+  // Kapitel 1–3 des Skripts haben keine Programmieraufgaben – als Hinweiszeile zeigen, damit die Nummerierung nicht irritiert
+  const pre = `<li class="chap pre"><span class="chap-num" aria-hidden="true">1–3</span><span><span class="sr">${esc(t("preSr"))} </span>${esc(t("preSub"))}</span></li>`;
+  ul.innerHTML = pre + visibleChapters().map(c => {
     const ex = chapterExercises(c.id);
     const solved = ex.filter(e => prog(e.id).solved).length;
     const on = S.selected.has(c.id);
@@ -1437,7 +1483,8 @@ async function doRun() {
   if (!ex || Engine.failed) return;
   if (S.view === "exam" && (!examRunning() || !S.exam.allowRun)) return;
   $("run-btn").disabled = true; $("run-btn").setAttribute("aria-busy", "true");
-  writeConsole([{ cls: "muted", text: t("running") }]);
+  writeConsole([{ cls: "muted", text: Engine.version ? t("running") : t("waitPython") }]);
+  if (!Engine.version) { await Engine.ready; if (Engine.version) writeConsole([{ cls: "muted", text: t("running") }]); }
   try {
     const r = await Engine.call("run", { code: ta.value, stdin: $("stdin").value, lang: LANG, files: ex.files || null });
     if (current() !== ex) return;
@@ -1461,7 +1508,7 @@ async function doCheck() {
   const ex = current();
   if (!ex || Engine.failed || S.view === "exam") return;
   $("check-btn").disabled = true; $("check-btn").setAttribute("aria-busy", "true");
-  setCheckStatus("");
+  setCheckStatus(Engine.version ? t("checking") : t("waitPython"), "busy");
   const p = prog(ex.id);
   try {
     const r = await Engine.call("check", { off: offKeys(), code: ta.value, tests: ex.tests, chapter: ex.ch, require: ex.require || [], forbid: ex.forbid || [], lang: LANG });
@@ -1682,7 +1729,7 @@ const Tutor = {
       else if (turn.role === "assistant") html += `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${md(turn.content)}</div></div>`;
       else html += `<div class="msg sys">${esc(turn.content)}</div>`;
     }
-    if (streamText !== undefined) html += `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${streamText ? md(streamText) : `<span class="thinking">${esc(t("aiThinking"))}</span>`}</div></div>`;
+    if (streamText !== undefined) html += `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${streamText ? md(streamText) : `<span class="thinking"><span class="spin" aria-hidden="true"></span>${esc(t("aiThinking"))}<span class="secs" id="think-secs"></span></span> <button type="button" class="btn ghost" data-stop style="padding:0 6px;font-size:12px">${esc(t("cancel"))}</button>`}</div></div>`;
     chat.innerHTML = html;
     chat.scrollTop = chat.scrollHeight;
   },
@@ -1733,6 +1780,8 @@ const Tutor = {
     this.busy = true; this.renderChrome();
     this.ctl = new AbortController();
     this.renderChat("");
+    announce(t("aiThinking"));
+    const stopTick = ticker(s => { const el = document.getElementById("think-secs"); if (el && s >= 3) el.textContent = ` · ${fmtSecs(s)} – ${t("thinkHint")}`; });
     const msgs = [{ role: "user", content: tutorRules() }];
     // nur die letzten Runden mitschicken
     const hist = this.turns.filter(x => x.role !== "sys").slice(-8);
@@ -1753,9 +1802,12 @@ const Tutor = {
       // fehlgeschlagene Nutzerzeile entfernen, damit die Liste mit user endet
       if (!(e && e.text)) { const last = this.turns.map(x => x.role).lastIndexOf("user"); if (last >= 0) this.turns[last].role = "sys-user"; }
     } finally {
+      stopTick();
       this.busy = false; this.ctl = null;
       this.turns = this.turns.map(x => x.role === "sys-user" ? { role: "sys", content: "↳ " + x.shown } : x);
       this.renderChat(); this.renderChrome();
+      const lastAi = [...this.turns].reverse().find(x => x.role === "assistant" || x.role === "sys");
+      if (lastAi) announce(lastAi.role === "assistant" ? t("tutor") + ": " + lastAi.content.slice(0, 300) : lastAi.content);
     }
   },
 };
@@ -1783,6 +1835,7 @@ $("ai-feedback").onclick = () => Tutor.ask("feedback");
 $("ai-hint").onclick = () => Tutor.ask("hint");
 $("ai-error").onclick = () => Tutor.ask("error");
 $("stop-btn").onclick = () => { Tutor.stop(); Gen.stop(); };
+$("chat").addEventListener("click", e => { if (e.target.closest("[data-stop]")) Tutor.stop(); });
 $("chat-form").addEventListener("submit", e => {
   e.preventDefault();
   const v = $("chat-input").value.trim();
@@ -1900,27 +1953,47 @@ const Gen = {
     const ch = (current() && S.selected.has(current().ch)) ? current().ch : chs[Math.floor(Math.random() * chs.length)];
     const level = S.mode === "auto" ? lvlState(ch).level : Number(S.mode);
     this.busy = true; Tutor.busy = true; Tutor.renderChrome();
-    Tutor.turns.push({ role: "sys", content: t("genWorking") }); Tutor.renderChat();
-    this.ctl = new AbortController();
+    const ctl = this.ctl = new AbortController();
+    // Fortschritt direkt unter dem Knopf: Schritte, verstrichene Zeit, Abbrechen
+    const box = $("gen-status");
+    box.innerHTML = `<div class="row"><span class="spin" aria-hidden="true"></span><strong>${esc(t("genBtn"))}</strong><span class="secs"></span></div>
+      <ol class="steps">${["genStep1", "genStep2", "genStep3"].map(k => `<li>${esc(t(k))}<span class="extra"></span></li>`).join("")}</ol>
+      <div class="hint">${esc(t("genHint"))}</div>
+      <button type="button" class="btn" id="gen-cancel">${esc(t("cancel"))}</button>`;
+    box.hidden = false;
+    $("gen-cancel").onclick = () => this.stop();
+    const steps = [...box.querySelectorAll(".steps li")];
+    const setStep = n => { steps.forEach((li, i) => { li.className = i + 1 < n ? "done" : i + 1 === n ? "now" : ""; }); announce(t(["genStep1", "genStep2", "genStep3"][n - 1]) + " …"); };
+    setStep(1);
+    const stopTick = ticker(s => { const el = box.querySelector(".secs"); if (el) el.textContent = "· " + fmtSecs(s); });
+    this._finish = () => { stopTick(); box.hidden = true; box.innerHTML = ""; };
     try {
-      const data = await Tutor.sample.json(genPrompt(ch, level), { signal: this.ctl.signal, cache: false, modelTier: "default" });
+      const data = await Tutor.sample.json(genPrompt(ch, level), { signal: ctl.signal, cache: false, modelTier: "default",
+        onText: ({ text }) => { const x = steps[0].querySelector(".extra"); if (x) x.textContent = " – " + t("genChars", { n: text.length.toLocaleString(LANG === "de" ? "de-DE" : "en-GB") }); } });
+      steps[0].querySelector(".extra").textContent = "";
+      setStep(2);
       const ex = normalizeGenerated(data, ch, level);
       const ok = ex && await validateGenerated(ex);
+      if (ctl.signal.aborted) throw { code: "cancelled" };
       if (!ok) { Tutor.turns.push({ role: "sys", content: t("genFailed") }); }
       else {
+        setStep(3);
         S.generated.push(ex); S.expanded.add(ch); save();
         Tutor.turns.push({ role: "sys", content: t("genOk") });
-        this.busy = false; Tutor.busy = false;
+        this.busy = false; Tutor.busy = false; this._finish();
         openExercise(ex.id);
+        announce(t("genOk"));
         return;
       }
     } catch (e) {
       const code = e && e.code;
       if (code === "not_granted" || code === "sampling_disabled" || code === "session_expired") { Tutor.disabled = true; Tutor.offCode = code; }
       else if (code === "rate_limited") Tutor.turns.push({ role: "sys", content: t("aiRate") });
-      else if (code !== "cancelled") Tutor.turns.push({ role: "sys", content: t("genFailed") });
+      else if (code === "cancelled") Tutor.turns.push({ role: "sys", content: t("genCancelled") });
+      else Tutor.turns.push({ role: "sys", content: t("genFailed") });
     } finally {
       this.busy = false; Tutor.busy = false; this.ctl = null;
+      if (this._finish) { this._finish(); this._finish = null; }
       Tutor.renderChat(); Tutor.renderChrome(); renderChapters();
     }
   },
@@ -2016,7 +2089,7 @@ function loadEditor() {
     ta.value = saved ?? L(ex.starter);
     $("stdin").value = ex.stdin || "";
   }
-  writeConsole([{ cls: "muted", text: t("outHint") }]);
+  writeConsole([{ cls: "muted", text: outPlaceholder() }]);
   $("result-panel").hidden = true;
 }
 
@@ -2309,7 +2382,7 @@ function renderExamResult() {
 function renderInfo() {
   const de = LANG === "de";
   $("info-body").innerHTML = de ? `
-    <p>Der CodingTrainer enthält ${allExercises().length} Aufgaben zu den Kapiteln 4–10 und den Anhängen A und B des Skripts (Version 4.0). Jede Aufgabe lässt sich nur mit dem lösen, was bis zu ihrem Kapitel im Skript steht.</p>
+    <p>Der CodingTrainer enthält ${allExercises().length} Aufgaben zu den Kapiteln 4–10 und den Anhängen A und B des Skripts (Version 4.0). Die Kapitelnummern entsprechen dem Skript; die Kapitel 1–3 (Vorwort, Einleitung, Vorbereitungen) enthalten keine Programmieraufgaben. Jede Aufgabe lässt sich nur mit dem lösen, was bis zu ihrem Kapitel im Skript steht.</p>
     <ul>
       <li><b>Prüfen</b> führt Ihren Code mehrfach mit unterschiedlichen Eingaben aus. Fest eingetippte Ergebnisse fallen dabei auf.</li>
       <li><b>Konstrukt-Prüfung:</b> Verwenden Sie etwas, das erst in einem späteren Kapitel kommt oder gar nicht im Skript steht (z.B. <code>lambda</code>, <code>.join()</code>), weist der Trainer darauf hin. Mit „Nur Konstrukte aus dem Skript“ zählt die Aufgabe dann noch nicht als gelöst.</li>
@@ -2326,7 +2399,7 @@ function renderInfo() {
     </ul>
     <p><a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">Zum Skript ↗</a></p>
     <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · abgestimmt auf Skriptversion 4.0 · ${allExercises().length} Aufgaben${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · ohne " + esc(offKeys().join(", ")) : ""}</p>` : `
-    <p>The CodingTrainer contains ${allExercises().length} exercises for chapters 4–10 and appendices A and B of the lecture notes (version 4.0). Each exercise can be solved using only what the notes cover up to its chapter.</p>
+    <p>The CodingTrainer contains ${allExercises().length} exercises for chapters 4–10 and appendices A and B of the lecture notes (version 4.0). Chapter numbers follow the notes; chapters 1–3 (preface, introduction, preparations) contain no programming exercises. Each exercise can be solved using only what the notes cover up to its chapter.</p>
     <ul>
       <li><b>Check</b> runs your code several times with different inputs, so hard-coded results are caught.</li>
       <li><b>Construct check:</b> if you use something that only appears in a later chapter or not at all in the notes (e.g. <code>lambda</code>, <code>.join()</code>), the trainer points it out. With “Only accept constructs from the notes”, the exercise doesn't count as solved yet.</li>
