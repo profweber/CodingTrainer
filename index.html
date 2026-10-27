@@ -53,6 +53,10 @@
   .cta:hover { filter: brightness(1.08); }
   .note { margin: 12px 0 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; font-size: 15px; }
   .note p { margin: 0 0 6px; } .note p:last-child { margin: 0; }
+  .howto { margin: 10px 0 0; border: 1px solid var(--line); border-radius: 6px; font-size: 15px; }
+  .howto summary { cursor: pointer; padding: 10px 14px; font-weight: 600; color: var(--accent); }
+  .howto ol { margin: 0; padding: 0 16px 0 36px; display: grid; gap: 6px; }
+  .howto p { margin: 10px 14px 12px; color: var(--muted); font-size: 14px; }
   .skip { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 0; font-size: 14px; color: var(--muted); }
   .skip input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); }
   .alt { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 15px; }
@@ -97,6 +101,16 @@
         <p><b>Sie brauchen ein kostenloses Claude-Konto.</b> Der Trainer läuft auf claude.ai; dort melden Sie sich an oder registrieren sich, falls Sie noch kein Konto haben.</p>
         <p>Der KI-Tutor nutzt Ihr eigenes Konto und Kontingent. Beim ersten Tipp fragt Claude einmal, ob die Seite das darf. Ihr Lernfortschritt wird nur in Ihrem Browser gespeichert.</p>
       </div>
+      <details class="howto">
+        <summary>Noch kein Claude-Konto? So legen Sie eines an</summary>
+        <ol>
+          <li>Klicken Sie oben auf <b>CodingTrainer öffnen</b> oder öffnen Sie <a href="https://claude.ai" rel="noopener">claude.ai</a>. Ohne Anmeldung erscheint dort die Anmeldeseite.</li>
+          <li>Melden Sie sich mit Ihrem <b>Google-Konto</b> an oder geben Sie Ihre <b>E-Mail-Adresse</b> ein (z.B. die der Hochschule). Sie bekommen dann einen Anmeldelink per E-Mail – ein Passwort gibt es nicht.</li>
+          <li>Beim ersten Mal bestätigen Sie Ihre <b>Handynummer</b> mit einem Code per SMS (Festnetz- und Internet-Telefonnummern funktionieren nicht).</li>
+          <li>Der kostenlose Plan genügt. Danach öffnet sich der CodingTrainer – falls nicht, klicken Sie hier einfach noch einmal auf den Knopf. Beim nächsten Mal sind Sie meist noch angemeldet.</li>
+        </ol>
+        <p>Voraussetzung ist ein Mindestalter von 18 Jahren. Das Konto besteht bei Anthropic, dem Anbieter von Claude; es gelten dessen Nutzungsbedingungen und Datenschutzhinweise. Wer das nicht möchte, nutzt die Version ohne KI-Tutor (unten).</p>
+      </details>
       <label class="skip"><input type="checkbox" data-skip> Diese Seite beim nächsten Besuch überspringen</label>
       <p class="alt">Ohne Claude-Konto: <a href="ohne-tutor/">Version ohne KI-Tutor</a> – alle Aufgaben und Tests, vollständig in Ihrem Browser, keine Daten an Dritte.</p>
     </div>
@@ -114,6 +128,16 @@
         <p><b>You need a free Claude account.</b> The trainer runs on claude.ai; sign in there, or sign up if you don't have an account yet.</p>
         <p>The AI tutor uses your own account and usage. On your first hint, Claude asks once whether the page may do so. Your progress is stored in your browser only.</p>
       </div>
+      <details class="howto">
+        <summary>No Claude account yet? Here's how to create one</summary>
+        <ol>
+          <li>Click <b>Open the CodingTrainer</b> above or go to <a href="https://claude.ai" rel="noopener">claude.ai</a>. If you are not signed in, the sign-in page appears.</li>
+          <li>Sign in with your <b>Google account</b> or enter your <b>email address</b> (e.g. your university address). You then receive a sign-in link by email – there is no password.</li>
+          <li>The first time, you confirm your <b>mobile number</b> with a code sent by text message (landline and internet phone numbers don't work).</li>
+          <li>The free plan is enough. Afterwards the CodingTrainer opens – if not, simply click the button here again. Next time you are usually still signed in.</li>
+        </ol>
+        <p>You must be at least 18 years old. The account is held with Anthropic, the provider of Claude; its terms of use and privacy policy apply. If you'd rather not, use the version without AI tutor (below).</p>
+      </details>
       <label class="skip"><input type="checkbox" data-skip> Skip this page next time</label>
       <p class="alt">No Claude account: <a href="ohne-tutor/">version without AI tutor</a> – all exercises and tests, entirely in your browser, no data sent to third parties.</p>
     </div>

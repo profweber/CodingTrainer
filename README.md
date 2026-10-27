@@ -12,7 +12,7 @@
 - Formeln sauber gesetzt (KaTeX, lokal eingebunden)
 - Deutsch und Englisch
 
-Die Startseite erklärt kurz, was man braucht, und führt zum Trainer auf claude.ai. Dort läuft der KI-Tutor; Studierende melden sich mit ihrem eigenen (kostenlosen) Claude-Konto an, und die Anfragen zählen zu ihrem eigenen Kontingent – nicht zu dem der Lehrenden. Python läuft vollständig im Browser (Pyodide), der Lernfortschritt wird nur im Browser gespeichert.
+Die Startseite erklärt kurz, was man braucht (einschließlich einer Schritt-für-Schritt-Anleitung zum Anlegen eines Claude-Kontos), und führt zum Trainer auf claude.ai. Dort läuft der KI-Tutor; Studierende melden sich mit ihrem eigenen (kostenlosen) Claude-Konto an, und die Anfragen zählen zu ihrem eigenen Kontingent – nicht zu dem der Lehrenden. Python läuft vollständig im Browser (Pyodide), der Lernfortschritt wird nur im Browser gespeichert.
 
 Wer kein Claude-Konto nutzen möchte, findet unter https://profweber.github.io/CodingTrainer/ohne-tutor/ dieselben Aufgaben ohne KI-Tutor (eigener Lernfortschritt, keine Daten an Dritte).
 
