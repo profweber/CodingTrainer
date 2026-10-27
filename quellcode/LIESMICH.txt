@@ -1,7 +1,7 @@
-CodingTrainer v1.0 – Quellcode
+CodingTrainer v1.1 – Quellcode
 ==============================
 
-bank.py, bank_k4.py … bank_kAB.py,   Aufgabenbank (250 Aufgaben). bank.py lädt alle Dateien
+bank.py, bank_k4.py … bank_kAB.py,   Aufgabenbank. bank.py lädt alle Dateien
 bank2_k4.py … bank2_kAB.py, bank3.py und sortiert nach Kapitel und Stufe. Jede Aufgabe:
                                      id, Kapitel, Stufe, Titel/Text/Startcode (DE/EN),
                                      Musterlösung, Tests, Skriptverweise, verlangte/verbotene
@@ -9,7 +9,8 @@ bank2_k4.py … bank2_kAB.py, bank3.py und sortiert nach Kapitel und Stufe. Jede
 exlib.py                             Funktion ex() zum Anlegen einer Aufgabe (prüft doppelte ids).
 harness.py                           Python-Seite: Ausführen, Tests, Konstrukt-Prüfung
                                      (Tabelle C: welches Konstrukt in welchem Kapitel steht).
-template.html                        Oberfläche (Texte DE/EN, Klausurmodus, KI-Tutor, Version).
+template.html                        Oberfläche (Texte DE/EN, Klausurmodus, KI-Tutor). Die Versionsnummer
+                                     steht in der Zeile  const VERSION = "…";
                                      Formeln in Aufgabentexten: $…$ im Text, $$…$$ abgesetzt
                                      (LaTeX), gesetzt mit KaTeX aus dem Ordner katex/.
 worker_template.js                   Startet Python (Pyodide) im Browser.
@@ -21,6 +22,7 @@ lint.py                              Zusätzliche Plausibilitätsprüfungen (Ver
                                      Hinweise zu übersetzten Ausgabetexten sind normal.
 build_website.py                     Erzeugt index.html und worker.js:
                                        python3 build_website.py           -> ../ohne-tutor/
+                                         (dazu info.json: Version und Aufgabenzahlen für die Startseite)
                                        python3 build_website.py --claude  -> claude/
 claude/                              Claude-Version mit eingebautem KI-Tutor; claude/config.json
                                      ist ihre Semester-Einstellung.
@@ -31,7 +33,7 @@ Ablauf nach einer Änderung (Python 3.11 oder neuer, mit numpy und pandas):
   python3 build_website.py
   python3 build_website.py --claude
 
-Version ohne Tutor: ohne-tutor/index.html und ohne-tutor/worker.js auf GitHub hochladen
+Version ohne Tutor: ohne-tutor/index.html, ohne-tutor/worker.js und ohne-tutor/info.json auf GitHub hochladen
 ("Add file" -> "Upload files"). Ihre Semester-Einstellung ist ../ohne-tutor/config.json.
 
 Claude-Version: mit dem Artifact-Werkzeug von Claude an dieselbe Adresse veröffentlichen –
@@ -39,3 +41,8 @@ claude/index.html als Seite, claude/worker.js, claude/config.json und die Dateie
 ../ohne-tutor/katex/ als zusätzliche Dateien unter katex/… (z.B. katex/katex.min.js).
 Die Python-Laufzeit (py/…) liegt dort bereits und bleibt beim Aktualisieren erhalten.
 Die Adresse steht in ../index.html (Startseite) und in den config.json-Dateien.
+
+Neue Version: VERSION in template.html hochsetzen, in ../index.html (Startseite) im Block
+id="changes" die Neuerungen eintragen (DE/EN), beide Versionen erzeugen, hochladen und die
+Claude-Version neu veröffentlichen. Bestehende Kopien der Studierenden ändern sich dadurch nicht;
+die Startseite zeigt ihnen über Info -> "Auf neue Version prüfen", wie sie umsteigen.

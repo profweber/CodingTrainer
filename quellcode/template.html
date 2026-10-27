@@ -388,6 +388,18 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
 .welcome h2 { font-size: 18px; margin-bottom: 6px; }
 .welcome ol { margin: 0 0 10px; padding-left: 1.3em; display: grid; gap: 3px; }
 .welcome p { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+dialog > .panel-h { position: sticky; top: 0; z-index: 2; background: var(--sheet); }
+.notice { padding: 12px 16px; border-color: var(--accent); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.notice p { margin: 0; flex: 1 1 320px; font-size: 14px; }
+.notice .row, .xfer .row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.ai-off .btn { margin-top: 10px; }
+.ai-off .xmsg { display: block; margin-top: 8px; }
+dialog .steps { margin: 0 0 .9em; padding-left: 1.3em; display: grid; gap: 6px; }
+.xfer { border-top: 1px solid var(--line); margin-top: 14px; padding-top: 12px; }
+.xfer h3 { font-size: 15px; margin: 0 0 6px; }
+.xfer [data-xfer-box] { margin-top: 10px; }
+.xfer textarea { display: block; width: 100%; box-sizing: border-box; margin: 4px 0 8px; font: 12px/1.4 var(--font-mono); padding: 6px 8px; border: 1px solid var(--field); border-radius: 4px; background: var(--sheet); color: var(--ink); resize: vertical; word-break: break-all; }
+.xmsg { font-size: 13px; color: var(--muted); }
 .mbar, .drawer-h, .backdrop { display: none; }
 @media (hover: none) { .kbd { display: none; } }
 @media (pointer: coarse) {
@@ -455,7 +467,7 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
 
 <a class="skip" href="#task-panel" data-t="skipLink"></a>
 <header class="titleblock">
-  <div class="tb-mark" aria-hidden="true">CT<span id="tb-version">v1.0</span></div>
+  <div class="tb-mark" aria-hidden="true">CT<span id="tb-version"></span></div>
   <div class="tb-name">
     <h1>CodingTrainer</h1>
     <p id="subtitle"></p>
@@ -568,6 +580,7 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
   <main class="main">
     <section class="panel" id="exam-intro" hidden></section>
     <section class="panel" id="exam-result" hidden></section>
+    <section class="panel notice" id="copy-banner" hidden></section>
     <section class="panel welcome" id="welcome" hidden></section>
     <section class="panel" id="task-panel" tabindex="-1">
       <div class="task-head">
@@ -633,6 +646,10 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
   <div class="panel-h"><h2 data-t="info"></h2><button type="button" class="btn ghost" id="info-close"><span aria-hidden="true">✕</span><span class="sr" data-t="close"></span></button></div>
   <div class="panel-b" id="info-body"></div>
 </dialog>
+<dialog id="copy-dlg" aria-labelledby="copy-h">
+  <div class="panel-h"><h2 id="copy-h"></h2><button type="button" class="btn ghost" id="copy-close"><span aria-hidden="true">✕</span><span class="sr" data-t="close"></span></button></div>
+  <div class="panel-b" id="copy-body"></div>
+</dialog>
 
 <script type="application/json" id="bank-data">/*BANK*/</script>
 <script type="application/json" id="constructs-data">/*CONSTRUCTS*/</script>
@@ -641,7 +658,8 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
 /* ====================================================================== Daten */
 const BANK = JSON.parse(document.getElementById("bank-data").textContent);
 const CONSTRUCTS = JSON.parse(document.getElementById("constructs-data").textContent);
-const VERSION = "1.0";
+const VERSION = "1.1";
+const HOME_URL = "https://profweber.github.io/CodingTrainer/";   // Startseite (zeigt die aktuelle Version)
 const STANDALONE = /*STANDALONE*/false;   // true: Version für eigenen Webserver (KI-Tutor über Claude-Link)
 if (STANDALONE) document.documentElement.classList.add("standalone");
 // Semester-Einstellungen: werden aus config.json neben index.html gelesen (siehe LIESMICH)
@@ -811,22 +829,46 @@ const I18N = {
   constructForbidden: { de: "Bitte hier nicht verwenden:", en: "Please don't use here:" },
   line: { de: "Zeile", en: "line" },
   showSolution: { de: "Musterlösung anzeigen", en: "Show reference solution" },
-  solutionLocked: { de: "Die Musterlösung erscheint nach zwei Prüfversuchen oder dem dritten Tipp.", en: "The reference solution appears after two check attempts or the third hint." },
+  solutionLockedNoAi: { de: "Die Musterlösung erscheint nach zwei Prüfversuchen.", en: "The reference solution appears after two checks." },
+  solutionLocked: { de: "Die Musterlösung erscheint nach zwei Prüfversuchen oder nach dem dritten Tipp des KI-Tutors.", en: "The reference solution appears after two checks or after the AI tutor's third hint." },
   solutionNote: { de: "Wer die Lösung ansieht, bekommt die nächste Aufgabe eine Stufe leichter.", en: "Viewing the solution makes the next exercise one level easier." },
   scriptRefs: { de: "Im Skript:", en: "In the notes:" },
-  aiUnavailable: { de: "Der KI-Tutor steht gerade nicht zur Verfügung. Er braucht ein (kostenloses) Claude-Konto: Melden Sie sich bei claude.ai an und laden Sie diese Seite danach neu. Alle Übungen und Tests funktionieren auch ohne Tutor.", en: "The AI tutor is not available right now. It needs a (free) Claude account: sign in at claude.ai and then reload this page. All exercises and tests also work without the tutor." },
+  aiCopy: { de: "In dieser geteilten Ansicht lässt claude.ai den KI-Tutor nicht zu – er funktioniert nur in Ihrer eigenen Kopie des CodingTrainers. Die legen Sie einmalig mit einem Klick an. Alle Übungen und Tests funktionieren auch hier.", en: "claude.ai doesn't allow the AI tutor in this shared view – it only works in your own copy of the CodingTrainer, which you create once with one click. All exercises and tests also work here." },
+  aiCopyBtn: { de: "Anleitung: eigene Kopie anlegen", en: "How to make your own copy" },
+  aiPermBtn: { de: "Berechtigungen öffnen", en: "Open permissions" },
+  aiPermFail: { de: "Das Fenster ließ sich nicht öffnen. Sie finden die Einstellung im Menü „Berechtigungen“ dieses Artefakts auf claude.ai.", en: "The panel could not be opened. You'll find the setting in this artifact's “Permissions” menu on claude.ai." },
+  copyBanner: { de: "**KI-Tutor:** In dieser geteilten Ansicht lässt claude.ai den Tutor nicht zu. In Ihrer eigenen Kopie des CodingTrainers funktioniert er – einmal anlegen, fertig.", en: "**AI tutor:** claude.ai doesn't allow the tutor in this shared view. It works in your own copy of the CodingTrainer – create it once and you're done." },
+  copyHow: { de: "So geht's", en: "Show me how" },
+  copyHide: { de: "Ausblenden", en: "Dismiss" },
+  copyTitle: { de: "KI-Tutor einschalten", en: "Turn on the AI tutor" },
+  copyIntro: { de: "claude.ai erlaubt KI-Funktionen in geteilten Artefakten nur in einer eigenen Kopie. Legen Sie sich deshalb einmalig eine Kopie des CodingTrainers an. Der Tutor nutzt dann Ihr eigenes Claude-Konto und Kontingent.", en: "claude.ai only allows AI features of a shared artifact in your own copy. So create a copy of the CodingTrainer once. The tutor then uses your own Claude account and usage." },
+  copySteps: { de: ["Klicken Sie oben links in der Kopfzeile von claude.ai auf **„Kopieren“**. claude.ai legt den CodingTrainer als Ihr eigenes Artefakt an.", "Öffnen Sie Ihre Kopie, falls sie sich nicht von selbst öffnet. Bei Ihrer ersten Anfrage an den Tutor fragt Claude einmal, ob die Seite Ihr Konto nutzen darf – bitte erlauben Sie das.", "Setzen Sie ein Lesezeichen auf Ihre Kopie und üben Sie künftig dort. Sie finden sie auch auf claude.ai in der Liste Ihrer Artefakte."], en: ["Click **“Copy”** at the top left of the claude.ai header. claude.ai creates the CodingTrainer as your own artifact.", "Open your copy if it doesn't open by itself. On your first request to the tutor, Claude asks once whether the page may use your account – please allow it.", "Bookmark your copy and practise there from now on. You'll also find it on claude.ai in your list of artifacts."] },
+  copyProgress: { de: "**Schon hier geübt?** Jede Kopie speichert ihren Fortschritt getrennt. Sichern Sie ihn unten und übernehmen Sie ihn in Ihrer Kopie unter **Info → Fortschritt übertragen**.", en: "**Already practised here?** Each copy keeps its progress separately. Save it below and load it in your copy under **Info → Transfer progress**." },
+  verCheck: { de: "Auf neue Version prüfen", en: "Check for a new version" },
+  verNote: { de: "Neue Versionen kommen nicht von selbst in Ihre Kopie. Die Startseite zeigt, ob es eine neuere gibt und wie Sie umsteigen.", en: "New versions don't reach your copy by themselves. The start page shows whether there is a newer one and how to switch." },
+  xferTitle: { de: "Fortschritt übertragen", en: "Transfer progress" },
+  xferText: { de: "Ihr Fortschritt (gelöste Aufgaben, Stufen, Ihr Code, erzeugte Aufgaben) ist nur in diesem Browser und in dieser Kopie gespeichert. So nehmen Sie ihn in eine neue Kopie oder einen anderen Browser mit.", en: "Your progress (solved exercises, levels, your code, generated exercises) is stored only in this browser and this copy. This is how you take it to a new copy or another browser." },
+  xferExport: { de: "Fortschritt sichern", en: "Save progress" },
+  xferExportNote: { de: "Kopieren Sie diesen Code und fügen Sie ihn in der anderen Kopie unter Info → Fortschritt übertragen → „Fortschritt übernehmen“ ein.", en: "Copy this code and paste it in the other copy under Info → Transfer progress → “Load progress”." },
+  xferCopy: { de: "Code kopieren", en: "Copy code" },
+  xferCopied: { de: "Kopiert.", en: "Copied." },
+  xferCopyFail: { de: "Automatisches Kopieren nicht möglich – der Code ist markiert, bitte mit Strg+C (Mac: ⌘+C) kopieren.", en: "Automatic copying isn't possible – the code is selected, please copy it with Ctrl+C (Mac: ⌘+C)." },
+  xferImport: { de: "Fortschritt übernehmen", en: "Load progress" },
+  xferPaste: { de: "Code hier einfügen:", en: "Paste the code here:" },
+  xferApply: { de: "Übernehmen (ersetzt den Fortschritt hier)", en: "Load (replaces the progress here)" },
+  xferOk: { de: "Fortschritt übernommen: {n} gelöste Aufgaben.", en: "Progress loaded: {n} solved exercises." },
+  xferBad: { de: "Dieser Code ist ungültig oder unvollständig. Bitte kopieren Sie ihn noch einmal vollständig.", en: "This code is invalid or incomplete. Please copy it again in full." },
   aiOffConfig: { de: "Der KI-Tutor ist in dieser Version ausgeschaltet. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "The AI tutor is switched off in this version. All exercises and tests work without it." },
-  aiNoAccount: { de: "Für Ihr Claude-Konto ist der KI-Tutor hier nicht verfügbar. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "The AI tutor is not available for your Claude account here. All exercises and tests work without it." },
-  aiConsent: { de: "Beim ersten Klick fragt Claude einmal, ob diese Seite den KI-Tutor über Ihr Claude-Konto nutzen darf – bitte erlauben Sie das. Die Anfragen zählen zu Ihrem eigenen Kontingent.", en: "On your first click, Claude asks once whether this page may use the AI tutor through your Claude account – please allow it. Requests count towards your own usage." },
+  aiNoAccount: { de: "Ihr Claude-Konto lässt KI-Anfragen aus Artefakten nicht zu. Das kommt z.B. bei Konten von Organisationen vor, deren Verwaltung es abgeschaltet hat. Mit einem privaten (kostenlosen) Claude-Konto funktioniert der Tutor. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "Your Claude account doesn't allow AI requests from artifacts. This happens, for example, with organisation accounts whose admins have turned it off. With a personal (free) Claude account the tutor works. All exercises and tests work without it." },
+  aiConsent: { de: "Bei Ihrer ersten Anfrage an den Tutor fragt Claude einmal, ob diese Seite Ihr Claude-Konto nutzen darf – bitte erlauben Sie das. Die Anfragen zählen zu Ihrem eigenen Kontingent.", en: "On your first request to the tutor, Claude asks once whether this page may use your Claude account – please allow it. Requests count towards your own usage." },
   aiExpired: { de: "Ihre Anmeldung bei Claude ist abgelaufen. Bitte melden Sie sich neu an und laden Sie die Seite danach neu.", en: "Your Claude sign-in has expired. Please sign in again and then reload the page." },
   aiRefused: { de: "Auf diese Anfrage gibt es keine Antwort. Bitte formulieren Sie sie anders.", en: "There is no answer to this request. Please rephrase it." },
-  aiDenied: { de: "Sie haben dem KI-Tutor den Zugriff nicht erlaubt. Wenn Sie ihn doch nutzen möchten, laden Sie die Seite neu und erlauben Sie die Abfrage. Die Übungen funktionieren auch ohne Tutor.", en: "You did not allow the AI tutor. If you want to use it after all, reload the page and allow the request. The exercises also work without the tutor." },
+  aiDenied: { de: "Sie haben dem KI-Tutor nicht erlaubt, Ihr Claude-Konto zu nutzen. Das können Sie in den Berechtigungen dieses Artefakts ändern. Die Übungen funktionieren auch ohne Tutor.", en: "You did not allow the AI tutor to use your Claude account. You can change this in this artifact's permissions. The exercises also work without the tutor." },
   aiRate: { de: "Gerade zu viele Anfragen – oder Ihr Claude-Kontingent ist für den Moment aufgebraucht. Bitte versuchen Sie es später noch einmal.", en: "Too many requests right now – or your Claude usage limit has been reached for the moment. Please try again later." },
   aiFail: { de: "Die Antwort konnte nicht geladen werden. Bitte erneut versuchen.", en: "The answer could not be loaded. Please try again." },
   aiThinking: { de: "Der Tutor denkt nach …", en: "The tutor is thinking …" },
   aiWelcome: { de: "Ich kenne die Aufgabe, Ihren Code und das letzte Testergebnis. Ich verrate keine fertige Lösung, sondern helfe Ihnen, selbst draufzukommen – und zeige die passenden Stellen im Skript.", en: "I know the exercise, your code and the latest test result. I won't hand out a finished solution, but I'll help you get there yourself – and point you to the right places in the notes." },
   noError: { de: "Es gibt gerade keine Fehlermeldung. Führen Sie den Code aus oder prüfen Sie ihn zuerst.", en: "There is no error message right now. Run or check your code first." },
-  genWorking: { de: "Claude entwirft eine Aufgabe und testet sie …", en: "Claude is drafting an exercise and testing it …" },
   genStep1: { de: "Claude entwirft eine passende Aufgabe", en: "Claude is drafting a suitable exercise" },
   genStep2: { de: "Musterlösung und Tests werden automatisch geprüft", en: "Reference solution and tests are checked automatically" },
   genStep3: { de: "Aufgabe wird geöffnet", en: "Opening the exercise" },
@@ -843,10 +885,11 @@ const I18N = {
   genOk: { de: "Neue Aufgabe erzeugt und geprüft.", en: "New exercise generated and verified." },
   genNoChapter: { de: "Wählen Sie mindestens ein Kapitel aus.", en: "Select at least one chapter." },
   aiMade: { de: "von Claude erzeugt", en: "generated by Claude" },
-  noChapters: { de: "Wählen Sie unter „Aufgaben & Kapitel“ mindestens ein Kapitel, das Sie üben möchten.", en: "Select at least one chapter you want to practise under “Exercises & chapters”." },
-  allDone: { de: "Sie haben alle Aufgaben der gewählten Kapitel gelöst. Lassen Sie sich eine neue Aufgabe erzeugen oder wählen Sie weitere Kapitel.", en: "You have solved every exercise in the selected chapters. Generate a new one or select more chapters." },
+  noChapters: { de: "Wählen Sie in der Kapitelliste mindestens ein Kapitel aus (Häkchen setzen), das Sie üben möchten.", en: "Select at least one chapter you want to practise in the chapter list (tick its box)." },
+  allDoneNoAi: { de: "Sie haben alle Aufgaben der gewählten Kapitel gelöst. Wählen Sie weitere Kapitel aus – oder versuchen Sie das Klausurtraining.", en: "You have solved every exercise in the selected chapters. Select more chapters – or try exam practice." },
+  allDone: { de: "Sie haben alle Aufgaben der gewählten Kapitel gelöst. Wählen Sie weitere Kapitel oder lassen Sie sich vom KI-Tutor eine neue Aufgabe erzeugen.", en: "You have solved every exercise in the selected chapters. Select more chapters or let the AI tutor generate a new exercise." },
   timeout: { de: "Abbruch nach Zeitlimit. Python wird neu gestartet …", en: "Stopped after the time limit. Restarting Python …" },
-  engineFail: { de: "Python konnte in dieser Ansicht nicht gestartet werden. Der KI-Tutor kann Ihren Code trotzdem besprechen.", en: "Python could not be started in this view. The AI tutor can still review your code." },
+  engineFail: { de: "Python konnte in dieser Ansicht nicht gestartet werden. Bitte laden Sie die Seite neu; hilft das nicht, versuchen Sie einen anderen Browser.", en: "Python could not be started in this view. Please reload the page; if that doesn't help, try another browser." },
   autoNote: { de: "Automatisch: Stufe <b>{l}</b> ({n}) in Kapitel {ch}. Zwei saubere Lösungen in Folge → eine Stufe höher.", en: "Adaptive: level <b>{l}</b> ({n}) in chapter {ch}. Two clean solutions in a row → one level up." },
   fixedNote: { de: "Feste Stufe {l} ({n}) für alle gewählten Kapitel. Aufgaben anderer Stufen sind in der Liste abgeblendet, bleiben aber anklickbar.", en: "Fixed level {l} ({n}) for all selected chapters. Exercises of other levels are dimmed in the list but stay clickable." },
   levelUp: { de: "Stark! In Kapitel {ch} geht es jetzt auf Stufe {l} weiter.", en: "Nice! Chapter {ch} continues at level {l}." },
@@ -867,7 +910,6 @@ const I18N = {
   examRunning: { de: "Klausur läuft", en: "Exam in progress" },
   examReview: { de: "Auswertung", en: "Results" },
   examNoLimit: { de: "ohne Zeitlimit", en: "no time limit" },
-  examElapsed: { de: "{m} min vergangen", en: "{m} min elapsed" },
   examLeft: { de: "verbleibend", en: "remaining" },
   examEdited: { de: "bearbeitet", en: "edited" },
   examOpen: { de: "offen", en: "open" },
@@ -898,7 +940,7 @@ const I18N = {
   constructOff: { de: "wird in diesem Semester nicht behandelt. Lösen Sie die Aufgabe ohne.", en: "is not covered this semester. Solve the exercise without it." },
   withoutTopics: { de: "ohne {t} (dieses Semester)", en: "without {t} (this semester)" },
   linkIntro: { de: "Der KI-Tutor öffnet **Claude in einem neuen Tab** – mit einer fertig vorbereiteten Anfrage: Aufgabe, Ihr Code, das letzte Testergebnis, die Regeln für den Tutor und die passenden Stellen im Skript.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Bitte keine persönlichen Daten in den Code schreiben.", en: "The AI tutor opens **Claude in a new tab** – with a ready-made request: the exercise, your code, the latest test result, the tutor rules and the matching sections of the notes.\n\nYou need a (free) Claude account; requests count towards your own usage. Please don't put personal data in your code." },
-  gotoIntro: { de: "Der KI-Tutor arbeitet **direkt in dieser Seite**, wenn Sie den Trainer in Claude öffnen: Er sieht Aufgabe, Code und Testergebnis und antwortet hier im Seitenbereich – ohne Kopieren und ohne neuen Tab.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Ihr Lernfortschritt wird in jeder Version getrennt gespeichert.", en: "The AI tutor works **right inside the page** when you open the trainer in Claude: it sees the exercise, your code and the test result and answers here in the side panel – no copying, no new tab.\n\nYou need a (free) Claude account; requests count towards your own usage. Your progress is saved separately in each version." },
+  gotoIntro: { de: "Den KI-Tutor gibt es in der **Claude-Version** des CodingTrainers: Dort kennt er Aufgabe, Code und Testergebnis und antwortet direkt im Seitenbereich.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Legen Sie sich dort einmalig eine eigene Kopie an (oben links „Kopieren“) – nur darin darf der Tutor Ihr Konto nutzen. Ihren bisherigen Fortschritt nehmen Sie unter Info → „Fortschritt übertragen“ mit.", en: "The AI tutor is part of the **Claude version** of the CodingTrainer: there it knows the exercise, your code and the test result and answers right in the side panel.\n\nYou need a (free) Claude account; requests count towards your own usage. Create your own copy there once (“Copy” at the top left) – only in it may the tutor use your account. Take your progress along under Info → “Transfer progress”." },
   gotoBtn: { de: "Trainer mit KI-Tutor öffnen", en: "Open the trainer with AI tutor" },
   linkOpened: { de: "In Claude geöffnet. Ist das Eingabefeld dort leer, liegt der Text in der Zwischenablage: mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "Opened in Claude. If the input field there is empty, the text is on the clipboard: paste with Ctrl+V (Mac: ⌘+V) and send." },
   linkOpenedLong: { de: "Die Anfrage ist für einen direkten Link zu lang und liegt in der Zwischenablage: In Claude mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "The request is too long for a direct link and is on the clipboard: paste it in Claude with Ctrl+V (Mac: ⌘+V) and send." },
@@ -936,7 +978,7 @@ const I18N = {
   stPeek: { de: "Lösung angesehen", en: "solution viewed" },
   stOpen: { de: "offen", en: "open" },
   legendLevel: { de: "Stufe", en: "level" },
-  legendCheck: { de: "☑ = Kapitel wird bei „Nächste Aufgabe“ berücksichtigt", en: "☑ = chapter is used for “Next exercise”" },
+  legendCheck: { de: "☑ = Kapitel wird bei „Nächste Aufgabe“ und im Klausurtraining berücksichtigt", en: "☑ = chapter is included in “Next exercise” and exam practice" },
   checkOk: { de: "✓ Alle {n} Tests bestanden", en: "✓ All {n} tests passed" },
   checkSome: { de: "✗ {p} von {n} Tests bestanden", en: "✗ {p} of {n} tests passed" },
   checkErr: { de: "✗ Fehler – Details unten", en: "✗ Error – details below" },
@@ -950,13 +992,13 @@ const I18N = {
   resetTip: { de: "Ihren Code verwerfen und den Startcode wiederherstellen", en: "Discard your code and restore the starter code" },
   welcomeTitle: { de: "So funktioniert der CodingTrainer", en: "How the CodingTrainer works" },
   welcomeSteps: { de: ["Lesen Sie die Aufgabe. Die Verweise unter „Im Skript“ führen direkt zum passenden Abschnitt.", "Schreiben Sie Ihren Code im Editor und probieren Sie ihn mit **Ausführen** aus.", "Klicken Sie auf **Prüfen**, um Ihre Lösung automatisch testen zu lassen. Sind alle Tests bestanden, gilt die Aufgabe als gelöst.", "Kommen Sie nicht weiter? Der **KI-Tutor** gibt Ihnen Hinweise, ohne die Lösung zu verraten."], en: ["Read the exercise. The links under “In the notes” take you straight to the matching section.", "Write your code in the editor and try it out with **Run**.", "Click **Check** to have your solution tested automatically. Once all tests pass, the exercise counts as solved.", "Stuck? The **AI tutor** gives you hints without revealing the solution."] },
-  welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert. Weitere Erklärungen finden Sie jederzeit unter „Info“.", en: "Your progress is stored in this browser only. More explanations are available any time under “About”." },
+  welcomeStep4NoAi: { de: "Kommen Sie nicht weiter? Nach zwei Prüfversuchen können Sie die Musterlösung ansehen. Einen **KI-Tutor**, der Hinweise gibt, hat die Claude-Version (siehe Tutor-Bereich).", en: "Stuck? After two checks you can view the reference solution. The Claude version has an **AI tutor** that gives hints (see the tutor panel)." },
+  welcomeStep4Off: { de: "Kommen Sie nicht weiter? Die Verweise unter „Im Skript“ führen zur passenden Erklärung, und nach zwei Prüfversuchen können Sie die Musterlösung ansehen.", en: "Stuck? The links under “In the notes” lead to the matching explanation, and after two checks you can view the reference solution." },
+  welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert; unter „Info“ können Sie ihn sichern und übertragen. Dort finden Sie auch weitere Erklärungen.", en: "Your progress is stored in this browser only; under “Info” you can save and transfer it. You'll also find more explanations there." },
   welcomeOk: { de: "Verstanden, los geht's", en: "Got it, let's start" },
-  mbarExam: { de: "Aufgabe {i} von {n}", en: "Exercise {i} of {n}" },
   preSub: { de: "ohne Programmieraufgaben", en: "no programming exercises" },
   preSr: { de: "Kapitel 1 bis 3 des Skripts:", en: "Chapters 1 to 3 of the notes:" },
   backPractice: { de: "← Zurück zum Üben", en: "← Back to practice" },
-  infoUse: { de: "Bedienung", en: "Using the trainer" },
   resultNotice: { de: "Kein Rückschluss auf die Klausur – siehe Hinweis im Klausurtraining.", en: "Not a prediction of your exam result – see the notice in exam practice." },
 };
 let LANG = "de";
@@ -991,6 +1033,7 @@ const S = {
   examHistory: store.get("examHistory", []),
   examAck: store.get("examAck", false),
   welcomed: store.get("welcomed", false),
+  copyHidden: store.get("copyHidden", false),
   lastResult: null, lastError: null, lastOut: "",
 };
 LANG = S.lang;
@@ -998,7 +1041,7 @@ const save = () => {
   store.set("lang", S.lang); store.set("selected", [...S.selected]); store.set("mode", S.mode); store.set("strict", S.strict);
   store.set("progress", S.progress); store.set("levels", S.levels); store.set("drafts", S.drafts);
   store.set("generated", S.generated); store.set("current", S.currentId); store.set("expanded", [...S.expanded]);
-  store.set("view", S.view); store.set("exam", S.exam); store.set("examCfg", S.examCfg); store.set("examHistory", S.examHistory); store.set("examAck", S.examAck); store.set("welcomed", S.welcomed);
+  store.set("view", S.view); store.set("exam", S.exam); store.set("examCfg", S.examCfg); store.set("examHistory", S.examHistory); store.set("examAck", S.examAck); store.set("welcomed", S.welcomed); store.set("copyHidden", S.copyHidden);
 };
 const examRunning = () => S.view === "exam" && !!S.exam && !S.exam.submitted;
 const examDone = () => S.view === "exam" && !!S.exam && !!S.exam.submitted;
@@ -1337,7 +1380,8 @@ function renderStatic() {
     : esc(sub.slice(0, si)) + `<a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">${esc(stitle)}</a>` + esc(sub.slice(si + stitle.length)) + " · v" + VERSION;
   $("stdin").placeholder = t("stdinPh");
   $("side").setAttribute("aria-label", t("navLabel"));
-  $("ed-help").textContent = t("edHelp");
+  $("ed-help").textContent = IS_MAC ? t("edHelp").replace(/Strg|Ctrl/g, "⌘") : t("edHelp");
+  $("tb-version").textContent = "v" + VERSION;
   $("run-btn").title = t("runTip"); $("check-btn").title = t("checkTip"); $("reset-btn").title = t("resetTip");
   if (IS_MAC) { $("run-btn").querySelector(".kbd").textContent = "⌘↵"; $("check-btn").querySelector(".kbd").textContent = "⇧⌘↵"; }
   $("view-seg").setAttribute("aria-label", t("viewPractice") + " / " + t("viewExam"));
@@ -1449,7 +1493,7 @@ function renderTask() {
   if (!ex) {
     $("task-title").textContent = "";
     $("task-tag").innerHTML = "";
-    $("task-body").innerHTML = `<p class="empty">${esc(S.selected.size ? t("allDone") : t("noChapters"))}</p>`;
+    $("task-body").innerHTML = `<p class="empty">${esc(S.selected.size ? t(Tutor.available() ? "allDone" : "allDoneNoAi") : t("noChapters"))}</p>`;
     $("task-refs").innerHTML = "";
     panel.querySelector(".editor-wrap").hidden = true;
     return;
@@ -1466,7 +1510,7 @@ function renderTask() {
 
 function renderAll() {
   renderStatic(); renderChapters(); renderLevel(); renderTask(); Tutor.renderChrome();
-  if (S.lastResult && S.view === "practice") renderResult(S.lastResult);
+  if (S.lastResult && current() && S.view === "practice") renderResult(S.lastResult);
   renderExam();
   Tutor.renderChat();
   renderMbar();
@@ -1599,7 +1643,7 @@ function renderResult(r) {
   if (ex.solution) {
     html += unlocked
       ? `<details class="solution" id="sol-details"><summary>${esc(t("showSolution"))}</summary>${p.solved ? "" : `<p style="margin:0;padding:0 12px 8px;color:var(--muted);font-size:13px">${esc(t("solutionNote"))}</p>`}<pre class="codeblock">${highlight(ex.solution)}</pre></details>`
-      : `<p style="margin:0;padding:0 16px 14px;color:var(--muted);font-size:13px">${esc(t("solutionLocked"))}</p>`;
+      : `<p style="margin:0;padding:0 16px 14px;color:var(--muted);font-size:13px">${esc(t(Tutor.available() ? "solutionLocked" : "solutionLockedNoAi"))}</p>`;
   }
   panel.innerHTML = html;
   const nb = $("res-next");
@@ -1613,7 +1657,7 @@ function renderResult(r) {
 function goNext() {
   const n = pickNext(S.currentId);
   if (n) openExercise(n.id);
-  else { S.currentId = null; save(); renderAll(); }
+  else { S.currentId = null; S.lastResult = null; S.lastError = null; save(); renderAll(); }   // alles gelöst
 }
 $("next-btn").onclick = goNext;
 $("mbar-next").onclick = goNext;
@@ -1659,7 +1703,10 @@ const Tutor = {
   sample: undefined, turns: [], hints: {}, ctl: null, busy: false, disabled: false,
   async init() {
     if (!STANDALONE) {
-      try { this.sample = await window.claude?.use?.("sample"); } catch (e) { this.sample = null; }
+      const use = n => Promise.resolve().then(() => window.claude?.use?.(n)).catch(() => null);
+      [this.sample, this.perm] = await Promise.all([use("sample"), use("permissions")]);
+      // früher verweigert? Dann gleich die passende Erklärung statt eines Fehlers beim ersten Klick
+      if (await this.permState() === "denied") { this.disabled = !!this.sample; this.offCode = "denied"; }
     }
     if (!this.sample) this.sample = null;
     // Tutor-Bereich nur ausblenden, wenn er per config.json abgeschaltet ist; sonst erklärt er, warum er nicht verfügbar ist
@@ -1673,6 +1720,21 @@ const Tutor = {
     if (!STANDALONE) return "off";   // in Claude geöffnet, aber ohne Tutor (nicht angemeldet oder nicht erlaubt)
     if (CONFIG.tutor.claude_link === false) return "off";
     return CONFIG.tutor.artifact_url ? "goto" : "link";
+  },
+  async permState() { try { return this.perm ? await this.perm.state("sample") : null; } catch (e) { return null; } },
+  // Claude-Aufruf endgültig abgelehnt: Ursache merken (verweigert, Konto, Anmeldung, geteilte Ansicht)
+  async fail(code) {
+    this.disabled = true;
+    this.offCode = code === "not_granted" && await this.permState() === "denied" ? "denied" : code;
+    this.renderChrome(); this.renderChat();
+  },
+  async openPerms() {
+    let ok = true;
+    try { await this.perm.manage(); } catch (e) { ok = false; }
+    const st = await this.permState();
+    if (this.sample && (st === "granted" || st === "prompt")) { this.disabled = false; this.offCode = null; this.turns = []; }
+    this.renderChrome(); this.renderChat();
+    if (!ok && this.mode() === "off") { const m = $("chat").querySelector(".xmsg"); if (m) m.textContent = t("aiPermFail"); }
   },
   hintLevel() { const ex = current(); return ex ? (this.hints[ex.id] || 0) : 0; },
   reset() {
@@ -1698,15 +1760,29 @@ const Tutor = {
     $("stop-btn").hidden = !this.busy;
     const h = this.hintLevel();
     $("hintmeter").innerHTML = [0, 1, 2].map(i => `<i class="${i < h ? "on" : ""}"></i>`).join("");
+    renderCopyBanner();
   },
+  // Tutor nur wegen der geteilten Ansicht aus (nicht: verweigert, Konto, Anmeldung)
+  needsCopy() { return !STANDALONE && this.sample !== undefined && this.mode() === "off" && !["denied", "sampling_disabled", "session_expired"].includes(this.offCode); },
   renderChat(streamText) {
     const chat = $("chat");
     if (S.view === "exam") { chat.innerHTML = `<div class="ai-off">${esc(examRunning() ? t("tutorExamOff") : t("tutorExamDone"))}</div>`; return; }
     const mode = this.mode();
     if (mode === "pending") { chat.innerHTML = ""; return; }
     if (mode === "off") {
-      const why = this.offCode === "sampling_disabled" ? "aiNoAccount" : this.offCode === "session_expired" ? "aiExpired" : this.disabled ? "aiDenied" : STANDALONE ? "aiOffConfig" : "aiUnavailable";
-      chat.innerHTML = `<div class="ai-off">${esc(t(why))}</div>`; return;
+      const c = this.offCode;
+      if (STANDALONE) chat.innerHTML = `<div class="ai-off">${esc(t("aiOffConfig"))}</div>`;
+      else if (c === "session_expired") chat.innerHTML = `<div class="ai-off">${esc(t("aiExpired"))}</div>`;
+      else if (c === "sampling_disabled") chat.innerHTML = `<div class="ai-off">${esc(t("aiNoAccount"))}</div>`;
+      else if (c === "denied") {
+        chat.innerHTML = `<div class="ai-off">${esc(t("aiDenied"))}${this.perm ? `<br><button type="button" class="btn" id="perm-btn">${esc(t("aiPermBtn"))}</button>` : ""}<span class="xmsg" role="status"></span></div>`;
+        if (this.perm) $("perm-btn").onclick = () => this.openPerms();
+        else chat.querySelector(".xmsg").textContent = t("aiPermFail");
+      } else {
+        chat.innerHTML = `<div class="ai-off">${esc(t("aiCopy"))}<br><button type="button" class="btn primary" id="copy-btn">${esc(t("aiCopyBtn"))}</button></div>`;
+        $("copy-btn").onclick = () => openCopyDlg();
+      }
+      return;
     }
     if (mode === "goto") {
       chat.innerHTML = `<div class="link-intro">${md(t("gotoIntro"))}<p style="margin-top:10px"><a class="btn primary" style="text-decoration:none" href="${esc(CONFIG.tutor.artifact_url)}" target="_top">${esc(t("gotoBtn"))}</a></p></div>`;
@@ -1795,7 +1871,7 @@ const Tutor = {
     } catch (e) {
       const code = e && e.code;
       if (e && e.text) this.turns.push({ role: "assistant", content: e.text });
-      if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed" || code === "session_expired") { this.disabled = true; this.offCode = code; }
+      if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed" || code === "session_expired") await this.fail(code);
       else if (code === "rate_limited") this.turns.push({ role: "sys", content: t("aiRate") });
       else if (code === "refused") this.turns.push({ role: "sys", content: t("aiRefused") });
       else if (code !== "cancelled") this.turns.push({ role: "sys", content: t("aiFail") });
@@ -1987,7 +2063,7 @@ const Gen = {
       }
     } catch (e) {
       const code = e && e.code;
-      if (code === "not_granted" || code === "sampling_disabled" || code === "session_expired") { Tutor.disabled = true; Tutor.offCode = code; }
+      if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed" || code === "session_expired") await Tutor.fail(code);
       else if (code === "rate_limited") Tutor.turns.push({ role: "sys", content: t("aiRate") });
       else if (code === "cancelled") Tutor.turns.push({ role: "sys", content: t("genCancelled") });
       else Tutor.turns.push({ role: "sys", content: t("genFailed") });
@@ -2379,18 +2455,48 @@ function renderExamResult() {
 }
 
 /* ====================================================================== Info */
+// Kapitel- und Bibliotheksangaben aus config.json, damit keine Zahl fest im Text steht
+function joinList(xs, de) { return xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + (de ? " und " : " and ") + xs[xs.length - 1]; }
+function chapterPhrase(de) {
+  const ids = visibleChapters().map(c => c.id);
+  const nums = ids.filter(i => /^\d+$/.test(i)).map(Number).sort((a, b) => a - b);
+  const apps = ids.filter(i => !/^\d+$/.test(i));
+  const ranges = [];
+  for (const n of nums) { const r = ranges[ranges.length - 1]; if (r && n === r[1] + 1) r[1] = n; else ranges.push([n, n]); }
+  const parts = [];
+  if (nums.length) parts.push((de ? (nums.length > 1 ? "den Kapiteln " : "dem Kapitel ") : (nums.length > 1 ? "chapters " : "chapter ")) + joinList(ranges.map(([a, b]) => a === b ? String(a) : a + "–" + b), de));
+  if (apps.length) parts.push((de ? (apps.length > 1 ? "den Anhängen " : "dem Anhang ") : (apps.length > 1 ? "appendices " : "appendix ")) + joinList(apps, de));
+  return parts.join(de ? " und " : " and ");
+}
+function libsPhrase(de) {
+  const libs = [["numpy", "NumPy"], ["pandas", "pandas"]].filter(([k]) => CONFIG.topics[k] !== false).map(([, n]) => n);
+  return libs.length ? (de ? ", inkl. " : ", incl. ") + joinList(libs, de) : "";
+}
 function renderInfo() {
   const de = LANG === "de";
+  const n = allExercises().length, gen = allExercises().filter(e => e.generated).length;
+  const home = `<a href="${HOME_URL}" target="_blank" rel="noopener">${de ? "Startseite" : "start page"}</a>`;
+  const tmode = Tutor.mode();
+  const tutorDe = !STANDALONE
+    ? `<li><b>KI-Tutor:</b> gibt Feedback und gestufte Tipps und verweist auf die passenden Abschnitte im Skript, ohne fertige Lösungen zu verraten. Er nutzt Ihr eigenes Claude-Konto und Kontingent (ein kostenloses Konto genügt; wie Sie eines anlegen, steht auf der ${home}). claude.ai lässt den Tutor nur in Ihrer <b>eigenen Kopie</b> des CodingTrainers zu: Haben Sie den Trainer über den geteilten Link geöffnet, legen Sie sich einmalig eine an (oben links „Kopieren“).</li>`
+    : tmode === "goto" ? `<li><b>KI-Tutor:</b> ist in dieser Version nicht eingebaut. Die Claude-Version mit KI-Tutor und eine Anleitung finden Sie auf der ${home}.</li>`
+    : tmode === "link" ? `<li><b>KI-Tutor:</b> öffnet Claude in einem neuen Tab mit einer vorbereiteten Anfrage (eigenes, kostenloses Claude-Konto nötig).</li>` : "";
+  const tutorEn = !STANDALONE
+    ? `<li><b>AI tutor:</b> gives feedback and graded hints and links to the matching sections of the notes without handing out finished solutions. It uses your own Claude account and usage (a free account is enough; the ${home} explains how to create one). claude.ai only allows the tutor in your <b>own copy</b> of the CodingTrainer: if you opened the trainer via the shared link, create one once (“Copy” at the top left).</li>`
+    : tmode === "goto" ? `<li><b>AI tutor:</b> not built into this version. You'll find the Claude version with AI tutor and instructions on the ${home}.</li>`
+    : tmode === "link" ? `<li><b>AI tutor:</b> opens Claude in a new tab with a prepared request (your own free Claude account needed).</li>` : "";
+  // Versionsprüfung nur in eigenen Kopien (in der geteilten Ansicht und der Version ohne Tutor ist der Stand immer aktuell)
+  const ver = STANDALONE || Tutor.needsCopy() ? "" : `<p><a href="${HOME_URL}?v=${encodeURIComponent(VERSION)}&amp;lang=${LANG}" target="_blank" rel="noopener">${esc(t("verCheck"))} ↗</a> – ${esc(t("verNote"))}</p>`;
   $("info-body").innerHTML = de ? `
-    <p>Der CodingTrainer enthält ${allExercises().length} Aufgaben zu den Kapiteln 4–10 und den Anhängen A und B des Skripts (Version 4.0). Die Kapitelnummern entsprechen dem Skript; die Kapitel 1–3 (Vorwort, Einleitung, Vorbereitungen) enthalten keine Programmieraufgaben. Jede Aufgabe lässt sich nur mit dem lösen, was bis zu ihrem Kapitel im Skript steht.</p>
+    <p>Der CodingTrainer enthält ${n} Aufgaben ${("zu " + chapterPhrase(true)).replace(/^zu dem /, "zum ")} des Skripts (Version 4.0)${gen ? `, davon ${gen} von Claude erzeugt` : ""}. Die Kapitelnummern entsprechen dem Skript; die Kapitel 1–3 (Vorwort, Einleitung, Vorbereitungen) enthalten keine Programmieraufgaben. Jede Aufgabe lässt sich nur mit dem lösen, was bis zu ihrem Kapitel im Skript steht.</p>
     <ul>
       <li><b>Prüfen</b> führt Ihren Code mehrfach mit unterschiedlichen Eingaben aus. Fest eingetippte Ergebnisse fallen dabei auf.</li>
       <li><b>Konstrukt-Prüfung:</b> Verwenden Sie etwas, das erst in einem späteren Kapitel kommt oder gar nicht im Skript steht (z.B. <code>lambda</code>, <code>.join()</code>), weist der Trainer darauf hin. Mit „Nur Konstrukte aus dem Skript“ zählt die Aufgabe dann noch nicht als gelöst.</li>
       <li><b>Automatische Stufe:</b> Zwei saubere Lösungen in Folge (höchstens zwei Prüfversuche, höchstens ein Tipp) heben die Stufe im Kapitel an; wer die Musterlösung ansieht oder lange hängt, bekommt leichtere Aufgaben.</li>
       <li><b>Klausurtraining:</b> zufällige Aufgaben aus den gewählten Kapiteln, optional mit Zeitlimit und ohne Ausführen (wie auf Papier). Kein Tutor und keine Tests bis zur Abgabe, danach Punkte, Musterlösungen und die Skriptabschnitte zum Wiederholen.</li>
-      <li><b>KI-Tutor:</b> gibt Feedback und gestufte Tipps und verweist auf die passenden Abschnitte im Skript. Er nutzt das Claude-Konto der Person, die übt (ein kostenloses Konto genügt). Ein Konto legen Sie auf <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a> an: mit Google-Konto oder E-Mail-Adresse, beim ersten Mal mit Bestätigung der Handynummer per SMS, ab 18 Jahren.</li>
+      ${tutorDe}
       ${STANDALONE ? "" : `<li><b>Neue Aufgaben:</b> Mit „Neue Aufgabe von Claude erzeugen“ (unten im Tutor-Bereich) erfindet Claude eine zusätzliche Aufgabe zum aktuellen Kapitel und Niveau. Bevor sie erscheint, prüft der Trainer sie automatisch: Die Musterlösung muss alle Tests bestehen, der Startcode darf es nicht, und es dürfen nur Konstrukte aus dem Skript vorkommen. Erzeugte Aufgaben tragen die Markierung „AI“ und werden in Ihrem Browser gespeichert.</li>`}
-      <li>Python läuft vollständig im Browser (Pyodide, Python 3.13, inkl. NumPy und pandas). Ihr Fortschritt wird nur in diesem Browser gespeichert.</li>
+      <li>Python läuft vollständig im Browser (Pyodide, Python 3.13${libsPhrase(true)}). Ihr Fortschritt wird nur in diesem Browser gespeichert – sichern und übertragen können Sie ihn unten unter „Fortschritt übertragen“.</li>
     </ul>
     <h3 style="font-size:16px;margin:12px 0 6px">Bedienung</h3>
     <ul>
@@ -2399,16 +2505,17 @@ function renderInfo() {
       <li><b>Symbole:</b> ○ offen · <span style="color:var(--warn)">◍</span> versucht · <span style="color:var(--ok)">●</span> gelöst · Balken = Stufe 1 (Einstieg) bis 3 (Transfer).</li>
     </ul>
     <p><a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">Zum Skript ↗</a></p>
-    <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · abgestimmt auf Skriptversion 4.0 · ${allExercises().length} Aufgaben${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · ohne " + esc(offKeys().join(", ")) : ""}</p>` : `
-    <p>The CodingTrainer contains ${allExercises().length} exercises for chapters 4–10 and appendices A and B of the lecture notes (version 4.0). Chapter numbers follow the notes; chapters 1–3 (preface, introduction, preparations) contain no programming exercises. Each exercise can be solved using only what the notes cover up to its chapter.</p>
+    ${ver}
+    <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · abgestimmt auf Skriptversion 4.0 · ${n} Aufgaben${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · ohne " + esc(offKeys().join(", ")) : ""}</p>` : `
+    <p>The CodingTrainer contains ${n} exercises for ${chapterPhrase(false)} of the lecture notes (version 4.0)${gen ? `, ${gen} of them generated by Claude` : ""}. Chapter numbers follow the notes; chapters 1–3 (preface, introduction, preparations) contain no programming exercises. Each exercise can be solved using only what the notes cover up to its chapter.</p>
     <ul>
       <li><b>Check</b> runs your code several times with different inputs, so hard-coded results are caught.</li>
       <li><b>Construct check:</b> if you use something that only appears in a later chapter or not at all in the notes (e.g. <code>lambda</code>, <code>.join()</code>), the trainer points it out. With “Only accept constructs from the notes”, the exercise doesn't count as solved yet.</li>
       <li><b>Adaptive level:</b> two clean solutions in a row (at most two checks, at most one hint) raise the level in that chapter; viewing the solution or getting stuck makes the next exercise easier.</li>
       <li><b>Exam practice:</b> random exercises from the selected chapters, optionally with a time limit and without running code (like on paper). No tutor and no tests until you submit; afterwards you get points, reference solutions and the sections of the notes to review.</li>
-      <li><b>AI tutor:</b> gives feedback and graded hints and links to the matching sections of the notes. It uses the Claude account of the person practising (a free account is enough). You create an account at <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a>: with a Google account or an email address, confirming your mobile number by text message the first time, from age 18.</li>
+      ${tutorEn}
       ${STANDALONE ? "" : `<li><b>New exercises:</b> with “Generate a new exercise with Claude” (at the bottom of the tutor panel), Claude invents an additional exercise for the current chapter and level. Before it appears, the trainer checks it automatically: the reference solution must pass all tests, the starter code must not, and only constructs from the notes may be used. Generated exercises are marked “AI” and stored in your browser.</li>`}
-      <li>Python runs entirely in your browser (Pyodide, Python 3.13, incl. NumPy and pandas). Your progress is stored in this browser only.</li>
+      <li>Python runs entirely in your browser (Pyodide, Python 3.13${libsPhrase(false)}). Your progress is stored in this browser only – you can save and transfer it below under “Transfer progress”.</li>
     </ul>
     <h3 style="font-size:16px;margin:12px 0 6px">Using the trainer</h3>
     <ul>
@@ -2417,10 +2524,94 @@ function renderInfo() {
       <li><b>Symbols:</b> ○ open · <span style="color:var(--warn)">◍</span> attempted · <span style="color:var(--ok)">●</span> solved · bars = level 1 (basics) to 3 (transfer).</li>
     </ul>
     <p><a href="https://profweber.github.io/programming/" target="_blank" rel="noopener">Open the lecture notes ↗</a></p>
-    <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · matched to lecture notes version 4.0 · ${allExercises().length} exercises${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · without " + esc(offKeys().join(", ")) : ""}</p>`;
+    ${ver}
+    <p style="color:var(--muted);font-size:13px">CodingTrainer v${VERSION} · matched to lecture notes version 4.0 · ${n} exercises${CONFIG.semester ? " · " + esc(CONFIG.semester) : ""}${offKeys().length ? " · without " + esc(offKeys().join(", ")) : ""}</p>`;
+  $("info-body").insertAdjacentHTML("beforeend", xferHtml());
+  bindXfer($("info-body"));
+}
+
+/* ====================================================================== Eigene Kopie & Fortschritt übertragen */
+function renderCopyBanner() {
+  const b = $("copy-banner");
+  if (!b) return;
+  const show = Tutor.needsCopy() && !S.copyHidden && S.view !== "exam";
+  if (!show) { b.hidden = true; return; }
+  if (b.hidden || b.dataset.lang !== LANG) {
+    b.innerHTML = `<p>${md(t("copyBanner")).replace(/^<p>|<\/p>$/g, "")}</p><div class="row"><button type="button" class="btn primary" id="copy-how">${esc(t("copyHow"))}</button><button type="button" class="btn ghost" id="copy-hide">${esc(t("copyHide"))}</button></div>`;
+    b.dataset.lang = LANG;
+    $("copy-how").onclick = () => openCopyDlg();
+    $("copy-hide").onclick = () => { S.copyHidden = true; save(); b.hidden = true; };
+  }
+  b.hidden = false;
+}
+function openCopyDlg() {
+  $("copy-h").textContent = t("copyTitle");
+  const body = $("copy-body");
+  body.innerHTML = `<p>${esc(t("copyIntro"))}</p><ol class="steps">${t("copySteps").map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol>${md(t("copyProgress"))}${xferHtml()}`;
+  bindXfer(body);
+  $("copy-dlg").showModal();
+}
+function xferHtml() {
+  return `<section class="xfer"><h3>${esc(t("xferTitle"))}</h3><p>${esc(t("xferText"))}</p><div class="row"><button type="button" class="btn" data-xfer="export">${esc(t("xferExport"))}</button><button type="button" class="btn" data-xfer="import">${esc(t("xferImport"))}</button></div><div data-xfer-box hidden></div></section>`;
+}
+function bindXfer(root) {
+  const box = root.querySelector("[data-xfer-box]");
+  root.querySelectorAll("[data-xfer]").forEach(btn => btn.onclick = () => {
+    box.hidden = false;
+    if (btn.dataset.xfer === "export") {
+      const code = exportProgress();
+      box.innerHTML = `<label class="xmsg">${esc(t("xferExportNote"))}<textarea readonly rows="4" spellcheck="false">${esc(code)}</textarea></label><div class="row"><button type="button" class="btn dark" data-xcopy>${esc(t("xferCopy"))}</button><span class="xmsg" role="status"></span></div>`;
+      const area = box.querySelector("textarea");
+      area.focus(); area.select();
+      box.querySelector("[data-xcopy]").onclick = async () => {
+        let ok = false;
+        try { await navigator.clipboard.writeText(code); ok = true; } catch (e) { area.select(); try { ok = document.execCommand("copy"); } catch (e2) {} }
+        if (!ok) { area.focus(); area.select(); }
+        box.querySelector('[role="status"]').textContent = t(ok ? "xferCopied" : "xferCopyFail");
+      };
+    } else {
+      box.innerHTML = `<label class="xmsg">${esc(t("xferPaste"))}<textarea rows="4" spellcheck="false"></textarea></label><div class="row"><button type="button" class="btn dark" data-xapply>${esc(t("xferApply"))}</button><span class="xmsg" role="status"></span></div>`;
+      const area = box.querySelector("textarea");
+      area.focus();
+      box.querySelector("[data-xapply]").onclick = () => {
+        const r = importProgress(area.value);
+        box.querySelector('[role="status"]').textContent = r ? t("xferOk", { n: r.solved }) : t("xferBad");
+        if (r) { area.value = ""; renderAll(); loadEditor(); renderWelcome(); }
+      };
+    }
+  });
+}
+function exportProgress() {
+  const d = { app: "CodingTrainer", v: 1, progress: S.progress, levels: S.levels, drafts: S.drafts, generated: S.generated, selected: [...S.selected], mode: S.mode, strict: S.strict, examHistory: S.examHistory };
+  const bytes = new TextEncoder().encode(JSON.stringify(d));
+  let bin = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return "CT1-" + btoa(bin);
+}
+function importProgress(code) {
+  try {
+    const m = String(code).replace(/\s+/g, "").match(/^CT1-([A-Za-z0-9+/]+={0,2})$/);
+    if (!m) return null;
+    const bin = atob(m[1]);
+    const d = JSON.parse(new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))));
+    const obj = x => (x && typeof x === "object" && !Array.isArray(x)) ? x : {};
+    if (!d || d.app !== "CodingTrainer" || !d.progress || typeof d.progress !== "object") return null;
+    S.progress = obj(d.progress); S.levels = obj(d.levels);
+    S.drafts = Object.fromEntries(Object.entries(obj(d.drafts)).filter(([, v]) => typeof v === "string"));
+    S.generated = Array.isArray(d.generated) ? d.generated.filter(g => g && typeof g.id === "string" && g.generated && g.title && g.tests) : [];
+    if (Array.isArray(d.selected)) { const sel = d.selected.filter(c => typeof c === "string" && chapterOn(c)); if (sel.length) S.selected = new Set(sel); }
+    if (d.mode === "auto" || [1, 2, 3].includes(d.mode)) S.mode = d.mode;
+    if (typeof d.strict === "boolean") S.strict = d.strict;
+    if (Array.isArray(d.examHistory)) S.examHistory = d.examHistory;
+    S.welcomed = true; S.lastResult = null; S.lastError = null;
+    if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); if (n) S.currentId = n.id; }
+    save();
+    return { solved: Object.values(S.progress).filter(p => p && p.solved).length };
+  } catch (e) { return null; }
 }
 $("info-btn").onclick = () => { renderInfo(); $("info-dlg").showModal(); };
 $("info-close").onclick = () => $("info-dlg").close();
+$("copy-close").onclick = () => $("copy-dlg").close();
 
 
 /* ====================================================================== Mobile Navigation (Schublade) & Begrüßung */
@@ -2455,7 +2646,10 @@ function renderWelcome() {
   const w = $("welcome");
   if (S.welcomed || S.view === "exam") { w.hidden = true; return; }
   w.hidden = false;
-  w.innerHTML = `<h2>${esc(t("welcomeTitle"))}</h2><ol>${t("welcomeSteps").map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol><p>${esc(t("welcomeNote"))}</p><button type="button" class="btn dark" id="welcome-ok">${esc(t("welcomeOk"))}</button>`;
+  const steps = t("welcomeSteps").slice();
+  if (STANDALONE && Tutor.mode() === "goto") steps[3] = t("welcomeStep4NoAi");   // Version ohne eingebauten Tutor
+  if (STANDALONE && Tutor.mode() === "off") steps[3] = t("welcomeStep4Off");
+  w.innerHTML = `<h2>${esc(t("welcomeTitle"))}</h2><ol>${steps.map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol><p>${esc(t("welcomeNote"))}</p><button type="button" class="btn dark" id="welcome-ok">${esc(t("welcomeOk"))}</button>`;
   $("welcome-ok").onclick = () => { S.welcomed = true; save(); w.hidden = true; $("task-panel").focus({ preventScroll: true }); };
 }
 
