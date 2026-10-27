@@ -20,12 +20,12 @@
 {
   "1.1": {
     "de": ["KI-Tutor: Der Trainer erklärt Schritt für Schritt, wie Sie Ihre eigene Kopie anlegen – nur darin lässt claude.ai den Tutor zu.",
-           "Fortschritt sichern und in eine andere Kopie oder einen anderen Browser übernehmen (Info → Fortschritt übertragen).",
-           "Info → „Auf neue Version prüfen“ zeigt, ob es eine neuere Version gibt.",
+           "Fortschritt sichern und in eine andere Kopie oder einen anderen Browser übernehmen (Info oben rechts → Fortschritt übertragen).",
+           "Info (oben rechts) → „Auf neue Version prüfen“ zeigt, ob es eine neuere Version gibt.",
            "Klarere Hinweise, wenn der KI-Tutor nicht verfügbar ist, und kleinere Verbesserungen der Bedienung."],
     "en": ["AI tutor: the trainer explains step by step how to create your own copy – claude.ai only allows the tutor there.",
-           "Save your progress and load it in another copy or browser (Info → Transfer progress).",
-           "Info → “Check for a new version” shows whether a newer version exists.",
+           "Save your progress and load it in another copy or browser (About, top right → Transfer progress).",
+           "About (top right) → “Check for a new version” shows whether a newer version exists.",
            "Clearer messages when the AI tutor isn't available, and smaller usability improvements."]
   }
 }
@@ -127,10 +127,10 @@
         <p><b>So starten Sie – einmalig, in einer Minute:</b></p>
         <ol>
           <li><b>CodingTrainer öffnen</b> (Knopf oben). Er läuft auf claude.ai; Sie brauchen ein kostenloses Claude-Konto (Anleitung unten).</li>
-          <li>Oben links in der Kopfzeile von claude.ai auf <b>„Kopieren“</b> klicken. Nur in Ihrer eigenen Kopie lässt claude.ai den KI-Tutor zu.</li>
+          <li>Ganz oben im Fenster, in der Leiste <b>über</b> dem Trainer, steht links der Titel „CodingTrainer“. Dort auf <b>„Kopieren“</b> klicken. Nur in Ihrer eigenen Kopie lässt claude.ai den KI-Tutor zu.</li>
           <li>In Ihrer Kopie üben und ein <b>Lesezeichen</b> darauf setzen. Bei Ihrer ersten Anfrage an den Tutor fragt Claude einmal, ob die Seite Ihr Konto nutzen darf – bitte erlauben.</li>
         </ol>
-        <p class="small">Der KI-Tutor nutzt Ihr eigenes Konto und Kontingent. Ihr Lernfortschritt wird nur in Ihrem Browser gespeichert. Neue Versionen kommen nicht von selbst in Ihre Kopie – ob es eine gibt, sehen Sie im Trainer unter Info → „Auf neue Version prüfen“; den Fortschritt nehmen Sie dann unter Info → „Fortschritt übertragen“ mit.</p>
+        <p class="small">Der KI-Tutor nutzt Ihr eigenes Konto und Kontingent. Ihr Lernfortschritt wird nur in Ihrem Browser gespeichert. Neue Versionen kommen nicht von selbst in Ihre Kopie – ob es eine gibt, sehen Sie im Trainer unter Info (oben rechts) → „Auf neue Version prüfen“; den Fortschritt nehmen Sie dann unter Info → „Fortschritt übertragen“ mit.</p>
       </div>
       <details class="howto">
         <summary>Noch kein Claude-Konto? So legen Sie eines an</summary>
@@ -159,10 +159,10 @@
         <p><b>Getting started – once, in a minute:</b></p>
         <ol>
           <li><b>Open the CodingTrainer</b> (button above). It runs on claude.ai; you need a free Claude account (instructions below).</li>
-          <li>Click <b>“Copy”</b> at the top left of the claude.ai header. claude.ai only allows the AI tutor in your own copy.</li>
+          <li>At the very top of the window, in the bar <b>above</b> the trainer, you'll see the title “CodingTrainer” on the left. Click <b>“Copy”</b> there. claude.ai only allows the AI tutor in your own copy.</li>
           <li>Practise in your copy and <b>bookmark</b> it. On your first request to the tutor, Claude asks once whether the page may use your account – please allow it.</li>
         </ol>
-        <p class="small">The AI tutor uses your own account and usage. Your progress is stored in your browser only. New versions don't reach your copy by themselves – the trainer shows whether there is one under Info → “Check for a new version”; take your progress along under Info → “Transfer progress”.</p>
+        <p class="small">The AI tutor uses your own account and usage. Your progress is stored in your browser only. New versions don't reach your copy by themselves – the trainer shows whether there is one under About (top right) → “Check for a new version”; take your progress along under About → “Transfer progress”.</p>
       </div>
       <details class="howto">
         <summary>No Claude account yet? Here's how to create one</summary>
@@ -259,13 +259,13 @@
         (items.length ? "<ul>" + items.map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" : "") +
         "<p><b>" + (de ? "So steigen Sie um:" : "How to switch:") + "</b></p><ol>" +
         (de
-          ? "<li>In Ihrer bisherigen Kopie: Info → Fortschritt übertragen → „Fortschritt sichern“ und den Code kopieren.</li>" +
-            "<li>Hier auf <b>CodingTrainer öffnen</b> klicken und oben links auf claude.ai <b>„Kopieren“</b> wählen.</li>" +
-            "<li>In der neuen Kopie: Info → Fortschritt übertragen → „Fortschritt übernehmen“ und den Code einfügen.</li>" +
+          ? "<li>In Ihrer bisherigen Kopie: Info (oben rechts) → Fortschritt übertragen → „Fortschritt sichern“ und den Code kopieren.</li>" +
+            "<li>Hier auf <b>CodingTrainer öffnen</b> klicken und in der Leiste ganz oben, links beim Titel „CodingTrainer“, <b>„Kopieren“</b> wählen.</li>" +
+            "<li>In der neuen Kopie: Info (oben rechts) → Fortschritt übertragen → „Fortschritt übernehmen“ und den Code einfügen.</li>" +
             "<li>Ein Lesezeichen auf die neue Kopie setzen. Die alte Kopie brauchen Sie danach nicht mehr.</li>"
-          : "<li>In your current copy: Info → Transfer progress → “Save progress” and copy the code.</li>" +
-            "<li>Click <b>Open the CodingTrainer</b> here and choose <b>“Copy”</b> at the top left on claude.ai.</li>" +
-            "<li>In the new copy: Info → Transfer progress → “Load progress” and paste the code.</li>" +
+          : "<li>In your current copy: About (top right) → Transfer progress → “Save progress” and copy the code.</li>" +
+            "<li>Click <b>Open the CodingTrainer</b> here and choose <b>“Copy”</b> in the bar at the very top, next to the title “CodingTrainer” on the left.</li>" +
+            "<li>In the new copy: About (top right) → Transfer progress → “Load progress” and paste the code.</li>" +
             "<li>Bookmark the new copy. You no longer need the old one.</li>") + "</ol>";
     }
 

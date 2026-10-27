@@ -140,7 +140,7 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; le
 .chap-row label.chap-label { display: contents; }
 .chap-row input { margin: 0; accent-color: var(--accent); width: 16px; height: 16px; }
 .chap-num { font: 700 15px/1 var(--font-display); border: 1.5px solid var(--ink); height: 26px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
-.chap-title { font-size: 14px; line-height: 1.25; overflow-wrap: anywhere; }
+.chap-title { font-size: 14px; line-height: 1.25; overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; }
 .chap-count { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .chap-bar { grid-column: 2 / 3; height: 3px; background: var(--line); border-radius: 2px; overflow: hidden; }
 .chap-bar i { display: block; height: 100%; background: var(--ok); }
@@ -149,7 +149,7 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; le
 .ex-list { list-style: none; margin: 2px 0 6px 44px; padding: 0; display: grid; gap: 1px; }
 .ex-list button { width: 100%; text-align: left; display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 6px; align-items: center; border: 0; background: transparent; padding: 3px 6px; border-radius: 4px; cursor: pointer; font-size: 13px; }
 .ex-list button:hover { background: var(--code-bg); }
-.ex-list button > span:nth-child(2) { overflow-wrap: anywhere; min-width: 0; }
+.ex-list button > span:nth-child(2) { overflow-wrap: break-word; hyphens: auto; -webkit-hyphens: auto; min-width: 0; }
 .ex-list button.off-level { color: var(--muted); }
 .ex-list button.off-level .pips i.on { background: var(--muted); border-color: var(--muted); }
 .ex-list button[aria-current="true"] { background: var(--accent-soft); }
@@ -707,6 +707,9 @@ const CHAPTERS = [
   { id: "B", file: "B-fehlerbehandlung.html", de: "Fehlerbehandlung", en: "Error handling" },
 ];
 const CH_ORDER = CHAPTERS.map(c => c.id);
+// Trennstellen für lange Wörter in der schmalen Kapitelliste (nicht jeder Browser trennt Deutsch selbst)
+const SHY = ["Kontroll|strukturen", "Daten|strukturen", "Repr\u00e4sen|tation", "Objekt|orientierte", "Program|mieren", "Program|mierung", "Fehler|behandlung", "Biblio|theken", "repre|sentation", "program|ming"];
+const shy = html => SHY.reduce((h, w) => h.split(w.replace("|", "")).join(w.replace("|", "\u00ad")), html);
 // Abschnitte des Skripts (ID → Kapitel, Nummer, Titel, Anker)
 const SEC = {};
 [
@@ -850,14 +853,14 @@ const I18N = {
   copyHide: { de: "Ausblenden", en: "Dismiss" },
   copyTitle: { de: "KI-Tutor einschalten", en: "Turn on the AI tutor" },
   copyIntro: { de: "claude.ai erlaubt KI-Funktionen in geteilten Artefakten nur in einer eigenen Kopie. Legen Sie sich deshalb einmalig eine Kopie des CodingTrainers an. Der Tutor nutzt dann Ihr eigenes Claude-Konto und Kontingent.", en: "claude.ai only allows AI features of a shared artifact in your own copy. So create a copy of the CodingTrainer once. The tutor then uses your own Claude account and usage." },
-  copySteps: { de: ["Klicken Sie oben links in der Kopfzeile von claude.ai auf **„Kopieren“**. claude.ai legt den CodingTrainer als Ihr eigenes Artefakt an.", "Öffnen Sie Ihre Kopie, falls sie sich nicht von selbst öffnet. Bei Ihrer ersten Anfrage an den Tutor fragt Claude einmal, ob die Seite Ihr Konto nutzen darf – bitte erlauben Sie das.", "Setzen Sie ein Lesezeichen auf Ihre Kopie und üben Sie künftig dort. Sie finden sie auch auf claude.ai in der Liste Ihrer Artefakte."], en: ["Click **“Copy”** at the top left of the claude.ai header. claude.ai creates the CodingTrainer as your own artifact.", "Open your copy if it doesn't open by itself. On your first request to the tutor, Claude asks once whether the page may use your account – please allow it.", "Bookmark your copy and practise there from now on. You'll also find it on claude.ai in your list of artifacts."] },
-  copyProgress: { de: "**Schon hier geübt?** Jede Kopie speichert ihren Fortschritt getrennt. Sichern Sie ihn unten und übernehmen Sie ihn in Ihrer Kopie unter **Info → Fortschritt übertragen**.", en: "**Already practised here?** Each copy keeps its progress separately. Save it below and load it in your copy under **Info → Transfer progress**." },
+  copySteps: { de: ["Ganz oben im Fenster, in der Leiste **über** dem Trainer, steht links der Titel „CodingTrainer“. Klicken Sie dort auf **„Kopieren“**. claude.ai legt den CodingTrainer dann als Ihr eigenes Artefakt an.", "Öffnen Sie Ihre Kopie, falls sie sich nicht von selbst öffnet. Bei Ihrer ersten Anfrage an den Tutor fragt Claude einmal, ob die Seite Ihr Konto nutzen darf – bitte erlauben Sie das.", "Setzen Sie ein Lesezeichen auf Ihre Kopie und üben Sie künftig dort. Sie finden sie auch auf claude.ai in der Liste Ihrer Artefakte."], en: ["At the very top of the window, in the bar **above** the trainer, you'll see the title “CodingTrainer” on the left. Click **“Copy”** there. claude.ai then creates the CodingTrainer as your own artifact.", "Open your copy if it doesn't open by itself. On your first request to the tutor, Claude asks once whether the page may use your account – please allow it.", "Bookmark your copy and practise there from now on. You'll also find it on claude.ai in your list of artifacts."] },
+  copyProgress: { de: "**Schon hier geübt?** Jede Kopie speichert ihren Fortschritt getrennt. Sichern Sie ihn unten und übernehmen Sie ihn in Ihrer Kopie unter **Info** (oben rechts) → **Fortschritt übertragen**.", en: "**Already practised here?** Each copy keeps its progress separately. Save it below and load it in your copy under **About** (top right) → **Transfer progress**." },
   verCheck: { de: "Auf neue Version prüfen", en: "Check for a new version" },
   verNote: { de: "Neue Versionen kommen nicht von selbst in Ihre Kopie. Die Startseite zeigt, ob es eine neuere gibt und wie Sie umsteigen.", en: "New versions don't reach your copy by themselves. The start page shows whether there is a newer one and how to switch." },
   xferTitle: { de: "Fortschritt übertragen", en: "Transfer progress" },
   xferText: { de: "Ihr Fortschritt (gelöste Aufgaben, Stufen, Ihr Code, erzeugte Aufgaben) ist nur in diesem Browser und in dieser Kopie gespeichert. So nehmen Sie ihn in eine neue Kopie oder einen anderen Browser mit.", en: "Your progress (solved exercises, levels, your code, generated exercises) is stored only in this browser and this copy. This is how you take it to a new copy or another browser." },
   xferExport: { de: "Fortschritt sichern", en: "Save progress" },
-  xferExportNote: { de: "Kopieren Sie diesen Code und fügen Sie ihn in der anderen Kopie unter Info → Fortschritt übertragen → „Fortschritt übernehmen“ ein.", en: "Copy this code and paste it in the other copy under Info → Transfer progress → “Load progress”." },
+  xferExportNote: { de: "Kopieren Sie diesen Code und fügen Sie ihn in der anderen Kopie unter Info (oben rechts) → Fortschritt übertragen → „Fortschritt übernehmen“ ein.", en: "Copy this code and paste it in the other copy under About (top right) → Transfer progress → “Load progress”." },
   xferCopy: { de: "Code kopieren", en: "Copy code" },
   xferCopied: { de: "Kopiert.", en: "Copied." },
   xferCopyFail: { de: "Automatisches Kopieren nicht möglich – der Code ist markiert, bitte mit Strg+C (Mac: ⌘+C) kopieren.", en: "Automatic copying isn't possible – the code is selected, please copy it with Ctrl+C (Mac: ⌘+C)." },
@@ -948,7 +951,7 @@ const I18N = {
   constructOff: { de: "wird in diesem Semester nicht behandelt. Lösen Sie die Aufgabe ohne.", en: "is not covered this semester. Solve the exercise without it." },
   withoutTopics: { de: "ohne {t} (dieses Semester)", en: "without {t} (this semester)" },
   linkIntro: { de: "Der KI-Tutor öffnet **Claude in einem neuen Tab** – mit einer fertig vorbereiteten Anfrage: Aufgabe, Ihr Code, das letzte Testergebnis, die Regeln für den Tutor und die passenden Stellen im Skript.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Bitte keine persönlichen Daten in den Code schreiben.", en: "The AI tutor opens **Claude in a new tab** – with a ready-made request: the exercise, your code, the latest test result, the tutor rules and the matching sections of the notes.\n\nYou need a (free) Claude account; requests count towards your own usage. Please don't put personal data in your code." },
-  gotoIntro: { de: "Den KI-Tutor gibt es in der **Claude-Version** des CodingTrainers: Dort kennt er Aufgabe, Code und Testergebnis und antwortet direkt im Seitenbereich.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Legen Sie sich dort einmalig eine eigene Kopie an (oben links „Kopieren“) – nur darin darf der Tutor Ihr Konto nutzen. Ihren bisherigen Fortschritt nehmen Sie unter Info → „Fortschritt übertragen“ mit.", en: "The AI tutor is part of the **Claude version** of the CodingTrainer: there it knows the exercise, your code and the test result and answers right in the side panel.\n\nYou need a (free) Claude account; requests count towards your own usage. Create your own copy there once (“Copy” at the top left) – only in it may the tutor use your account. Take your progress along under Info → “Transfer progress”." },
+  gotoIntro: { de: "Den KI-Tutor gibt es in der **Claude-Version** des CodingTrainers: Dort kennt er Aufgabe, Code und Testergebnis und antwortet direkt im Seitenbereich.\n\nSie brauchen dafür ein (kostenloses) Claude-Konto; die Anfragen zählen zu Ihrem eigenen Kontingent. Legen Sie sich dort einmalig eine eigene Kopie an („Kopieren“ in der Leiste ganz oben, links beim Titel „CodingTrainer“) – nur darin darf der Tutor Ihr Konto nutzen. Ihren bisherigen Fortschritt nehmen Sie unter Info (oben rechts) → „Fortschritt übertragen“ mit.", en: "The AI tutor is part of the **Claude version** of the CodingTrainer: there it knows the exercise, your code and the test result and answers right in the side panel.\n\nYou need a (free) Claude account; requests count towards your own usage. Create your own copy there once (“Copy” in the bar at the very top, next to the title “CodingTrainer” on the left) – only in it may the tutor use your account. Take your progress along under About (top right) → “Transfer progress”." },
   gotoBtn: { de: "Trainer mit KI-Tutor öffnen", en: "Open the trainer with AI tutor" },
   linkOpened: { de: "In Claude geöffnet. Ist das Eingabefeld dort leer, liegt der Text in der Zwischenablage: mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "Opened in Claude. If the input field there is empty, the text is on the clipboard: paste with Ctrl+V (Mac: ⌘+V) and send." },
   linkOpenedLong: { de: "Die Anfrage ist für einen direkten Link zu lang und liegt in der Zwischenablage: In Claude mit Strg+V (Mac: ⌘+V) einfügen und absenden.", en: "The request is too long for a direct link and is on the clipboard: paste it in Claude with Ctrl+V (Mac: ⌘+V) and send." },
@@ -1002,7 +1005,7 @@ const I18N = {
   welcomeSteps: { de: ["Lesen Sie die Aufgabe. Die Verweise unter „Im Skript“ führen direkt zum passenden Abschnitt.", "Schreiben Sie Ihren Code im Editor und probieren Sie ihn mit **Ausführen** aus.", "Klicken Sie auf **Prüfen**, um Ihre Lösung automatisch testen zu lassen. Sind alle Tests bestanden, gilt die Aufgabe als gelöst.", "Kommen Sie nicht weiter? Der **KI-Tutor** gibt Ihnen Hinweise, ohne die Lösung zu verraten."], en: ["Read the exercise. The links under “In the notes” take you straight to the matching section.", "Write your code in the editor and try it out with **Run**.", "Click **Check** to have your solution tested automatically. Once all tests pass, the exercise counts as solved.", "Stuck? The **AI tutor** gives you hints without revealing the solution."] },
   welcomeStep4NoAi: { de: "Kommen Sie nicht weiter? Nach zwei Prüfversuchen können Sie die Musterlösung ansehen. Einen **KI-Tutor**, der Hinweise gibt, hat die Claude-Version (siehe Tutor-Bereich).", en: "Stuck? After two checks you can view the reference solution. The Claude version has an **AI tutor** that gives hints (see the tutor panel)." },
   welcomeStep4Off: { de: "Kommen Sie nicht weiter? Die Verweise unter „Im Skript“ führen zur passenden Erklärung, und nach zwei Prüfversuchen können Sie die Musterlösung ansehen.", en: "Stuck? The links under “In the notes” lead to the matching explanation, and after two checks you can view the reference solution." },
-  welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert; unter „Info“ können Sie ihn sichern und übertragen. Dort finden Sie auch weitere Erklärungen.", en: "Your progress is stored in this browser only; under “Info” you can save and transfer it. You'll also find more explanations there." },
+  welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert; unter **Info** (oben rechts) können Sie ihn sichern und übertragen. Dort finden Sie auch weitere Erklärungen.", en: "Your progress is stored in this browser only; under **About** (top right) you can save and transfer it. You'll also find more explanations there." },
   welcomeOk: { de: "Verstanden, los geht's", en: "Got it, let's start" },
   preSub: { de: "ohne Programmieraufgaben", en: "no programming exercises" },
   preSr: { de: "Kapitel 1 bis 3 des Skripts:", en: "Chapters 1 to 3 of the notes:" },
@@ -1426,7 +1429,7 @@ function renderChapters() {
       return `<li><button type="button" class="${e.lvl === targetLevel(e.ch) ? "" : "off-level"}" data-ex="${esc(e.id)}" aria-current="${e.id === S.currentId}"><span class="ex-state ${st}" aria-hidden="true"></span><span>${esc(L(e.title))}${e.generated ? `<span class="ex-ai">AI</span>` : ""}<span class="sr">, ${esc(t("levelOf", { l: e.lvl }))}, ${esc(stTxt)}</span></span>${pips(e.lvl).replace('role="img"', 'aria-hidden="true"')}</button></li>`;
     }).join("")}</ul>` : "";
     const inner = `<span class="chap-num">${c.id}</span>
-        <span class="chap-title">${esc(L(c))}${c.id === "9" && offKeys().length ? `<span class="chap-sub">${esc(t("withoutTopics", { t: offKeys().join(", ") }))}</span>` : ""}</span>
+        <span class="chap-title">${shy(esc(L(c)))}${c.id === "9" && offKeys().length ? `<span class="chap-sub">${esc(t("withoutTopics", { t: offKeys().join(", ") }))}</span>` : ""}</span>
         <span class="chap-count">${solved}/${ex.length}</span>`;
     const bar = `<span class="chap-bar" aria-hidden="true"><i style="width:${ex.length ? (100 * solved / ex.length) : 0}%"></i></span>`;
     const box = `<input type="checkbox" data-ch="${c.id}" ${on ? "checked" : ""} aria-label="${esc(t("includeChapter", { ch: c.id }))}">`;
@@ -2486,11 +2489,11 @@ function renderInfo() {
   const home = `<a href="${HOME_URL}" target="_blank" rel="noopener">${de ? "Startseite" : "start page"}</a>`;
   const tmode = Tutor.mode();
   const tutorDe = !STANDALONE
-    ? `<li><b>KI-Tutor:</b> gibt Feedback und gestufte Tipps und verweist auf die passenden Abschnitte im Skript, ohne fertige Lösungen zu verraten. Er nutzt Ihr eigenes Claude-Konto und Kontingent (ein kostenloses Konto genügt; wie Sie eines anlegen, steht auf der ${home}). claude.ai lässt den Tutor nur in Ihrer <b>eigenen Kopie</b> des CodingTrainers zu: Haben Sie den Trainer über den geteilten Link geöffnet, legen Sie sich einmalig eine an (oben links „Kopieren“).</li>`
+    ? `<li><b>KI-Tutor:</b> gibt Feedback und gestufte Tipps und verweist auf die passenden Abschnitte im Skript, ohne fertige Lösungen zu verraten. Er nutzt Ihr eigenes Claude-Konto und Kontingent (ein kostenloses Konto genügt; wie Sie eines anlegen, steht auf der ${home}). claude.ai lässt den Tutor nur in Ihrer <b>eigenen Kopie</b> des CodingTrainers zu: Haben Sie den Trainer über den geteilten Link geöffnet, legen Sie sich einmalig eine an („Kopieren“ in der Leiste ganz oben, links beim Titel „CodingTrainer“).</li>`
     : tmode === "goto" ? `<li><b>KI-Tutor:</b> ist in dieser Version nicht eingebaut. Die Claude-Version mit KI-Tutor und eine Anleitung finden Sie auf der ${home}.</li>`
     : tmode === "link" ? `<li><b>KI-Tutor:</b> öffnet Claude in einem neuen Tab mit einer vorbereiteten Anfrage (eigenes, kostenloses Claude-Konto nötig).</li>` : "";
   const tutorEn = !STANDALONE
-    ? `<li><b>AI tutor:</b> gives feedback and graded hints and links to the matching sections of the notes without handing out finished solutions. It uses your own Claude account and usage (a free account is enough; the ${home} explains how to create one). claude.ai only allows the tutor in your <b>own copy</b> of the CodingTrainer: if you opened the trainer via the shared link, create one once (“Copy” at the top left).</li>`
+    ? `<li><b>AI tutor:</b> gives feedback and graded hints and links to the matching sections of the notes without handing out finished solutions. It uses your own Claude account and usage (a free account is enough; the ${home} explains how to create one). claude.ai only allows the tutor in your <b>own copy</b> of the CodingTrainer: if you opened the trainer via the shared link, create one once (“Copy” in the bar at the very top, next to the title “CodingTrainer” on the left).</li>`
     : tmode === "goto" ? `<li><b>AI tutor:</b> not built into this version. You'll find the Claude version with AI tutor and instructions on the ${home}.</li>`
     : tmode === "link" ? `<li><b>AI tutor:</b> opens Claude in a new tab with a prepared request (your own free Claude account needed).</li>` : "";
   // Versionsprüfung nur in eigenen Kopien (in der geteilten Ansicht und der Version ohne Tutor ist der Stand immer aktuell)
@@ -2657,7 +2660,7 @@ function renderWelcome() {
   const steps = t("welcomeSteps").slice();
   if (STANDALONE && Tutor.mode() === "goto") steps[3] = t("welcomeStep4NoAi");   // Version ohne eingebauten Tutor
   if (STANDALONE && Tutor.mode() === "off") steps[3] = t("welcomeStep4Off");
-  w.innerHTML = `<h2>${esc(t("welcomeTitle"))}</h2><ol>${steps.map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol><p>${esc(t("welcomeNote"))}</p><button type="button" class="btn dark" id="welcome-ok">${esc(t("welcomeOk"))}</button>`;
+  w.innerHTML = `<h2>${esc(t("welcomeTitle"))}</h2><ol>${steps.map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol><p>${md(t("welcomeNote")).replace(/^<p>|<\/p>$/g, "")}</p><button type="button" class="btn dark" id="welcome-ok">${esc(t("welcomeOk"))}</button>`;
   $("welcome-ok").onclick = () => { S.welcomed = true; save(); w.hidden = true; $("task-panel").focus({ preventScroll: true }); };
 }
 

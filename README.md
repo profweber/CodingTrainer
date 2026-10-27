@@ -19,12 +19,12 @@
 Die Startseite erklärt Schritt für Schritt, was man braucht, und führt zum Trainer auf claude.ai:
 
 1. **CodingTrainer öffnen** – mit dem eigenen, kostenlosen Claude-Konto (die Startseite erklärt auch, wie man eines anlegt).
-2. **„Kopieren“** oben links auf claude.ai klicken. claude.ai lässt KI-Funktionen in einem per Link geteilten Artefakt nur für dessen Eigentümer zu; in der eigenen Kopie funktioniert der Tutor mit dem Konto der Studierenden. Die Anfragen zählen zu deren eigenem Kontingent – nicht zu dem der Lehrenden.
+2. **„Kopieren“** klicken – in der Leiste von claude.ai ganz oben, links beim Titel „CodingTrainer“. claude.ai lässt KI-Funktionen in einem per Link geteilten Artefakt nur für dessen Eigentümer zu; in der eigenen Kopie funktioniert der Tutor mit dem Konto der Studierenden. Die Anfragen zählen zu deren eigenem Kontingent – nicht zu dem der Lehrenden.
 3. **In der eigenen Kopie üben** und ein Lesezeichen setzen.
 
-Wer den Trainer über den geteilten Link öffnet, sieht oben einen Hinweis mit derselben Anleitung. Python läuft vollständig im Browser (Pyodide); der Lernfortschritt wird nur im Browser gespeichert und lässt sich unter Info → „Fortschritt übertragen“ in eine andere Kopie mitnehmen.
+Wer den Trainer über den geteilten Link öffnet, sieht oben einen Hinweis mit derselben Anleitung. Python läuft vollständig im Browser (Pyodide); der Lernfortschritt wird nur im Browser gespeichert und lässt sich unter Info (oben rechts) → „Fortschritt übertragen“ in eine andere Kopie mitnehmen.
 
-**Neue Versionen** erreichen bestehende Kopien nicht von selbst. Im Trainer führt Info → „Auf neue Version prüfen“ zur Startseite; sie zeigt, ob die Kopie aktuell ist, was neu ist und wie man umsteigt (Fortschritt sichern, neu kopieren, Fortschritt übernehmen).
+**Neue Versionen** erreichen bestehende Kopien nicht von selbst. Im Trainer führt Info (oben rechts) → „Auf neue Version prüfen“ zur Startseite; sie zeigt, ob die Kopie aktuell ist, was neu ist und wie man umsteigt (Fortschritt sichern, neu kopieren, Fortschritt übernehmen).
 
 Wer kein Claude-Konto nutzen möchte, findet unter https://profweber.github.io/CodingTrainer/ohne-tutor/ dieselben Aufgaben ohne KI-Tutor (eigener Lernfortschritt, keine Daten an Dritte).
 
