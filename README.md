@@ -9,6 +9,7 @@
 - Automatische Tests mit verständlichen Rückmeldungen und Verweisen auf die passenden Abschnitte im Skript
 - Klausurtraining mit zufälligen Aufgaben aus den gewählten Kapiteln
 - KI-Tutor direkt in der Seite: gibt Hinweise und Feedback, verrät aber keine fertigen Lösungen
+- Neue Aufgaben auf Knopfdruck: Claude erfindet zusätzliche Aufgaben passend zu Kapitel und Niveau; der Trainer prüft sie automatisch (Musterlösung besteht alle Tests, Startcode nicht, nur Konstrukte aus dem Skript), bevor sie erscheinen
 - Formeln sauber gesetzt (KaTeX, lokal eingebunden)
 - Deutsch und Englisch
 
