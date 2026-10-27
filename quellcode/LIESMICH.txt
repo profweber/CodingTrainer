@@ -38,4 +38,4 @@ Claude-Version: mit dem Artifact-Werkzeug von Claude an dieselbe Adresse veröff
 claude/index.html als Seite, claude/worker.js, claude/config.json und die Dateien aus
 ../ohne-tutor/katex/ als zusätzliche Dateien unter katex/… (z.B. katex/katex.min.js).
 Die Python-Laufzeit (py/…) liegt dort bereits und bleibt beim Aktualisieren erhalten.
-Die Adresse steht in ../index.html (Weiterleitung) und in den config.json-Dateien.
+Die Adresse steht in ../index.html (Startseite) und in den config.json-Dateien.

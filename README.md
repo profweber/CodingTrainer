@@ -12,7 +12,7 @@
 - Formeln sauber gesetzt (KaTeX, lokal eingebunden)
 - Deutsch und Englisch
 
-Der Link leitet zum Trainer auf claude.ai weiter. Dort läuft der KI-Tutor; Studierende melden sich mit ihrem eigenen (kostenlosen) Claude-Konto an, und die Anfragen zählen zu ihrem eigenen Kontingent – nicht zu dem der Lehrenden. Python läuft vollständig im Browser (Pyodide), der Lernfortschritt wird nur im Browser gespeichert.
+Die Startseite erklärt kurz, was man braucht, und führt zum Trainer auf claude.ai. Dort läuft der KI-Tutor; Studierende melden sich mit ihrem eigenen (kostenlosen) Claude-Konto an, und die Anfragen zählen zu ihrem eigenen Kontingent – nicht zu dem der Lehrenden. Python läuft vollständig im Browser (Pyodide), der Lernfortschritt wird nur im Browser gespeichert.
 
 Wer kein Claude-Konto nutzen möchte, findet unter https://profweber.github.io/CodingTrainer/ohne-tutor/ dieselben Aufgaben ohne KI-Tutor (eigener Lernfortschritt, keine Daten an Dritte).
 
@@ -26,7 +26,7 @@ Version 1.0 · abgestimmt auf Skriptversion 4.0
 
 | Pfad | Inhalt |
 |---|---|
-| `index.html` | Weiterleitung zur Claude-Version (die Adresse steht viermal in der Datei) |
+| `index.html` | Startseite mit Knopf zur Claude-Version und Link zur Version ohne Tutor (die Adresse der Claude-Version steht dreimal in der Datei). Wer „beim nächsten Besuch überspringen“ wählt, wird direkt weitergeleitet; mit `?start` am Ende der Adresse erscheint die Startseite wieder. |
 | `ohne-tutor/` | vollständige Website ohne KI-Tutor (läuft direkt auf GitHub Pages; `katex/` enthält die Formelschrift) |
 | `quellcode/` | Aufgabenbank, Prüfwerkzeuge und Vorlage, aus der beide Versionen erzeugt werden – Details in `quellcode/LIESMICH.txt` |
 | `quellcode/claude/` | die Claude-Version zum Veröffentlichen auf claude.ai, mit ihrer eigenen `config.json` |

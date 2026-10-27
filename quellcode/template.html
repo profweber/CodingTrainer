@@ -796,9 +796,14 @@ const I18N = {
   solutionLocked: { de: "Die Musterlösung erscheint nach zwei Prüfversuchen oder dem dritten Tipp.", en: "The reference solution appears after two check attempts or the third hint." },
   solutionNote: { de: "Wer die Lösung ansieht, bekommt die nächste Aufgabe eine Stufe leichter.", en: "Viewing the solution makes the next exercise one level easier." },
   scriptRefs: { de: "Im Skript:", en: "In the notes:" },
-  aiUnavailable: { de: "Der KI-Tutor ist nur verfügbar, wenn diese Seite in Claude geöffnet ist und Sie angemeldet sind. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "The AI tutor is only available when this page is opened in Claude and you are signed in. All exercises and tests work without it." },
-  aiDenied: { de: "Der KI-Tutor wurde für diese Seite nicht freigegeben. Die Übungen funktionieren weiterhin.", en: "The AI tutor was not allowed for this page. The exercises still work." },
-  aiRate: { de: "Gerade zu viele Anfragen. Bitte in einer Minute erneut versuchen.", en: "Too many requests right now. Please try again in a minute." },
+  aiUnavailable: { de: "Der KI-Tutor steht gerade nicht zur Verfügung. Er braucht ein (kostenloses) Claude-Konto: Melden Sie sich bei claude.ai an und laden Sie diese Seite danach neu. Alle Übungen und Tests funktionieren auch ohne Tutor.", en: "The AI tutor is not available right now. It needs a (free) Claude account: sign in at claude.ai and then reload this page. All exercises and tests also work without the tutor." },
+  aiOffConfig: { de: "Der KI-Tutor ist in dieser Version ausgeschaltet. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "The AI tutor is switched off in this version. All exercises and tests work without it." },
+  aiNoAccount: { de: "Für Ihr Claude-Konto ist der KI-Tutor hier nicht verfügbar. Alle Übungen und Tests funktionieren auch ohne ihn.", en: "The AI tutor is not available for your Claude account here. All exercises and tests work without it." },
+  aiConsent: { de: "Beim ersten Klick fragt Claude einmal, ob diese Seite den KI-Tutor über Ihr Claude-Konto nutzen darf – bitte erlauben Sie das. Die Anfragen zählen zu Ihrem eigenen Kontingent.", en: "On your first click, Claude asks once whether this page may use the AI tutor through your Claude account – please allow it. Requests count towards your own usage." },
+  aiExpired: { de: "Ihre Anmeldung bei Claude ist abgelaufen. Bitte melden Sie sich neu an und laden Sie die Seite danach neu.", en: "Your Claude sign-in has expired. Please sign in again and then reload the page." },
+  aiRefused: { de: "Auf diese Anfrage gibt es keine Antwort. Bitte formulieren Sie sie anders.", en: "There is no answer to this request. Please rephrase it." },
+  aiDenied: { de: "Sie haben dem KI-Tutor den Zugriff nicht erlaubt. Wenn Sie ihn doch nutzen möchten, laden Sie die Seite neu und erlauben Sie die Abfrage. Die Übungen funktionieren auch ohne Tutor.", en: "You did not allow the AI tutor. If you want to use it after all, reload the page and allow the request. The exercises also work without the tutor." },
+  aiRate: { de: "Gerade zu viele Anfragen – oder Ihr Claude-Kontingent ist für den Moment aufgebraucht. Bitte versuchen Sie es später noch einmal.", en: "Too many requests right now – or your Claude usage limit has been reached for the moment. Please try again later." },
   aiFail: { de: "Die Antwort konnte nicht geladen werden. Bitte erneut versuchen.", en: "The answer could not be loaded. Please try again." },
   aiThinking: { de: "Der Tutor denkt nach …", en: "The tutor is thinking …" },
   aiWelcome: { de: "Ich kenne die Aufgabe, Ihren Code und das letzte Testergebnis. Ich verrate keine fertige Lösung, sondern helfe Ihnen, selbst draufzukommen – und zeige die passenden Stellen im Skript.", en: "I know the exercise, your code and the latest test result. I won't hand out a finished solution, but I'll help you get there yourself – and point you to the right places in the notes." },
@@ -914,7 +919,7 @@ const I18N = {
   checkTip: { de: "Automatische Tests laufen lassen – so wird die Aufgabe als gelöst gewertet", en: "Run the automatic tests – this is how the exercise counts as solved" },
   resetTip: { de: "Ihren Code verwerfen und den Startcode wiederherstellen", en: "Discard your code and restore the starter code" },
   welcomeTitle: { de: "So funktioniert der CodingTrainer", en: "How the CodingTrainer works" },
-  welcomeSteps: { de: ["Aufgabe lesen – die Chips „Im Skript“ führen zur passenden Stelle im Skript.", "Code im Editor schreiben und mit **Ausführen** ausprobieren.", "Mit **Prüfen** die automatischen Tests starten. Sind alle grün, ist die Aufgabe gelöst.", "Nicht weiter? Der **KI-Tutor** gibt Hinweise, ohne die Lösung zu verraten."], en: ["Read the exercise – the “In the notes” chips lead to the matching section of the notes.", "Write code in the editor and try it with **Run**.", "Start the automatic tests with **Check**. When all are green, the exercise is solved.", "Stuck? The **AI tutor** gives hints without giving away the solution."] },
+  welcomeSteps: { de: ["Lesen Sie die Aufgabe. Die Verweise unter „Im Skript“ führen direkt zum passenden Abschnitt.", "Schreiben Sie Ihren Code im Editor und probieren Sie ihn mit **Ausführen** aus.", "Klicken Sie auf **Prüfen**, um Ihre Lösung automatisch testen zu lassen. Sind alle Tests bestanden, gilt die Aufgabe als gelöst.", "Kommen Sie nicht weiter? Der **KI-Tutor** gibt Ihnen Hinweise, ohne die Lösung zu verraten."], en: ["Read the exercise. The links under “In the notes” take you straight to the matching section.", "Write your code in the editor and try it out with **Run**.", "Click **Check** to have your solution tested automatically. Once all tests pass, the exercise counts as solved.", "Stuck? The **AI tutor** gives you hints without revealing the solution."] },
   welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert. Weitere Erklärungen finden Sie jederzeit unter „Info“.", en: "Your progress is stored in this browser only. More explanations are available any time under “About”." },
   welcomeOk: { de: "Verstanden, los geht's", en: "Got it, let's start" },
   mbarExam: { de: "Aufgabe {i} von {n}", en: "Exercise {i} of {n}" },
@@ -1610,13 +1615,15 @@ const Tutor = {
       try { this.sample = await window.claude?.use?.("sample"); } catch (e) { this.sample = null; }
     }
     if (!this.sample) this.sample = null;
-    document.documentElement.classList.toggle("no-tutor", this.mode() === "off");
+    // Tutor-Bereich nur ausblenden, wenn er per config.json abgeschaltet ist; sonst erklärt er, warum er nicht verfügbar ist
+    document.documentElement.classList.toggle("no-tutor", STANDALONE && CONFIG.tutor.claude_link === false);
     this.renderChrome(); this.renderChat();
   },
   // "inline": Claude direkt in der Seite · "link": Anfrage wird in claude.ai (eigenes Konto) geöffnet · "off"
   mode() {
     if (this.sample && !this.disabled) return "inline";
     if (this.sample === undefined && !STANDALONE) return "pending";
+    if (!STANDALONE) return "off";   // in Claude geöffnet, aber ohne Tutor (nicht angemeldet oder nicht erlaubt)
     if (CONFIG.tutor.claude_link === false) return "off";
     return CONFIG.tutor.artifact_url ? "goto" : "link";
   },
@@ -1650,7 +1657,10 @@ const Tutor = {
     if (S.view === "exam") { chat.innerHTML = `<div class="ai-off">${esc(examRunning() ? t("tutorExamOff") : t("tutorExamDone"))}</div>`; return; }
     const mode = this.mode();
     if (mode === "pending") { chat.innerHTML = ""; return; }
-    if (mode === "off") { chat.innerHTML = `<div class="ai-off">${esc(this.disabled ? t("aiDenied") : t("aiUnavailable"))}</div>`; return; }
+    if (mode === "off") {
+      const why = this.offCode === "sampling_disabled" ? "aiNoAccount" : this.offCode === "session_expired" ? "aiExpired" : this.disabled ? "aiDenied" : STANDALONE ? "aiOffConfig" : "aiUnavailable";
+      chat.innerHTML = `<div class="ai-off">${esc(t(why))}</div>`; return;
+    }
     if (mode === "goto") {
       chat.innerHTML = `<div class="link-intro">${md(t("gotoIntro"))}<p style="margin-top:10px"><a class="btn primary" style="text-decoration:none" href="${esc(CONFIG.tutor.artifact_url)}" target="_top">${esc(t("gotoBtn"))}</a></p></div>`;
       return;
@@ -1666,6 +1676,7 @@ const Tutor = {
       return;
     }
     let html = `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${md(t("aiWelcome"))}</div></div>`;
+    if (!this.turns.length) html += `<div class="msg sys">${esc(t("aiConsent"))}</div>`;
     for (const turn of this.turns) {
       if (turn.role === "user") html += `<div class="msg user">${esc(turn.shown)}</div>`;
       else if (turn.role === "assistant") html += `<div class="msg ai"><div class="who">${esc(t("tutor"))}</div><div class="md">${md(turn.content)}</div></div>`;
@@ -1735,8 +1746,9 @@ const Tutor = {
     } catch (e) {
       const code = e && e.code;
       if (e && e.text) this.turns.push({ role: "assistant", content: e.text });
-      if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed") this.disabled = true;
+      if (code === "not_granted" || code === "sampling_disabled" || code === "not_declared" || code === "capability_disabled" || code === "capability_removed" || code === "session_expired") { this.disabled = true; this.offCode = code; }
       else if (code === "rate_limited") this.turns.push({ role: "sys", content: t("aiRate") });
+      else if (code === "refused") this.turns.push({ role: "sys", content: t("aiRefused") });
       else if (code !== "cancelled") this.turns.push({ role: "sys", content: t("aiFail") });
       // fehlgeschlagene Nutzerzeile entfernen, damit die Liste mit user endet
       if (!(e && e.text)) { const last = this.turns.map(x => x.role).lastIndexOf("user"); if (last >= 0) this.turns[last].role = "sys-user"; }
@@ -1904,7 +1916,7 @@ const Gen = {
       }
     } catch (e) {
       const code = e && e.code;
-      if (code === "not_granted" || code === "sampling_disabled") Tutor.disabled = true;
+      if (code === "not_granted" || code === "sampling_disabled" || code === "session_expired") { Tutor.disabled = true; Tutor.offCode = code; }
       else if (code === "rate_limited") Tutor.turns.push({ role: "sys", content: t("aiRate") });
       else if (code !== "cancelled") Tutor.turns.push({ role: "sys", content: t("genFailed") });
     } finally {

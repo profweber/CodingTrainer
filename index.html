@@ -4,25 +4,148 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CodingTrainer</title>
-<meta name="description" content="Python-Übungen zum Skript „Programmierung für Ingenieurinnen und Ingenieure“ (Hochschule Trier)">
-<!-- Weiterleitung zur Claude-Version mit eingebautem KI-Tutor. Neue Adresse: überall dort eintragen, wo claude.ai/artifact/… steht. -->
-<meta http-equiv="refresh" content="0; url=https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3">
-<script>location.replace("https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3");</script>
+<meta name="description" content="Python-Übungen zum Skript „Programmierung für Ingenieurinnen und Ingenieure“ (Prof. Dr. Maik Weber, Hochschule Trier)">
+<script>
+  // Adresse der Claude-Version – bei einer Änderung auch in den beiden Knöpfen unten anpassen (für Browser ohne JavaScript)
+  var TRAINER = "https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3";
+  // Wer „beim nächsten Mal überspringen“ gewählt hat, kommt direkt zum Trainer (mit ?start erscheint die Seite wieder)
+  try {
+    if (location.search.indexOf("start") >= 0) localStorage.removeItem("ct.skipStart");
+    else if (localStorage.getItem("ct.skipStart") === "1") location.replace(TRAINER);
+  } catch (e) {}
+</script>
+<link rel="stylesheet" href="ohne-tutor/fonts/fonts.css">
 <style>
-  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #edf1ef; color: #17242c;
-         font: 16px/1.5 system-ui, sans-serif; padding: 16px; box-sizing: border-box; }
-  main { max-width: 34rem; background: #fbfcfb; border: 1px solid #cbd6d2; border-radius: 6px; padding: 24px; }
-  h1 { margin: 0 0 8px; font-size: 22px; }
-  a { color: #2344c4; }
-  .small { font-size: 14px; color: #586972; margin-top: 16px; }
+  :root {
+    --paper: #edf1ef; --sheet: #fbfcfb; --ink: #17242c; --muted: #586972; --line: #cbd6d2;
+    --accent: #2344c4; --accent-ink: #ffffff; --grid: rgba(23, 36, 44, .045);
+    --font-display: "Barlow Semi Condensed", "Arial Narrow", Arial, sans-serif;
+    --font-body: "Barlow", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #0e1417; --sheet: #151d21; --ink: #e1e8e5; --muted: #93a39d; --line: #283439;
+            --accent: #93a8ff; --accent-ink: #0e1417; --grid: rgba(225, 232, 229, .035); color-scheme: dark; }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
+    background-color: var(--paper); color: var(--ink); font: 16px/1.55 var(--font-body);
+    background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 8px 8px;
+  }
+  main { width: min(640px, 100%); background: var(--sheet); border: 1.5px solid var(--ink); }
+  header { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; border-bottom: 1.5px solid var(--ink); }
+  .mark { display: grid; place-items: center; padding: 8px 16px; border-right: 1.5px solid var(--ink); font: 700 24px/1 var(--font-display); letter-spacing: .04em; }
+  .mark span { display: block; font-size: 10px; letter-spacing: .14em; color: var(--muted); margin-top: 4px; font-weight: 600; }
+  .name { padding: 10px 16px; min-width: 0; }
+  h1 { margin: 0; font: 700 26px/1.1 var(--font-display); letter-spacing: .01em; }
+  .name p { margin: 3px 0 0; color: var(--muted); font-size: 14px; }
+  .lang { display: flex; align-items: center; padding: 0 12px; border-left: 1px solid var(--line); }
+  .lang button { border: 1px solid var(--line); background: transparent; color: inherit; font: 600 13px/1 var(--font-body); padding: 7px 9px; cursor: pointer; }
+  .lang button + button { border-left: 0; }
+  .lang button[aria-pressed="true"] { background: var(--ink); color: var(--sheet); border-color: var(--ink); }
+  .body { padding: 20px 20px 22px; }
+  .lead { margin: 0 0 14px; font-size: 17px; }
+  ul { margin: 0 0 18px; padding-left: 1.2em; display: grid; gap: 4px; }
+  .cta { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px 18px; border-radius: 6px;
+         background: var(--accent); color: var(--accent-ink); font: 700 19px/1.2 var(--font-display); letter-spacing: .02em; text-decoration: none; }
+  .cta:hover { filter: brightness(1.08); }
+  .note { margin: 12px 0 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 6px; font-size: 15px; }
+  .note p { margin: 0 0 6px; } .note p:last-child { margin: 0; }
+  .skip { display: flex; gap: 8px; align-items: flex-start; margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+  .skip input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--accent); }
+  .alt { margin: 18px 0 0; padding-top: 14px; border-top: 1px solid var(--line); font-size: 15px; }
+  .alt a { color: var(--accent); font-weight: 600; }
+  footer { padding: 10px 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+  a { color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+  @media (max-width: 480px) {
+    header { grid-template-columns: auto minmax(0, 1fr); }
+    .lang { grid-column: 1 / -1; border-left: 0; border-top: 1px solid var(--line); padding: 8px 12px; }
+    h1 { font-size: 22px; } .mark { padding: 8px 12px; font-size: 20px; }
+    .body { padding: 16px; } .lead { font-size: 16px; }
+  }
 </style>
 </head>
 <body>
 <main>
-  <h1>CodingTrainer</h1>
-  <p>Sie werden zum Trainer weitergeleitet … Falls nichts passiert:
-     <a href="https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3">CodingTrainer öffnen</a>.</p>
-  <p class="small">Ohne Claude-Konto: <a href="ohne-tutor/">Version ohne KI-Tutor</a></p>
+  <header>
+    <div class="mark" aria-hidden="true">CT<span>v1.0</span></div>
+    <div class="name">
+      <h1>CodingTrainer</h1>
+      <p lang="de" data-l="de">Übungen zum Skript <a href="https://profweber.github.io/programming/">„Programmierung für Ingenieurinnen und Ingenieure“</a></p>
+      <p lang="en" data-l="en" hidden>Exercises for the lecture notes <a href="https://profweber.github.io/programming/">“Programmierung für Ingenieurinnen und Ingenieure”</a></p>
+    </div>
+    <div class="lang" role="group" aria-label="Sprache / Language">
+      <button type="button" id="b-de" aria-pressed="true">DE</button><button type="button" id="b-en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <div class="body">
+    <div lang="de" data-l="de">
+      <p class="lead">Python üben – direkt im Browser, ohne Installation.</p>
+      <ul>
+        <li>250 Aufgaben zu den Kapiteln 4–10 und den Anhängen, in drei Schwierigkeitsstufen</li>
+        <li>Automatische Tests mit Rückmeldung und Verweisen ins Skript</li>
+        <li>KI-Tutor, der Hinweise gibt, aber keine fertigen Lösungen verrät</li>
+        <li>Klausurtraining mit zufälligen Aufgaben</li>
+      </ul>
+      <a class="cta" href="https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3" data-go>CodingTrainer öffnen <span aria-hidden="true">→</span></a>
+      <div class="note">
+        <p><b>Sie brauchen ein kostenloses Claude-Konto.</b> Der Trainer läuft auf claude.ai; dort melden Sie sich an oder registrieren sich, falls Sie noch kein Konto haben.</p>
+        <p>Der KI-Tutor nutzt Ihr eigenes Konto und Kontingent. Beim ersten Tipp fragt Claude einmal, ob die Seite das darf. Ihr Lernfortschritt wird nur in Ihrem Browser gespeichert.</p>
+      </div>
+      <label class="skip"><input type="checkbox" data-skip> Diese Seite beim nächsten Besuch überspringen</label>
+      <p class="alt">Ohne Claude-Konto: <a href="ohne-tutor/">Version ohne KI-Tutor</a> – alle Aufgaben und Tests, vollständig in Ihrem Browser, keine Daten an Dritte.</p>
+    </div>
+
+    <div lang="en" data-l="en" hidden>
+      <p class="lead">Practise Python – right in your browser, no installation.</p>
+      <ul>
+        <li>250 exercises for chapters 4–10 and the appendices, at three levels</li>
+        <li>Automatic tests with feedback and links to the lecture notes</li>
+        <li>AI tutor that gives hints but never hands out finished solutions</li>
+        <li>Exam practice with random exercises</li>
+      </ul>
+      <a class="cta" href="https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3" data-go>Open the CodingTrainer <span aria-hidden="true">→</span></a>
+      <div class="note">
+        <p><b>You need a free Claude account.</b> The trainer runs on claude.ai; sign in there, or sign up if you don't have an account yet.</p>
+        <p>The AI tutor uses your own account and usage. On your first hint, Claude asks once whether the page may do so. Your progress is stored in your browser only.</p>
+      </div>
+      <label class="skip"><input type="checkbox" data-skip> Skip this page next time</label>
+      <p class="alt">No Claude account: <a href="ohne-tutor/">version without AI tutor</a> – all exercises and tests, entirely in your browser, no data sent to third parties.</p>
+    </div>
+  </div>
+
+  <footer>Prof. Dr. Maik Weber · Hochschule Trier · CodingTrainer v1.0 · <a href="https://github.com/profweber/CodingTrainer">GitHub</a></footer>
 </main>
+<script>
+  (function () {
+    var lang = "de";
+    try { lang = localStorage.getItem("ct.startLang") || ((navigator.language || "de").toLowerCase().indexOf("de") === 0 ? "de" : "en"); } catch (e) {}
+    function setLang(l) {
+      lang = l;
+      document.documentElement.lang = l;
+      document.querySelectorAll("[data-l]").forEach(function (el) { el.hidden = el.getAttribute("data-l") !== l; });
+      document.getElementById("b-de").setAttribute("aria-pressed", String(l === "de"));
+      document.getElementById("b-en").setAttribute("aria-pressed", String(l === "en"));
+      try { localStorage.setItem("ct.startLang", l); } catch (e) {}
+    }
+    document.getElementById("b-de").onclick = function () { setLang("de"); };
+    document.getElementById("b-en").onclick = function () { setLang("en"); };
+    setLang(lang);
+    document.querySelectorAll("[data-go]").forEach(function (a) { a.href = TRAINER; });
+    // „Überspringen“: beide Sprachfassungen synchron halten und speichern
+    var boxes = document.querySelectorAll("[data-skip]");
+    boxes.forEach(function (b) {
+      b.onchange = function () {
+        boxes.forEach(function (o) { o.checked = b.checked; });
+        try { b.checked ? localStorage.setItem("ct.skipStart", "1") : localStorage.removeItem("ct.skipStart"); } catch (e) {}
+      };
+    });
+  })();
+</script>
 </body>
 </html>
