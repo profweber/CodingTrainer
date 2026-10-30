@@ -2,8 +2,8 @@ CodingTrainer v1.1 – Quellcode
 ==============================
 
 bank.py, bank_k4.py … bank_kAB.py,   Aufgabenbank. bank.py lädt alle Dateien
-bank2_k4.py … bank2_kAB.py, bank3.py und sortiert nach Kapitel und Stufe. Jede Aufgabe:
-                                     id, Kapitel, Stufe, Titel/Text/Startcode (DE/EN),
+bank2_k4.py … bank2_kAB.py,         und sortiert nach Kapitel und Stufe. Jede Aufgabe:
+bank3.py, bank4.py                   id, Kapitel, Stufe, Titel/Text/Startcode (DE/EN),
                                      Musterlösung, Tests, Skriptverweise, verlangte/verbotene
                                      Konstrukte, ggf. Beispieldateien und Beispieleingaben.
 exlib.py                             Funktion ex() zum Anlegen einer Aufgabe (prüft doppelte ids).

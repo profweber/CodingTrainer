@@ -165,8 +165,9 @@ h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; le
 .main { display: grid; gap: 12px; min-width: 0; }
 .task-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; padding: 14px 16px 6px; }
 .task-head h2 { font-size: 26px; font-weight: 700; line-height: 1.1; flex: 1 1 260px; }
-.tag { display: inline-flex; gap: 6px; align-items: center; font: 600 12px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.tag { display: inline-flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; font: 600 12px/1.2 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .tag .pips i { height: 11px; }
+.tag-lvl { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
 .badge-ai { font: 600 11px/1 var(--font-display); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); border: 1px solid var(--accent); padding: 3px 6px; border-radius: 3px; }
 .task-body { padding: 4px 16px 12px; max-width: 78ch; }
 .task-body p { margin: 0 0 .6em; }
@@ -388,6 +389,7 @@ dialog .panel-b ul { margin: 0 0 .7em; padding-left: 1.2em; }
 .welcome h2 { font-size: 18px; margin-bottom: 6px; }
 .welcome ol { margin: 0 0 10px; padding-left: 1.3em; display: grid; gap: 3px; }
 .welcome p { margin: 0 0 10px; color: var(--muted); font-size: 14px; }
+.welcome .row { display: flex; flex-wrap: wrap; gap: 8px; }
 dialog > .panel-h { position: sticky; top: 0; z-index: 2; background: var(--sheet); }
 .notice { padding: 12px 16px; border-color: var(--accent); display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
 .notice p { margin: 0; flex: 1 1 320px; font-size: 14px; }
@@ -826,7 +828,7 @@ const I18N = {
   runtimeError: { de: "Ihr Code hat einen Fehler ausgelöst", en: "Your code raised an error" },
   syntaxError: { de: "Syntaxfehler – der Code läuft gar nicht erst los", en: "Syntax error – the code doesn't start at all" },
   solvedMsg: { de: "Gelöst! Weiter mit der nächsten Aufgabe?", en: "Solved! On to the next exercise?" },
-  constructLater: { de: "kommt erst in Kapitel {ch} – diese Aufgabe lässt sich ohne lösen.", en: "is only introduced in chapter {ch} – this exercise can be solved without it." },
+  constructLater: { de: "kommt erst in {chl} – diese Aufgabe lässt sich ohne lösen.", en: "is only introduced in {chl} – this exercise can be solved without it." },
   constructAbsent: { de: "kommt im Skript nicht vor. Lösen Sie die Aufgabe mit den Mitteln aus dem Skript.", en: "does not appear in the lecture notes. Solve the exercise with the tools from the notes." },
   constructMissing: { de: "Diese Aufgabe verlangt:", en: "This exercise requires:" },
   constructForbidden: { de: "Bitte hier nicht verwenden:", en: "Please don't use here:" },
@@ -893,10 +895,10 @@ const I18N = {
   allDone: { de: "Sie haben alle Aufgaben der gewählten Kapitel gelöst. Wählen Sie weitere Kapitel oder lassen Sie sich vom KI-Tutor eine neue Aufgabe erzeugen.", en: "You have solved every exercise in the selected chapters. Select more chapters or let the AI tutor generate a new exercise." },
   timeout: { de: "Abbruch nach Zeitlimit. Python wird neu gestartet …", en: "Stopped after the time limit. Restarting Python …" },
   engineFail: { de: "Python konnte in dieser Ansicht nicht gestartet werden. Bitte laden Sie die Seite neu; hilft das nicht, versuchen Sie einen anderen Browser.", en: "Python could not be started in this view. Please reload the page; if that doesn't help, try another browser." },
-  autoNote: { de: "Automatisch: Stufe <b>{l}</b> ({n}) in Kapitel {ch}. Zwei saubere Lösungen in Folge → eine Stufe höher.", en: "Adaptive: level <b>{l}</b> ({n}) in chapter {ch}. Two clean solutions in a row → one level up." },
+  autoNote: { de: "Automatisch: Stufe <b>{l}</b> ({n}) in {chl}. Zwei saubere Lösungen in Folge → eine Stufe höher.", en: "Adaptive: level <b>{l}</b> ({n}) in {chl}. Two clean solutions in a row → one level up." },
   fixedNote: { de: "Feste Stufe {l} ({n}) für alle gewählten Kapitel. Aufgaben anderer Stufen sind in der Liste abgeblendet, bleiben aber anklickbar.", en: "Fixed level {l} ({n}) for all selected chapters. Exercises of other levels are dimmed in the list but stay clickable." },
-  levelUp: { de: "Stark! In Kapitel {ch} geht es jetzt auf Stufe {l} weiter.", en: "Nice! Chapter {ch} continues at level {l}." },
-  levelDown: { de: "In Kapitel {ch} geht es auf Stufe {l} weiter – erst festigen, dann steigern.", en: "Chapter {ch} continues at level {l} – consolidate first, then step up." },
+  levelUp: { de: "Stark! In {chl} geht es jetzt auf Stufe {l} weiter.", en: "Nice! {Chl} continues at level {l}." },
+  levelDown: { de: "In {chl} geht es auf Stufe {l} weiter – erst festigen, dann steigern.", en: "{Chl} continues at level {l} – consolidate first, then step up." },
   viewPractice: { de: "Üben", en: "Practice" },
   viewExam: { de: "Klausurtraining", en: "Exam practice" },
   examSetup: { de: "Klausur einstellen", en: "Exam settings" },
@@ -974,7 +976,7 @@ const I18N = {
   nextShort: { de: "Nächste →", en: "Next →" },
   close: { de: "Schließen", en: "Close" },
   edHelp: { de: "Python-Editor. Tab rückt ein, Umschalt+Tab rückt aus. Zum Verlassen des Editors zuerst Escape, dann Tab drücken. Strg+Enter führt aus, Umschalt+Strg+Enter prüft.", en: "Python editor. Tab indents, Shift+Tab outdents. To leave the editor, press Escape and then Tab. Ctrl+Enter runs, Shift+Ctrl+Enter checks." },
-  includeChapter: { de: "Kapitel {ch} bei „Nächste Aufgabe“ und im Klausurtraining berücksichtigen", en: "Include chapter {ch} in “Next exercise” and exam practice" },
+  includeChapter: { de: "{Chl} bei „Nächste Aufgabe“ und im Klausurtraining berücksichtigen", en: "Include {chl} in “Next exercise” and exam practice" },
   levelOf: { de: "Stufe {l} von 3", en: "level {l} of 3" },
   stSolved: { de: "gelöst", en: "solved" },
   stTried: { de: "versucht", en: "attempted" },
@@ -996,6 +998,7 @@ const I18N = {
   welcomeTitle: { de: "So funktioniert der CodingTrainer", en: "How the CodingTrainer works" },
   welcomeSteps: { de: ["Lesen Sie die Aufgabe. Die Verweise unter „Im Skript“ führen direkt zum passenden Abschnitt.", "Schreiben Sie Ihren Code im Editor und probieren Sie ihn mit **Ausführen** aus.", "Klicken Sie auf **Prüfen**, um Ihre Lösung automatisch testen zu lassen. Sind alle Tests bestanden, gilt die Aufgabe als gelöst.", "Kommen Sie nicht weiter? Der **KI-Tutor** gibt Ihnen Hinweise, ohne die Lösung zu verraten."], en: ["Read the exercise. The links under “In the notes” take you straight to the matching section.", "Write your code in the editor and try it out with **Run**.", "Click **Check** to have your solution tested automatically. Once all tests pass, the exercise counts as solved.", "Stuck? The **AI tutor** gives you hints without revealing the solution."] },
   welcomeStep4NoAi: { de: "Kommen Sie nicht weiter? Nach zwei Prüfversuchen können Sie die Musterlösung ansehen. Einen **KI-Tutor**, der Hinweise gibt, hat die Claude-Version (siehe Tutor-Bereich).", en: "Stuck? After two checks you can view the reference solution. The Claude version has an **AI tutor** that gives hints (see the tutor panel)." },
+  welcomeStep4Copy: { de: "Kommen Sie nicht weiter? Der **KI-Tutor** gibt Hinweise, ohne die Lösung zu verraten – allerdings nur in Ihrer **eigenen Kopie** des CodingTrainers. Die legen Sie einmalig mit einem Klick an.", en: "Stuck? The **AI tutor** gives hints without revealing the solution – but only in your **own copy** of the CodingTrainer, which you create once with one click." },
   welcomeStep4Off: { de: "Kommen Sie nicht weiter? Die Verweise unter „Im Skript“ führen zur passenden Erklärung, und nach zwei Prüfversuchen können Sie die Musterlösung ansehen.", en: "Stuck? The links under “In the notes” lead to the matching explanation, and after two checks you can view the reference solution." },
   welcomeNote: { de: "Ihr Fortschritt wird nur in diesem Browser gespeichert; unter **Info** (oben rechts) können Sie ihn sichern und übertragen. Dort finden Sie auch weitere Erklärungen.", en: "Your progress is stored in this browser only; under **About** (top right) you can save and transfer it. You'll also find more explanations there." },
   welcomeOk: { de: "Verstanden, los geht's", en: "Got it, let's start" },
@@ -1012,6 +1015,9 @@ const t = (k, vars) => {
 };
 const L = obj => (obj && typeof obj === "object") ? (obj[LANG] ?? obj.de ?? "") : (obj ?? "");
 const chName = id => L(CHAPTERS.find(c => c.id === id));
+// „Kapitel 4“ bzw. „Anhang A“ (für Texte mit {chl}, am Satzanfang {Chl})
+const chLabel = id => (/^\d+$/.test(String(id)) ? (LANG === "de" ? "Kapitel " : "chapter ") : (LANG === "de" ? "Anhang " : "appendix ")) + id;
+const chVars = id => { const l = chLabel(id); return { chl: l, Chl: l[0].toUpperCase() + l.slice(1) }; };
 const chIdx = id => CH_ORDER.indexOf(id);
 
 /* ====================================================================== Speicher (nur dieser Browser) */
@@ -1355,7 +1361,7 @@ function pickNext(excludeId, preferCh) {
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
-function openExercise(id) {
+function openExercise(id, expand = true) {
   const ex = byId(id);
   if (!ex) return;
   S.currentId = id;
@@ -1366,7 +1372,7 @@ function openExercise(id) {
   writeConsole([{ cls: "muted", text: outPlaceholder() }]);
   $("result-panel").hidden = true;
   setCheckStatus("");
-  S.expanded.add(ex.ch);
+  if (expand) S.expanded.add(ex.ch);   // beim An-/Abwählen von Kapiteln nichts aufklappen
   Tutor.reset();
   save();
   renderAll();
@@ -1424,7 +1430,7 @@ function renderChapters() {
         <span class="chap-title">${shy(esc(L(c)))}${c.id === "9" && offKeys().length ? `<span class="chap-sub">${esc(t("withoutTopics", { t: offKeys().join(", ") }))}</span>` : ""}</span>
         <span class="chap-count">${solved}/${ex.length}</span>`;
     const bar = `<span class="chap-bar" aria-hidden="true"><i style="width:${ex.length ? (100 * solved / ex.length) : 0}%"></i></span>`;
-    const box = `<input type="checkbox" data-ch="${c.id}" ${on ? "checked" : ""} aria-label="${esc(t("includeChapter", { ch: c.id }))}">`;
+    const box = `<input type="checkbox" data-ch="${c.id}" ${on ? "checked" : ""} aria-label="${esc(t("includeChapter", chVars(c.id)))}">`;
     return practice
       ? `<li class="chap ${on ? "" : "off"}"><div class="chap-row"><label>${box}</label><button type="button" class="chap-open" data-open="${c.id}" aria-expanded="${open}"${open ? ` aria-controls="exl-${c.id}"` : ""}>${inner}<span class="caret" aria-hidden="true">▶</span></button>${bar}</div>${list}</li>`
       : `<li class="chap ${on ? "" : "off"}"><label class="chap-row">${box}<span class="chap-open">${inner}<span></span></span>${bar}</label></li>`;
@@ -1436,9 +1442,9 @@ function renderChapters() {
 $("chapters").addEventListener("change", e => {
   const ch = e.target.dataset.ch;
   if (!ch) return;
-  e.target.checked ? (S.selected.add(ch), S.expanded.add(ch)) : S.selected.delete(ch);
+  e.target.checked ? S.selected.add(ch) : S.selected.delete(ch);
   save();
-  if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); n ? openExercise(n.id) : renderAll(); }
+  if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); n ? openExercise(n.id, false) : renderAll(); }
   else renderAll();
 });
 $("chapters").addEventListener("click", e => {
@@ -1460,7 +1466,7 @@ $("chapters").addEventListener("click", e => {
 $("toggle-all").onclick = () => {
   if (S.selected.size === visibleChapters().length) S.selected.clear(); else visibleChapters().forEach(c => S.selected.add(c.id));
   save();
-  if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); n ? openExercise(n.id) : renderAll(); } else renderAll();
+  if (!current() || !S.selected.has(current().ch)) { const n = pickNext(); n ? openExercise(n.id, false) : renderAll(); } else renderAll();
 };
 
 function renderLevel() {
@@ -1470,7 +1476,7 @@ function renderLevel() {
   if (S.mode === "auto") {
     const ch = ex ? ex.ch : CH_ORDER.find(c => S.selected.has(c)) || "4";
     const l = lvlState(ch).level;
-    $("level-note").innerHTML = t("autoNote", { l, n: names[l], ch });
+    $("level-note").innerHTML = t("autoNote", { l, n: names[l], ...chVars(ch) });
   } else {
     $("level-note").textContent = t("fixedNote", { l: S.mode, n: names[Number(S.mode)] });
   }
@@ -1505,7 +1511,7 @@ function renderTask() {
   $("task-title").textContent = L(ex.title);
   const names = I18N.levelNames[LANG];
   const examPrefix = examRunning() ? `${esc(t("examTaskOf", { i: S.exam.idx + 1, n: S.exam.ids.length }))} · ${PTS[ex.lvl]} ${esc(t("points"))} · ` : "";
-  $("task-tag").innerHTML = `${examPrefix}${LANG === "de" ? "Kapitel" : "Chapter"} ${esc(ex.ch)} · ${pips(ex.lvl)} ${esc(names[ex.lvl])}${ex.generated ? ` <span class="badge-ai">${esc(t("aiMade"))}</span>` : ""}`;
+  $("task-tag").innerHTML = `<span>${examPrefix}${esc(chVars(ex.ch).Chl)} · ${esc(chName(ex.ch))}</span><span class="tag-lvl">${pips(ex.lvl)} ${esc(names[ex.lvl])}</span>${ex.generated ? ` <span class="badge-ai">${esc(t("aiMade"))}</span>` : ""}`;
   $("task-body").innerHTML = md(L(ex.task));
   $("task-refs").innerHTML = (!examRunning() && (ex.refs || []).length) ? `<span class="eyebrow">${esc(t("scriptRefs"))}</span>` + ex.refs.map(refChip).join("") : "";
   renderEditor();
@@ -1599,19 +1605,19 @@ function isSolved(r) {
   return !r.error && r.checks.length > 0 && r.checks.every(c => c.ok) && !constructBlocking(r.constructs);
 }
 
-const noteText = it => it.status === "later" ? t("constructLater", { ch: it.chapter }) : it.status === "off" ? t("constructOff") : t("constructAbsent");
+const noteText = it => it.status === "later" ? t("constructLater", chVars(it.chapter)) : it.status === "off" ? t("constructOff") : t("constructAbsent");
 let adaptMsg = "";
 function adapt(ex, kind) {
   const st = lvlState(ex.ch);
   adaptMsg = "";
   if (kind === "clean") {
     st.streak += 1; st.struggle = 0;
-    if (st.streak >= 2 && st.level < 3) { st.level += 1; st.streak = 0; adaptMsg = t("levelUp", { ch: ex.ch, l: st.level }); }
+    if (st.streak >= 2 && st.level < 3) { st.level += 1; st.streak = 0; adaptMsg = t("levelUp", { ...chVars(ex.ch), l: st.level }); }
   } else if (kind === "solved") {
     st.streak = 0;
   } else if (kind === "struggle" || kind === "peek") {
     st.streak = 0; st.struggle += 1;
-    if (st.struggle >= (kind === "peek" ? 1 : 2) && st.level > 1) { st.level -= 1; st.struggle = 0; adaptMsg = t("levelDown", { ch: ex.ch, l: st.level }); }
+    if (st.struggle >= (kind === "peek" ? 1 : 2) && st.level > 1) { st.level -= 1; st.struggle = 0; adaptMsg = t("levelDown", { ...chVars(ex.ch), l: st.level }); }
   }
   save(); renderLevel();
 }
@@ -1715,6 +1721,7 @@ const Tutor = {
     // Tutor-Bereich nur ausblenden, wenn er per config.json abgeschaltet ist; sonst erklärt er, warum er nicht verfügbar ist
     document.documentElement.classList.toggle("no-tutor", STANDALONE && CONFIG.tutor.claude_link === false);
     this.renderChrome(); this.renderChat();
+    if (!STANDALONE) renderWelcome();   // Willkommenskarte an die geteilte Ansicht anpassen
   },
   // "inline": Claude direkt in der Seite · "link": Anfrage wird in claude.ai (eigenes Konto) geöffnet · "off"
   mode() {
@@ -2537,7 +2544,8 @@ function renderInfo() {
 function renderCopyBanner() {
   const b = $("copy-banner");
   if (!b) return;
-  const show = Tutor.needsCopy() && !S.copyHidden && S.view !== "exam";
+  // solange die Willkommenskarte sichtbar ist, erklärt sie die eigene Kopie – keine zweite Leiste darüber
+  const show = Tutor.needsCopy() && !S.copyHidden && S.view !== "exam" && S.welcomed;
   if (!show) { b.hidden = true; return; }
   if (b.hidden || b.dataset.lang !== LANG) {
     b.innerHTML = `<p>${md(t("copyBanner")).replace(/^<p>|<\/p>$/g, "")}</p><div class="row"><button type="button" class="btn primary" id="copy-how">${esc(t("copyHow"))}</button><button type="button" class="btn ghost" id="copy-hide">${esc(t("copyHide"))}</button></div>`;
@@ -2652,8 +2660,11 @@ function renderWelcome() {
   const steps = t("welcomeSteps").slice();
   if (STANDALONE && Tutor.mode() === "goto") steps[3] = t("welcomeStep4NoAi");   // Version ohne eingebauten Tutor
   if (STANDALONE && Tutor.mode() === "off") steps[3] = t("welcomeStep4Off");
-  w.innerHTML = `<h2>${esc(t("welcomeTitle"))}</h2><ol>${steps.map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol><p>${md(t("welcomeNote")).replace(/^<p>|<\/p>$/g, "")}</p><button type="button" class="btn dark" id="welcome-ok">${esc(t("welcomeOk"))}</button>`;
-  $("welcome-ok").onclick = () => { S.welcomed = true; save(); w.hidden = true; $("task-panel").focus({ preventScroll: true }); };
+  const copy = Tutor.needsCopy();   // geteilte Ansicht: Tutor nur in der eigenen Kopie
+  if (copy) steps[3] = t("welcomeStep4Copy");
+  w.innerHTML = `<h2>${esc(t("welcomeTitle"))}</h2><ol>${steps.map(s => `<li>${md(s).replace(/^<p>|<\/p>$/g, "")}</li>`).join("")}</ol><p>${md(t("welcomeNote")).replace(/^<p>|<\/p>$/g, "")}</p><div class="row"><button type="button" class="btn dark" id="welcome-ok">${esc(t("welcomeOk"))}</button>${copy ? `<button type="button" class="btn primary" id="welcome-copy">${esc(t("aiCopyBtn"))}</button>` : ""}</div>`;
+  $("welcome-ok").onclick = () => { S.welcomed = true; save(); w.hidden = true; renderCopyBanner(); $("task-panel").focus({ preventScroll: true }); };
+  if (copy) $("welcome-copy").onclick = () => openCopyDlg();
 }
 
 /* ====================================================================== Start */

@@ -840,6 +840,7 @@ check(("keine zahl" in o or "not a number" in o) and ("zwischen 1 und 10" in o o
 import bank_k4, bank_k5, bank_k6, bank_k7, bank_k8, bank_k9, bank_k10, bank_kAB  # noqa: E402,F401
 import bank2_k4, bank2_k5, bank2_k6, bank2_k7, bank2_k8, bank2_k9, bank2_k10, bank2_kAB  # noqa: E402,F401
 import bank3  # noqa: E402,F401
+import bank4  # noqa: E402,F401
 
 _ORDER = ["4", "5", "6", "7", "8", "9", "10", "A", "B"]
 EX.sort(key=lambda e: (_ORDER.index(e["ch"]), e["lvl"]))

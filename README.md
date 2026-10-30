@@ -54,7 +54,7 @@ Jede Version hat eine `config.json`; beide sollten gleich sein (die Startseite b
 {
   "semester": "",
   "chapters": ["4", "5", "6", "7", "8", "9", "10", "A", "B"],
-  "topics": { "numpy": true, "pandas": true },
+  "topics": { "numpy": true, "pandas": false },
   "tutor": {
     "claude_link": true,
     "artifact_url": "https://claude.ai/artifact/BJzRVf2JWj36M7LE2x9yV3"
@@ -64,7 +64,7 @@ Jede Version hat eine `config.json`; beide sollten gleich sein (die Startseite b
 
 | Einstellung | Wirkung |
 |---|---|
-| `"pandas": false` | pandas-Aufgaben verschwinden (auch im Klausurtraining), Kapitel 9 zeigt „ohne pandas“, der Tutor empfiehlt pandas nicht; Aufgabenzahl im Trainer und auf der Startseite passen sich an. Gleiches gilt für `"numpy"`. |
+| `"pandas": false` (Voreinstellung) | pandas-Aufgaben verschwinden (auch im Klausurtraining), Kapitel 9 zeigt „ohne pandas“, der Tutor empfiehlt pandas nicht; Aufgabenzahl im Trainer und auf der Startseite passen sich an. Mit `true` erscheinen sie (dann 10 Aufgaben mehr). Gleiches gilt für `"numpy"`. |
 | Kapitel aus `"chapters"` löschen | Das Kapitel wird ausgeblendet; Kapitelangaben und Aufgabenzahl passen sich an. |
 | `"semester": "SoSe 2027"` | Erscheint im Info-Fenster. |
 | `"artifact_url"` | Nur Version ohne Tutor: Der Tutor-Bereich zeigt einen Knopf zur Claude-Version. Leer (`""`): Der Tutor öffnet stattdessen Claude in einem neuen Tab mit vorbereiteter Anfrage. |
